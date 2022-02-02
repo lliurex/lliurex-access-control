@@ -1,0 +1,33 @@
+{
+	"SETUP": {
+		"type": "python",
+		"path": "AccessControlManager.py",
+		"class": "AccessControlManager"
+	},
+	"METHODS": {
+		"isAccessDenyGroupEnabled": {
+			"allowed_groups": [
+				"anonymous"
+			]
+		},
+		"getDenyGroups": {
+			"allowed_groups": [
+				"anonymous"
+			]
+		},
+		"setDenyGroups": {
+			"allowed_groups": [
+				"sudo",
+				"admins"
+			]
+
+		},
+		"disableAccessDenyGroup": {
+			"allowed_groups": [
+				"sudo",
+				"admins"
+			]
+
+		}
+	}
+}

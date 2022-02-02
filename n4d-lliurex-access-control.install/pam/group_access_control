@@ -1,0 +1,6 @@
+Name: Deny access to computer to users groups
+Default: yes
+Priority: -666
+Auth-Type: Additional
+Auth:
+	required pam_listfile.so onerr=succeed item=group sense=deny file=/etc/lliurex-access-control/login.group.deny

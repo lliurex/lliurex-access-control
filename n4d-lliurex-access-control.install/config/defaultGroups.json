@@ -1,0 +1,12 @@
+{
+	"students":{
+		"ca@valencia":"Alumnes",
+		"default":"Students",
+		"es":"Alumnos"
+	},
+	"teachers":{
+		"ca@valencia":"Professors",
+		"default":"Teachers",
+		"es":"Profesores"
+	}
+} 
