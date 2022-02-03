@@ -10,7 +10,7 @@ GridLayout{
     columnSpacing:10
 
     Rectangle{
-        width:150
+        width:160
         height:380
         border.color: "#d3d3d3"
 

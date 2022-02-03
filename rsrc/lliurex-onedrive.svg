@@ -7,9 +7,9 @@
    inkscape:version="1.1 (1:1.1+202105261517+ce6663b3b7)"
    id="svg8"
    version="1.1"
-   viewBox="0 0 158.75 31.750001"
+   viewBox="0 0 171.97917 31.750001"
    height="120"
-   width="600"
+   width="650"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -75,9 +75,9 @@
      showgrid="false"
      inkscape:current-layer="layer1"
      inkscape:document-units="mm"
-     inkscape:cy="53.499995"
-     inkscape:cx="233.74998"
-     inkscape:zoom="2.0000002"
+     inkscape:cy="128.69342"
+     inkscape:cx="325.97619"
+     inkscape:zoom="1.4142137"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -139,7 +139,7 @@
          id="flowPara5332"> </flowPara></flowRoot>
     <g
        id="g4147"
-       transform="matrix(0.27664017,0,0,0.26458333,269.26016,254.58645)">
+       transform="matrix(0.29800096,0,0,0.26458333,290.09325,254.58645)">
       <rect
          y="14.233741"
          x="-974.73523"
@@ -161,7 +161,7 @@
     <g
        id="g14544"
        style="fill:#ff3333;fill-opacity:1"
-       transform="matrix(0.03601227,0,0,0.03601227,61.368865,263.12065)">
+       transform="matrix(0.03601227,0,0,0.03601227,67.983448,263.12065)">
       <g
          id="g14479"
          style="fill:#ff3333;fill-opacity:1">
@@ -174,11 +174,11 @@
            id="path14469"
            style="fill:#ff3333;fill-opacity:1" />
         <polygon
-           points="376.2,120.9 236.9,120.9 237,121.1 351.7,406.3 490.7,406.3 376.4,121.1 376.4,120.9 "
+           points="351.7,406.3 490.7,406.3 376.4,121.1 376.4,120.9 376.2,120.9 236.9,120.9 237,121.1 "
            id="polygon14471"
            style="fill:#ff3333;fill-opacity:1" />
         <polygon
-           points="762.7,406.3 648.3,121.1 648.3,120.9 508.9,120.9 623.7,406.3 "
+           points="508.9,120.9 623.7,406.3 762.7,406.3 648.3,121.1 648.3,120.9 "
            id="polygon14473"
            style="fill:#ff3333;fill-opacity:1" />
         <path
@@ -194,7 +194,8 @@
     <g
        aria-label="Access Control"
        id="text1612"
-       style="font-size:11.2889px;line-height:1.25;font-family:SpaceColony-SemiBold;-inkscape-font-specification:SpaceColony-SemiBold;fill:#ffffff;stroke-width:0.264583">
+       style="font-size:11.2889px;line-height:1.25;font-family:SpaceColony-SemiBold;-inkscape-font-specification:SpaceColony-SemiBold;fill:#ffffff;stroke-width:0.264583"
+       transform="translate(6.6145823,-1.5e-5)">
       <path
          d="m 28.196863,284.31975 v -1.45627 h -7.179741 v 1.45627 q 0,0.41769 -0.225778,0.64347 -0.225778,0.22578 -0.643467,0.22578 -0.417689,0 -0.643467,-0.22578 -0.225778,-0.22578 -0.225778,-0.64347 v -3.08187 q 0,-1.73849 1.038579,-2.8448 1.038578,-1.10631 2.957691,-1.10631 h 2.664181 q 1.919113,0 2.957692,1.10631 1.038579,1.10631 1.038579,2.8448 v 3.08187 q 0,0.41769 -0.225778,0.64347 -0.225778,0.22578 -0.643468,0.22578 -0.417689,0 -0.643467,-0.22578 -0.225778,-0.22578 -0.225778,-0.64347 z m -7.179741,-3.08187 v 0.16933 h 7.179741 v -0.16933 q 0,-1.07245 -0.632178,-1.73849 -0.632179,-0.67733 -1.817513,-0.67733 h -2.280358 q -1.185335,0 -1.817513,0.67733 -0.632179,0.66604 -0.632179,1.73849 z"
          id="path14829" />

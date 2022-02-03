@@ -48,7 +48,7 @@ class LliurexAccessControl(QObject):
 		self.isAccessDenyGroupEnabled=copy.deepcopy(self.n4dMan.isAccessDenyGroupEnabled)
 		self.denyGroups=copy.deepcopy(self.n4dMan.denyGroups)
 		self._updateGroupModel()
-		time.sleep(1)
+		time.sleep(2)
 		self.currentStack=1
 
 	#def _loadConfig

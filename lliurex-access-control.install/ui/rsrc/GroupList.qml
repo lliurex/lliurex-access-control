@@ -10,7 +10,7 @@ Rectangle {
 
     id:groupTable
     visible: true
-    width: 430; height: 125
+    width: 470; height: 125
     color:"white"
     border.color: "#d3d3d3"
 
@@ -32,7 +32,7 @@ Rectangle {
         id: listdelegate
         Rectangle{
             id: menuItem
-            width: 430
+            width: 470
             height:visible?30:0
             color:"transparent"
 
@@ -51,7 +51,7 @@ Rectangle {
             Text{
                 id: text
                 text: description
-                width:300
+                width:400
                 clip: true
                 anchors.left:groupCheck.right
                 anchors.leftMargin:5

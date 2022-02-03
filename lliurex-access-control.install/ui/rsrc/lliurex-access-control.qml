@@ -45,8 +45,8 @@ ApplicationWindow {
         id: mainLayout
         anchors.fill: parent
         anchors.margins: margin
-        Layout.minimumWidth:600
-        Layout.maximumWidth:600
+        Layout.minimumWidth:650
+        Layout.maximumWidth:650
         Layout.minimumHeight:500
         Layout.maximumHeight:500
 
@@ -65,7 +65,7 @@ ApplicationWindow {
         StackLayout {
             id: stackLayout
             currentIndex:accessControlBridge.currentStack
-            implicitWidth: 500
+            implicitWidth: 650
             Layout.alignment:Qt.AlignHCenter
             Layout.leftMargin:0
             Layout.fillWidth:true

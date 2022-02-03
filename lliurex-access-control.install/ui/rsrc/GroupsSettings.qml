@@ -25,8 +25,8 @@ Rectangle{
             visible:accessControlBridge.showSettingsMessage[0]
             text:getMessageText(accessControlBridge.showSettingsMessage[1])
             type:getMessageType(accessControlBridge.showSettingsMessage[2])
-            Layout.minimumWidth:430
-            Layout.maximumWidth:430
+            Layout.minimumWidth:470
+            Layout.maximumWidth:470
             Layout.topMargin: 40
         }
 
@@ -142,7 +142,7 @@ Rectangle{
         var msg="";
         switch (code){
             case 10:
-                msg=i18nd("lliurex-acccess-control","Changes applied successfully");
+                msg=i18nd("lliurex-access-control","Changes applied successfully");
                 break;
             case -10:
                 msg=i18nd("lliurex-access-control","It is not possible to deactive access control by group");
