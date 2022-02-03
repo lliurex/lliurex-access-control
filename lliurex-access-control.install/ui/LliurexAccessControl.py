@@ -177,7 +177,7 @@ class LliurexAccessControl(QObject):
 		self._model=GroupsModel.GroupsModel()
 		entries=self.n4dMan.groupsConfigData
 		for item in entries:
-			self._model.appendRow(item["id"],item["isChecked"],item["description"])
+			self._model.appendRow(item["groupId"],item["isChecked"],item["description"])
 		
 	#def _updateGroupModel
 

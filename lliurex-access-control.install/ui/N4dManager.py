@@ -69,7 +69,7 @@ class N4dManager:
 
 		for item in self.defaultGroups:
 			tmp={}
-			tmp["id"]=item
+			tmp["groupId"]=item
 			if item in self.denyGroups:
 				tmp["isChecked"]=True
 			else:

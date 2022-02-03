@@ -1,6 +1,8 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.6
 import QtQml.Models 2.6
+import org.kde.plasma.components 2.0 as Components
+
 
 
 Rectangle {
@@ -23,41 +25,20 @@ Rectangle {
         height: parent.height
         model:structModel
         enabled:structEnabled
-        delegate: listdelegate
+        currentIndex:-1
         clip: true
+        focus: true
         boundsBehavior: Flickable.StopAtBounds
-     }         
-
-    Component{
-        id: listdelegate
-        Rectangle{
-            id: menuItem
-            width: 470
-            height:visible?30:0
-            color:"transparent"
-
-            CheckBox {
-                id:groupCheck
-                checked:isChecked
-                onToggled:{
-                    accessControlBridge.manageGroupChecked([id,checked])
-                }
-                anchors.left:parent.left
-                anchors.leftMargin:5
-                anchors.verticalCenter:parent.verticalCenter
-
-            }
-
-            Text{
-                id: text
-                text: description
-                width:400
-                clip: true
-                anchors.left:groupCheck.right
-                anchors.leftMargin:5
-                anchors.verticalCenter:parent.verticalCenter
-            }
+        highlight: Rectangle { color: "#add8e6"; opacity:0.8;border.color:"#53a1c9" }
+        highlightMoveDuration: 0
+        highlightResizeDuration: 0
+        delegate: ListDelegateGroupItem{
+            groupId:model.groupId
+            isChecked:model.isChecked
+            description:model.description
         }
-    }
+
+     } 
+
 }
 
