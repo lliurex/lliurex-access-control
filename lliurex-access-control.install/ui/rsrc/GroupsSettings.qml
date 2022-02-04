@@ -63,7 +63,7 @@ Rectangle{
             }
             GroupList{
                 id:groupList
-                structModel:accessControlBridge.model
+                structModel:accessControlBridge.groupsModel
                 structEnabled:groupControlCb.checked
             }
         }
@@ -91,7 +91,7 @@ Rectangle{
                     if (accessControlBridge.closePopUp){
                         synchronizePopup.close(),
                         timer.stop(),
-                        groupList.structModel=accessControlBridge.model
+                        groupList.structModel=accessControlBridge.groupsModel
                     }
                   })
                 accessControlBridge.applyChanges()
@@ -112,7 +112,7 @@ Rectangle{
                     if (accessControlBridge.closePopUp){
                         synchronizePopup.close(),
                         timer.stop(),
-                        groupList.structModel=accessControlBridge.model
+                        groupList.structModel=accessControlBridge.groupsModel
 
                     }
                   })

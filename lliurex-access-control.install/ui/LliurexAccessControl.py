@@ -21,7 +21,7 @@ class LliurexAccessControl(QObject):
 
 	def initBridge(self):
 
-		self._model=GroupsModel.GroupsModel()
+		self._groupsModel=GroupsModel.GroupsModel()
 		self._settingsChanged=False
 		self._showSettingsMessage=[False,"","Success"]
 		self._closeGui=False
@@ -165,19 +165,19 @@ class LliurexAccessControl(QObject):
 
 	#def _setShowChangesDialog
 
-	def _getModel(self):
+	def _getGroupsModel(self):
 		
-		return self._model
+		return self._groupsModel
 
-	#def _getModel
+	#def _getGroupsModel
 
 	def _updateGroupModel(self):
 
-		ret=self._model.clear()
-		self._model=GroupsModel.GroupsModel()
-		entries=self.n4dMan.groupsConfigData
-		for item in entries:
-			self._model.appendRow(item["groupId"],item["isChecked"],item["description"])
+		ret=self._groupsModel.clear()
+		self._groupsModel=GroupsModel.GroupsModel()
+		groupsEntries=self.n4dMan.groupsConfigData
+		for item in groupsEntries:
+			self._groupsModel.appendRow(item["groupId"],item["isChecked"],item["description"])
 		
 	#def _updateGroupModel
 
@@ -352,7 +352,7 @@ class LliurexAccessControl(QObject):
 	on_showChangesDialog=Signal()
 	showChangesDialog=Property(bool,_getShowChangesDialog,_setShowChangesDialog, notify=on_showChangesDialog)
 
-	model=Property(QObject,_getModel,constant=True)
+	groupsModel=Property(QObject,_getGroupsModel,constant=True)
 
 
 #class LliurexAccessControl
