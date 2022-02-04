@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.12
 Rectangle{
     color:"transparent"
     Text{ 
-        text:i18nd("lliurex-access-control","Restrict access by group")
+        text:i18nd("lliurex-access-control","Restrict access by user")
         font.family: "Quattrocento Sans Bold"
         font.pointSize: 16
     }
@@ -22,9 +22,9 @@ Rectangle{
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:accessControlBridge.showSettingsGroupMessage[0]
-            text:getMessageText(accessControlBridge.showSettingsGroupMessage[1])
-            type:getMessageType(accessControlBridge.showSettingsGroupMessage[2])
+            visible:accessControlBridge.showSettingsUserMessage[0]
+            text:getMessageText(accessControlBridge.showSettingsUserMessage[1])
+            type:getMessageType(accessControlBridge.showSettingsUserMessage[2])
             Layout.minimumWidth:470
             Layout.maximumWidth:470
             Layout.topMargin: 40
@@ -32,19 +32,19 @@ Rectangle{
 
         GridLayout{
             id: optionsGrid
-            rows: 3
+            rows: 4
             flow: GridLayout.TopToBottom
             rowSpacing:5
             Layout.topMargin: messageLabel.visible?0:50
 
             CheckBox {
-                id:groupControlCb
-                text:i18nd("lliurex-access-control","Activated access control by group on this computer")
-                checked:accessControlBridge.isAccessDenyGroupEnabled
+                id:userControlCb
+                text:i18nd("lliurex-access-control","Activated access control by user on this computer")
+                checked:accessControlBridge.isAccessDenyUserEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 onToggled:{
-                   accessControlBridge.manageGroupAccessControl(checked)
+                   accessControlBridge.manageUserAccessControl(checked)
                 }
 
                 Layout.alignment:Qt.AlignLeft
@@ -52,19 +52,76 @@ Rectangle{
             }
             RowLayout {
                 Layout.fillWidth: true
-                Layout.alignment:Qt.AlignHCenter
+                Layout.alignment:Qt.AlignLeft
 
                 Text{
-                    id:groupsList
-                    text:i18nd("lliurex-access-control","Groups with restricted access:")
+                    id:usersList
+                    text:i18nd("lliurex-access-control","Users with restricted access:")
+                    font.pointSize:10
+                    Layout.leftMargin:80
+                }
+            }
+            RowLayout {
+                id:entryRow
+                Layout.fillWidth: true
+                Layout.alignment:Qt.AlignLeft
+                visible:false
+
+                TextField{
+                    id:userEntry
+                    placeholderText:i18nd("lliurex-acces-control","Username")
+                    implicitWidth:310
                     font.pointSize:10
 
                 }
+                Button{
+                   id:applyUserBtn
+                   display:AbstractButton.IconOnly
+                   icon.name:"dialog-ok.svg"
+                   onClicked:{
+                        accessControlBridge.addUser(userEntry.text)
+                        entryRow.visible=false
+                   }
+                }
+
             }
-            GroupList{
-                id:groupList
-                structModel:accessControlBridge.groupsModel
-                structEnabled:groupControlCb.checked
+            RowLayout{
+                Layout.fillWidth: true
+                Layout.alignment:Qt.AlignHCenter
+
+                UserList{
+                    id:userList
+                    structModel:accessControlBridge.usersModel
+                    structEnabled:userControlCb.checked
+                }
+                ColumnLayout{
+                    Layout.leftMargin:10
+                    Layout.alignment:Qt.AlignHCenter
+                    Button{
+                        id:addUserBtn
+                        display:AbstractButton.TextBesideIcon
+                        icon.name:"contact-new.svg"
+                        text:i18nd("lliurex-access-control","Add user")
+                        implicitWidth:110
+                        enabled:userControlCb.checked
+                        onClicked:{
+                            entryRow.visible=true
+                            userEntry.text=""
+                        }
+                    }    
+                    Button{
+                        id:removeListBtn
+                        display:AbstractButton.TextBesideIcon
+                        icon.name:"delete.svg"
+                        text:i18nd("lliurex-access-control","Remove List")
+                        implicitWidth:110
+                        enabled:userControlCb.checked
+                        onClicked:{
+                            accessControlBridge.removeUserList()
+                        }
+                    }
+
+                }
             }
         }
     }
@@ -83,7 +140,7 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
-            enabled:accessControlBridge.settingsGroupChanged
+            enabled:accessControlBridge.settingsUserChanged
             onClicked:{
                 synchronizePopup.open()
                 synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
@@ -91,10 +148,10 @@ Rectangle{
                     if (accessControlBridge.closePopUp){
                         synchronizePopup.close(),
                         timer.stop(),
-                        groupList.structModel=accessControlBridge.groupsModel
+                        userList.structModel=accessControlBridge.usersModel
                     }
                   })
-                accessControlBridge.applyChanges()
+                accessControlBridge.applyUserChanges()
             }
         }
         Button {
@@ -104,7 +161,7 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
-            enabled:accessControlBridge.settingsGroupChanged
+            enabled:accessControlBridge.settingsUserChanged
             onClicked:{
                 synchronizePopup.open()
                 synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
@@ -112,7 +169,7 @@ Rectangle{
                     if (accessControlBridge.closePopUp){
                         synchronizePopup.close(),
                         timer.stop(),
-                        groupList.structModel=accessControlBridge.groupsModel
+                        userList.structModel=accessControlBridge.usersModel
 
                     }
                   })
@@ -144,13 +201,19 @@ Rectangle{
             case 10:
                 msg=i18nd("lliurex-access-control","Changes applied successfully");
                 break;
-            case -10:
-                msg=i18nd("lliurex-access-control","It is not possible to deactive access control by group");
+            case -30:
+                msg=i18nd("lliurex-access-control","It is not possible to remove user list");
                 break;
-            case -20:
+            case -40:
+                msg=i18nd("lliurex-access-control","It is not possible to deactive access control by user");
+                break;
+            case -50:
                 msg=i18nd("lliurex-access-control","Unable to update the list of groups with restricted access");
                 break;
-            case -70:
+            case -60:
+                msg=i18nd("lliurex-access-control","Unable to update the user list");
+                break;                
+            case -80:
                 msg=i18nd("lliurex-access-control","No group selected");
                 break;
             default:

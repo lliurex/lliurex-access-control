@@ -20,14 +20,52 @@
 				"sudo",
 				"admins"
 			]
-
 		},
 		"disableAccessDenyGroup": {
 			"allowed_groups": [
 				"sudo",
 				"admins"
 			]
+		},
+		"getGroupList":{
+			"allowed_groups": [
+				"anonymous"
+			]
+		},
+		"isAccessDenyUserEnabled": {
+			"allowed_groups": [
+				"anonymous"
+			]
+		},
+		"getDenyUsers": {
+			"allowed_groups": [
+				"anonymous"
+			]
+		},
+		"setDenyUsers": {
+			"allowed_groups": [
+				"sudo",
+				"admins"
+			]
 
+		},
+		"disableAccessDenyUser": {
+			"allowed_groups": [
+				"sudo",
+				"admins"
+			]
+
+		},
+		"getUsersList": {
+			"allowed_groups": [
+				"anonymous"
+			]
+		},
+		"setUsersList":{
+			"allowed_groups": [
+				"sudo",
+				"admins"
+			]
 		}
 	}
 }

@@ -16,7 +16,7 @@ GridLayout{
 
         GridLayout{
             id: menuGrid
-            rows:2 
+            rows:3 
             flow: GridLayout.TopToBottom
             rowSpacing:0
 
@@ -27,6 +27,17 @@ GridLayout{
                 Connections{
                     function onMenuOptionClicked(){
                         optionsLayout.currentIndex=0;
+                    }
+                }
+            }
+
+            MenuOptionBtn {
+                id:userItem
+                optionText:i18nd("lliurex-access-control","Control by users")
+                optionIcon:"/usr/share/icons/breeze/actions/16/user.svg"
+                Connections{
+                    function onMenuOptionClicked(){
+                        optionsLayout.currentIndex=1;
                     }
                 }
             }
@@ -52,6 +63,10 @@ GridLayout{
 
         GroupsSettings{
             id:groupsSettings
+        }
+
+        UserSettings{
+            id:userSettings
         }
 
     }

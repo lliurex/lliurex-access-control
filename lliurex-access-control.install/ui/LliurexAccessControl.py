@@ -8,6 +8,7 @@ import copy
 import time
 import N4dManager
 import GroupsModel
+import UsersModel
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 class LliurexAccessControl(QObject):
@@ -22,14 +23,18 @@ class LliurexAccessControl(QObject):
 	def initBridge(self):
 
 		self._groupsModel=GroupsModel.GroupsModel()
-		self._settingsChanged=False
-		self._showSettingsMessage=[False,"","Success"]
+		self._usersModel=UsersModel.UsersModel()
+		self._settingsGroupChanged=False
+		self._showSettingsGroupMessage=[False,"","Success"]
+		self._settingsUserChanged=False
+		self._showSettingsUserMessage=[False,"","Success"]
 		self._closeGui=False
 		self._closePopUp=True
 		self._showChangesDialog=False
 		self._currentStack=0
 		self._currentOptionsStack=0
 		self._isAccessDenyGroupEnabled=False
+		self._isAccessDenyUserEnabled=False
 		self.loadConfig()
 
 	#def initBridge
@@ -47,7 +52,12 @@ class LliurexAccessControl(QObject):
 		self._isAccessDenyGroupEnabled=self.n4dMan.isAccessDenyGroupEnabled
 		self.isAccessDenyGroupEnabled=copy.deepcopy(self.n4dMan.isAccessDenyGroupEnabled)
 		self.denyGroups=copy.deepcopy(self.n4dMan.denyGroups)
+		self._isAccessDenyUserEnabled=self.n4dMan.isAccessDenyUserEnabled
+		self.isAccessDenyUserEnabled=copy.deepcopy(self.n4dMan.isAccessDenyUserEnabled)
+		self.denyUsers=copy.deepcopy(self.n4dMan.denyUsers)
+		self.usersList=copy.deepcopy(self.n4dMan.usersList)
 		self._updateGroupModel()
+		self._updateUserModel()
 		time.sleep(2)
 		self.currentStack=1
 
@@ -95,33 +105,75 @@ class LliurexAccessControl(QObject):
 
 	#def _setIsAccessDenyGroupEnabled
 
-	def _getSettingsChanged(self):
+	def _getSettingsGroupChanged(self):
 
-		return self._settingsChanged
+		return self._settingsGroupChanged
 
-	#def _getSettingsChanged
+	#def _getSettingsGroupChanged
 
-	def _setSettingsChanged(self,settingsChanged):
+	def _setSettingsGroupChanged(self,settingsGroupChanged):
 
-		if self._settingsChanged!=settingsChanged:
-			self._settingsChanged=settingsChanged
-			self.on_settingsChanged.emit()
+		if self._settingsGroupChanged!=settingsGroupChanged:
+			self._settingsGroupChanged=settingsGroupChanged
+			self.on_settingsGroupChanged.emit()
 
-	#def _setSettingsChanged
+	#def _setSettingsGroupChanged
 
-	def _getShowSettingsMessage(self):
+	def _getShowSettingsGroupMessage(self):
 
-		return self._showSettingsMessage
+		return self._showSettingsGroupMessage
 
-	#def _getShowSettingsMessage
+	#def _getShowSettingsGroupMessage
 
-	def _setShowSettingsMessage(self,showSettingsMessage):
+	def _setShowSettingsGroupMessage(self,showSettingsGroupMessage):
 
-		if self._showSettingsMessage!=showSettingsMessage:
-			self._showSettingsMessage=showSettingsMessage
-			self.on_showSettingsMessage.emit()
+		if self._showSettingsGroupMessage!=showSettingsGroupMessage:
+			self._showSettingsGroupMessage=showSettingsGroupMessage
+			self.on_showSettingsGroupMessage.emit()
 
-	#def _setShowSettingsMessage
+	#def _setShowSettingsGroupMessage
+
+	def _getIsAccessDenyUserEnabled(self):
+
+		return self._isAccessDenyUserEnabled
+
+	#def _getIsAccessDenyUserEnabled
+
+	def _setIsAccessDenyUserEnabled(self,isAccessDenyUserEnabled):
+
+		if self._isAccessDenyUserEnabled!=isAccessDenyUserEnabled:
+			self._isAccessDenyUserEnabled=isAccessDenyUserEnabled
+			self.on_isAccessDenyUserEnabled.emit()
+
+	#def _setIsAccessDenyUserEnabled
+
+	def _getSettingsUserChanged(self):
+
+		return self._settingsUserChanged
+
+	#def _getSettingsUserChanged
+
+	def _setSettingsUserChanged(self,settingsUserChanged):
+
+		if self._settingsUserChanged!=settingsUserChanged:
+			self._settingsUserChanged=settingsUserChanged
+			self.on_settingsUserChanged.emit()
+
+	#def _setSettingsUserChanged
+
+	def _getShowSettingsUserMessage(self):
+
+		return self._showSettingsUserMessage
+
+	#def _getShowSettingsUserMessage
+
+	def _setShowSettingsUserMessage(self,showSettingsUserMessage):
+
+		if self._showSettingsUserMessage!=showSettingsUserMessage:
+			self._showSettingsUserMessage=showSettingsUserMessage
+			self.on_showSettingsUserMessage.emit()
+
+	#def _setShowSettingsUserMessage
 
 	def _getClosePopUp(self):
 
@@ -181,25 +233,56 @@ class LliurexAccessControl(QObject):
 		
 	#def _updateGroupModel
 
+	def _getUsersModel(self):
+		
+		return self._usersModel
+
+	#def _getUsersModel
+
+	def _updateUserModel(self):
+
+		ret=self._usersModel.clear()
+		self._usersModel=UsersModel.UsersModel()
+		usersEntries=self.n4dMan.usersConfigData
+		for item in usersEntries:
+			self._usersModel.appendRow(item["userId"],item["isChecked"])
+		
+	#def _updateUserModel
+
 	@Slot(bool)
 	def manageGroupAccessControl(self,value):
 
-		self.showSettingsMessage=[False,"","Success"]
+		self.showSettingsGroupMessage=[False,"","Success"]
 		if value!=self.isAccessDenyGroupEnabled:
 			if value!=self.n4dMan.isAccessDenyGroupEnabled:
-				self.settingsChanged=True
+				self.settingsGroupChanged=True
 			else:
-				self.settingsChanged=False
+				self.settingsGroupChanged=False
 			self.isAccessDenyGroupEnabled=value
 		else:
-			self.settingsChanged=False
+			self.settingsGroupChanged=False
 
 	#def manageGroupAccessControl
+
+	@Slot(bool)
+	def manageUserAccessControl(self,value):
+
+		self.showSettingsUserMessage=[False,"","Success"]
+		if value!=self.isAccessDenyUserEnabled:
+			if value!=self.n4dMan.isAccessDenyUserEnabled:
+				self.settingsUserChanged=True
+			else:
+				self.settingsUserChanged=False
+			self.isAccessDenyUserEnabled=value
+		else:
+			self.settingsUserChanged=False
+
+	#def manageUserAccessControl
 	
 	@Slot('QVariantList')
 	def manageGroupChecked(self,value):
 
-		self.showSettingsMessage=[False,"","Success"]
+		self.showSettingsGroupMessage=[False,"","Success"]
 		groupId=value[0]
 		groupChecked=value[1]
 		tmpGroups=copy.deepcopy(self.denyGroups)
@@ -216,72 +299,182 @@ class LliurexAccessControl(QObject):
 
 		if tmpGroups != self.denyGroups:
 			if tmpGroups != self.n4dMan.denyGroups:
-				self.settingsChanged=True
+				self.settingsGroupChanged=True
 			else:
-				self.settingsChanged=False
+				self.settingsGroupChanged=False
 			self.denyGroups=tmpGroups
 		else:
-			self.settingsChanged=False
+			self.settingsGroupChanged=False
 
 	#def manageGroupChecked
 
-	@Slot()
-	def applyChanges(self):
+	@Slot('QVariantList')
+	def manageUserChecked(self,value):
 
-		self.showSettingsMessage=[False,"","Success"]
+		self.showSettingsUserMessage=[False,"","Success"]
+		userId=value[0]
+		userChecked=value[1]
+		tmpUsers=copy.deepcopy(self.denyUsers)
+
+		if userId not in tmpUsers:
+			if userChecked:
+				tmpUsers.append(userId)
+		else:
+			if not userChecked:
+				tmpUsers.remove(userId)
+
+		if len(tmpUsers)==0:
+			self.isAccessDenyUserEnabled=False
+
+		if tmpUsers != self.denyUsers:
+			if tmpUsers != self.n4dMan.denyUsers:
+				self.settingsUserChanged=True
+			else:
+				self.settingsUserChanged=False
+			self.denyUsers=tmpUsers
+		else:
+			self.settingsUserChanged=False
+
+	#def manageUserChecked
+
+	@Slot(str)
+	def addUser(self,value):
+
+		self._usersModel.appendRow(value,True)
+		tmpUser=[value,True]
+		self.manageUserChecked(tmpUser)
+		self._updateUserList(value,False)
+
+	#def addUser
+
+	@Slot(int)
+	def removeUser(self,index):
+
+		tmpUser=self._usersModel._entries[index]
+		self._usersModel.removeRow(index)
+		self.manageUserChecked([tmpUser["userId"],False])
+		self._updateUserList(tmpUser["userId"],True)
+	
+	#def removeUser
+
+	@Slot()
+	def removeUserList(self):
+
+		self._usersModel.clear()
+		self._usersModel=UsersModel.UsersModel()
+		self.usersList=[]
+		self.denyUsers=[]
+		self.isAccessDenyUserEnabled=False
+		self.settingsUserChanged=True
+
+	#def removeUserList
+
+	def _updateUserList(self,userId,delete):
+
+		tmpList=copy.deepcopy(self.usersList)
+
+		if not delete:
+			if userId not in tmpList:
+				tmpList.append(userId)
+		else:
+			if userId in tmpList:
+				tmpList.remove(userId)
+
+		if len(tmpList)==0:
+			self.isAccessDenyUserEnabled=False
+
+		if tmpList != self.usersList:
+			self.usersList=tmpList
+
+	#def _updateUserList
+
+	@Slot()
+	def applyGroupChanges(self):
+
+		self.showSettingsGroupMessage=[False,"","Success"]
 		self.closePopUp=False
-		t = threading.Thread(target=self._applyChanges)
+		t = threading.Thread(target=self._applyGroupChanges)
 		t.daemon=True
 		t.start()
 
-	#def applyChanges	
+	#def applyGroupChanges	
 
-	def _applyChanges(self):
+	def _applyGroupChanges(self):
 
-		ret=self.n4dMan.applyChanges(self.isAccessDenyGroupEnabled,self.denyGroups)
+		ret=self.n4dMan.applyGroupChanges(self.isAccessDenyGroupEnabled,self.denyGroups)
 		self.closePopUp=True
 
 		if ret[0]:
-			self._updateConfig()
-			self.showSettingsMessage=[True,ret[1],"Success"]
+			self._updateGroupConfig()
+			self.showSettingsGroupMessage=[True,ret[1],"Success"]
 			self.closeGui=True
 		else:
-			self.showSettingsMessage=[True,ret[1],"Error"]
+			self.showSettingsGroupMessage=[True,ret[1],"Error"]
 			self.closeGui=False
 
-		self.settingsChanged=False
+		self.settingsGroupChanged=False
 		self.showChangesDialog=False
 
-	#def applyChanges
+	#def _applyGroupChanges
 
 	@Slot()
-	def cancelChanges(self):
+	def cancelGroupChanges(self):
 
-		self.showSettingsMessage=[False,"","Success"]
+		self.showSettingsGroupMessage=[False,"","Success"]
 		self.closePopUp=False
-		t = threading.Thread(target=self._cancelChanges)
+		t = threading.Thread(target=self._cancelGroupChanges)
 		t.daemon=True
 		t.start()
 
-	#def cancelChanges
+	#def cancelGroupChanges
 
-	def _cancelChanges(self):
+	def _cancelGroupChanges(self):
 
-		self._updateConfig()
+		self._updateGroupConfig()
 		self.settingsChanged=False
 		self.closePopUp=True
 		self.showChangesDialog=False
 		self.closeGui=True
 
-	#def _cancelChanges
+	#def _cancelGroupChanges
 
-	def _updateConfig(self):
+	def _updateGroupConfig(self):
 
 		self.isAccessDenyGroupEnabled=copy.deepcopy(self.n4dMan.isAccessDenyGroupEnabled)
 		self.denyGroups=copy.deepcopy(self.n4dMan.denyGroups)
 		self._updateGroupModel()
 	
-	#def_updateConfig
+	#def _updateGroupConfig
+	
+	@Slot()
+	def applyUserChanges(self):
+
+		self.showSettingsUserMessage=[False,"","Success"]
+		self.closePopUp=False
+		t = threading.Thread(target=self._applyUserChanges)
+		t.daemon=True
+		t.start()
+
+	#def applyUserChanges	
+
+	def _applyUserChanges(self):
+
+		ret=self.n4dMan.applyUsersChanges(self.isAccessDenyUserEnabled,self.denyUsers,self.usersList)
+		self.closePopUp=True
+
+		if ret[0]:
+			#self._updateUsersConfig()
+			self.showSettingsUserMessage=[True,ret[1],"Success"]
+			self.closeGui=True
+		else:
+			self.showSettingsUserMessage=[True,ret[1],"Error"]
+			self.closeGui=False
+
+		self.settingsUserChanged=False
+		self.showChangesDialog=False
+
+	#def _applyGroupChanges
+
 
 	@Slot(str)
 	def manageSettingsDialog(self,action):
@@ -299,7 +492,7 @@ class LliurexAccessControl(QObject):
 	@Slot()
 	def openHelp(self):
 		lang=os.environ["LANG"]
-		print(lang)
+		
 		if 'valencia' in lang:
 			self.help_cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Lliurex-Access-Control.'
 		else:
@@ -320,7 +513,7 @@ class LliurexAccessControl(QObject):
 	@Slot()
 	def closeApplication(self):
 
-		if self.settingsChanged:
+		if self.settingsGroupChanged:
 			self.closeGui=False
 			self.showChangesDialog=True
 		else:
@@ -337,11 +530,20 @@ class LliurexAccessControl(QObject):
 	on_isAccessDenyGroupEnabled=Signal()
 	isAccessDenyGroupEnabled=Property(bool,_getIsAccessDenyGroupEnabled,_setIsAccessDenyGroupEnabled,notify=on_isAccessDenyGroupEnabled)
 	
-	on_settingsChanged=Signal()
-	settingsChanged=Property(bool,_getSettingsChanged,_setSettingsChanged, notify=on_settingsChanged)
+	on_settingsGroupChanged=Signal()
+	settingsGroupChanged=Property(bool,_getSettingsGroupChanged,_setSettingsGroupChanged, notify=on_settingsGroupChanged)
 
-	on_showSettingsMessage=Signal()
-	showSettingsMessage=Property('QVariantList',_getShowSettingsMessage,_setShowSettingsMessage,notify=on_showSettingsMessage)
+	on_showSettingsGroupMessage=Signal()
+	showSettingsGroupMessage=Property('QVariantList',_getShowSettingsGroupMessage,_setShowSettingsGroupMessage,notify=on_showSettingsGroupMessage)
+
+	on_isAccessDenyUserEnabled=Signal()
+	isAccessDenyUserEnabled=Property(bool,_getIsAccessDenyUserEnabled,_setIsAccessDenyUserEnabled,notify=on_isAccessDenyUserEnabled)
+	
+	on_settingsUserChanged=Signal()
+	settingsUserChanged=Property(bool,_getSettingsUserChanged,_setSettingsUserChanged, notify=on_settingsUserChanged)
+
+	on_showSettingsUserMessage=Signal()
+	showSettingsUserMessage=Property('QVariantList',_getShowSettingsUserMessage,_setShowSettingsUserMessage,notify=on_showSettingsUserMessage)
 
 	on_closePopUp=Signal()
 	closePopUp=Property(bool,_getClosePopUp,_setClosePopUp, notify=on_closePopUp)
@@ -353,6 +555,7 @@ class LliurexAccessControl(QObject):
 	showChangesDialog=Property(bool,_getShowChangesDialog,_setShowChangesDialog, notify=on_showChangesDialog)
 
 	groupsModel=Property(QObject,_getGroupsModel,constant=True)
+	usersModel=Property(QObject,_getUsersModel,constant=True)
 
 
 #class LliurexAccessControl
