@@ -1,0 +1,6 @@
+Name: Deny access to computer to specific users
+Default: yes
+Priority: -667
+Auth-Type: Additional
+Auth:
+	required pam_listfile.so onerr=succeed item=user sense=deny file=/etc/lliurex-access-control/login.user.deny

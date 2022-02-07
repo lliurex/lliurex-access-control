@@ -11,11 +11,8 @@ class AccessControlManager:
 
 	DISABLE_GROUP_ACCESS_CONTROL_ERROR=-10
 	SET_GROUP_ERROR=-20
-	REMOVE_USERS_LIST_ERROR=-30
 	DISABLE_USER_ACCESS_CONTROL_ERROR=-40
 	SET_USER_ERROR=-50
-	SET_USERS_LIST_ERROR=-60
-
 
 	def __init__(self):
 
@@ -24,7 +21,7 @@ class AccessControlManager:
 		self.groupDenyListPath=os.path.join(self.configPath,"login.group.deny")
 		self.defaultGroupsFile=os.path.join(self.configPath+"/groups-lists","defaultGroups.json")
 		self.userDenyListPath=os.path.join(self.configPath,"login.user.deny")
-		self.userList=os.path.join(self.configPath+"/users-lists","userList")
+		self.usersList=os.path.join(self.configPath+"/users-lists","usersList")
 	
 	#def __init__
 
@@ -39,7 +36,22 @@ class AccessControlManager:
 
 	#def isAccessDenyGroupEnabled
 
-	def getDenyGroups(self):
+	def getGroupsInfo(self):
+
+		denyGroups=self._readDenyGroupsFile()
+		groupsInfo=self._readGroupsList()
+
+		for item in groupsInfo:
+			if item in denyGroups:
+				groupsInfo[item]["isLocked"]=True
+			else:
+				groupsInfo[item]["isLocked"]=False
+
+		return n4d.responses.build_successful_call_response(groupsInfo)
+
+	#def getDenyGroups 
+
+	def _readDenyGroupsFile(self):
 
 		denyGroups=[]
 
@@ -49,19 +61,41 @@ class AccessControlManager:
 				for line in lines:
 					denyGroups.append(line.strip())
 
-		return n4d.responses.build_successful_call_response(denyGroups)
+		return denyGroups
 
-	#def getDenyGroups 
+	#def __readDenyGroupsFile
 
-	def setDenyGroups(self,groupList):
+	def _readGroupsList(self):
 
+		groupsInfo={}
+
+		if os.path.exists(self.defaultGroupsFile):
+			f=open(self.defaultGroupsFile)
+			groupsInfo=json.load(f)
+			f.close()
+
+		return groupsInfo
+
+	#def __readGroupsList
+
+
+	def setGroupsInfo(self,groupsInfo):
+
+		denyGroups=[]
 		try:
-			if len(groupList)>0:
-				with open(self.groupDenyListPath,'w') as fd:
-					for item in groupList:
-						fd.write(item+"\n")
+			if len(groupsInfo)>0:
+				for item in groupsInfo:
+					if groupsInfo[item]["isLocked"]:
+						denyGroups.append(item)
 
-			return n4d.responses.build_successful_call_response()
+				if len(denyGroups)>0:
+					with open(self.groupDenyListPath,'w') as fd:
+						for item in denyGroups:
+							fd.write(item+"\n")
+					return n4d.responses.build_successful_call_response()
+
+				else:
+					return self.disableAccessDenyGroup()
 		except:
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_GROUP_ERROR)
 	
@@ -79,17 +113,6 @@ class AccessControlManager:
 	
 	#def disableAccessDenyGroup
 
-	def getGroupList(self):
-
-		defaultGroups={}
-		if os.path.exists(self.defaultGroupsFile):
-			f=open(self.defaultGroupsFile)
-			defaultGroups=json.load(f)
-			f.close()
-			return n4d.responses.build_successful_call_response(defaultGroups)
-
-	#def getGroupList
-
 	def isAccessDenyUserEnabled(self):
 
 		isEnabled=False
@@ -101,7 +124,34 @@ class AccessControlManager:
 
 	#def isAccessDenyUserEnabled
 
-	def getDenyUsers(self):
+	def getUsersInfo(self):
+
+		denyUsers=[]
+		usersList=[]
+		usersInfo={}
+
+		denyUsers=self._readDenyUsersFile()
+		usersList=self._readUsersList()
+
+		if len(usersList)>0:
+			for item in usersList:
+				usersInfo[item]={}
+				if item in denyUsers:
+					usersInfo[item]["isLocked"]=True
+				else:
+					usersInfo[item]["isLocked"]=False
+
+		if len(denyUsers)>0:
+			for item in denyUsers:
+				if item not in usersList:
+					usersInfo[item]={}
+					usersInfo[item]["isLocked"]=True
+
+		return n4d.responses.build_successful_call_response(usersInfo)
+
+	#def getDenyUsers 
+
+	def _readDenyUsersFile(self):
 
 		denyUsers=[]
 
@@ -111,20 +161,55 @@ class AccessControlManager:
 				for line in lines:
 					denyUsers.append(line.strip())
 
-		return n4d.responses.build_successful_call_response(denyUsers)
+		return denyUsers
 
-	#def getDenyUsers 
+	#def _readDenyUsersFile
 
-	def setDenyUsers(self,userList):
+	def _readUsersList(self):
+
+		usersList=[]
+
+		if os.path.exists(self.usersList):
+			with open(self.usersList,'r') as fd:
+				lines=fd.readlines()
+				for line in lines:
+					usersList.append(line.strip())
+
+		return usersList
+
+	#def _readUsersList
+
+
+	def setUsersInfo(self,usersInfo):
+
+		usersList=[]
+		denyUsers=[]
 
 		try:
-			if len(userList)>0:
-				with open(self.userDenyListPath,'w') as fd:
-					for item in userList:
+			if len(usersInfo)>0:
+				for item in usersInfo:
+					usersList.append(item)
+					if usersInfo[item]["isLocked"]:
+						denyUsers.append(item)
+				with open(self.usersList,'w') as fd:
+					for item in usersList:
 						fd.write(item+"\n")
+				
+				if len(denyUsers)>0:
+					with open(self.userDenyListPath,'w') as fd:
+						for item in denyUsers:
+							fd.write(item+"\n")
+					return n4d.responses.build_successful_call_response()
+				else:
+					return self.disableAccessDenyUser()
 
-			return n4d.responses.build_successful_call_response()
-		except:
+			else:
+				if os.path.exists(self.usersList):
+					os.remove(self.usersList)
+					
+				return self.disableAccessDenyUser()
+			
+		except Exception as e:
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_USER_ERROR)
 	
 	#def setDennyGroups
@@ -140,36 +225,6 @@ class AccessControlManager:
 			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_USER_ACCESS_CONTROL_ERROR)
 	
 	#def disableAccessDenyGroup
-
-	def getUsersList(self):
-
-		usersList=[]
-		if os.path.exists(self.userList):
-			with open(self.userList,'r') as fd:
-				lines=fd.readlines()
-				for line in lines:
-					usersList.append(line.strip())
-
-		return n4d.responses.build_successful_call_response(usersList)
-
-
-	#def getUsersList
-
-	def setUsersList(self,userList):
-
-		try:
-			if len(userList)>0:
-				with open(self.userList,'w') as fd:
-					for item in userList:
-						fd.write(item+"\n")
-			else:
-				os.remove(self.userList)
-			return n4d.responses.build_successful_call_response()
-		except:
-			return n4d.responses.build_failed_call_response(AccessControlManager.SET_USERS_LIST_ERROR)
-	
-	#def setDennyGroups
-
 	
 #class AccessControlManager 
 

@@ -10,12 +10,12 @@
 				"anonymous"
 			]
 		},
-		"getDenyGroups": {
+		"getGroupsInfo": {
 			"allowed_groups": [
 				"anonymous"
 			]
 		},
-		"setDenyGroups": {
+		"setGroupsInfo": {
 			"allowed_groups": [
 				"sudo",
 				"admins"
@@ -27,22 +27,17 @@
 				"admins"
 			]
 		},
-		"getGroupList":{
-			"allowed_groups": [
-				"anonymous"
-			]
-		},
 		"isAccessDenyUserEnabled": {
 			"allowed_groups": [
 				"anonymous"
 			]
 		},
-		"getDenyUsers": {
+		"getUsersInfo": {
 			"allowed_groups": [
 				"anonymous"
 			]
 		},
-		"setDenyUsers": {
+		"setUsersInfo": {
 			"allowed_groups": [
 				"sudo",
 				"admins"
@@ -55,17 +50,6 @@
 				"admins"
 			]
 
-		},
-		"getUsersList": {
-			"allowed_groups": [
-				"anonymous"
-			]
-		},
-		"setUsersList":{
-			"allowed_groups": [
-				"sudo",
-				"admins"
-			]
 		}
 	}
 }
