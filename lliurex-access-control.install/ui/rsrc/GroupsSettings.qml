@@ -94,7 +94,7 @@ Rectangle{
                         groupList.structModel=accessControlBridge.groupsModel
                     }
                   })
-                accessControlBridge.applyChanges()
+                accessControlBridge.applyGroupChanges()
             }
         }
         Button {
@@ -116,7 +116,7 @@ Rectangle{
 
                     }
                   })
-                accessControlBridge.cancelChanges()
+                accessControlBridge.cancelGroupChanges()
             }
         }
     } 

@@ -34,7 +34,7 @@ Rectangle {
         highlightResizeDuration: 0
         delegate: ListDelegateGroupItem{
             groupId:model.groupId
-            isChecked:model.isChecked
+            isLocked:model.isLocked
             description:model.description
         }
 
