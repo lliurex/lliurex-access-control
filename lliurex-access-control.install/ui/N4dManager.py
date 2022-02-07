@@ -4,6 +4,7 @@ import n4d.client
 import os
 import json
 import codecs
+import pwd
 
 class N4dManager:
 
@@ -15,15 +16,13 @@ class N4dManager:
 
 		self.debug=True
 		ticket=ticket.replace('##U+0020##',' ')
-		self.defaultGroups={}
+		self.groupsInfo={}
 		self.groupsConfigData=[]
 		self.sessionLang=""
 		self.isAccessDenyGroupEnabled=False
-		self.denyGroups=[]
-		self.usersList=[]
+		self.usersInfo={}
 		self.usersConfigData=[]
 		self.isAccessDenyUserEnabled=False
-		self.denyUsers=[]
 		self.setServer(ticket)
 		self.getSessionLang()
 		self.loadConfig()
@@ -48,8 +47,7 @@ class N4dManager:
 	def loadGroupConfig(self):
 
 		self.isAccessDenyGroupEnabled=self.client.AccessControlManager.isAccessDenyGroupEnabled()
-		self.denyGroups=self.client.AccessControlManager.getDenyGroups()
-		self.defaultGroups=self.client.AccessControlManager.getGroupList()
+		self.groupsInfo=self.client.AccessControlManager.getGroupsInfo()
 		self.getGroupsConfig()
 		
 	#def loadGroupConfig()
@@ -57,8 +55,7 @@ class N4dManager:
 	def loadUserConfig(self):
 		
 		self.isAccessDenyUserEnabled=self.client.AccessControlManager.isAccessDenyUserEnabled()
-		self.denyUsers=self.client.AccessControlManager.getDenyUsers()
-		self.usersList=self.client.AccessControlManager.getUsersList()
+		self.usersInfo=self.client.AccessControlManager.getUsersInfo()
 		self.getUsersConfig()
 
 	#def loadUserConfig
@@ -78,15 +75,11 @@ class N4dManager:
 
 		self.groupsConfigData=[]
 
-		for item in self.defaultGroups:
+		for item in self.groupsInfo:
 			tmp={}
 			tmp["groupId"]=item
-			if item in self.denyGroups:
-				tmp["isChecked"]=True
-			else:
-				tmp["isChecked"]=False
-			tmp["description"]=self.defaultGroups[item][self.sessionLang]
-
+			tmp["isLocked"]=self.groupsInfo[item]["isLocked"]
+			tmp["description"]=self.groupsInfo[item][self.sessionLang]
 			self.groupsConfigData.append(tmp)
 
 	#def getGroupsConfig 
@@ -96,30 +89,22 @@ class N4dManager:
 		#self._readDefaultGroups()
 		self.usersConfigData=[]
 
-		for item in self.usersList:
-			tmp={}
-			tmp["userId"]=item
-			if item in self.denyUsers:
-				tmp["isChecked"]=True
-			else:
-				tmp["isChecked"]=False
-			self.usersConfigData.append(tmp)
-
-		for item in self.denyUsers:
-			tmp={}
-			if item not in self.usersList:
+		print("lista de usuarios recibida")
+		print(self.usersInfo)
+		for item in self.usersInfo:
+			if item !="":
+				tmp={}
 				tmp["userId"]=item
-				tmp["isChecked"]=True
-				self.usersList.append(item)
+				tmp["isLocked"]=self.usersInfo[item]["isLocked"]
 				self.usersConfigData.append(tmp)
 
 	#def getUsersConfig 			
 			
 
-	def applyGroupChanges(self,groupAccessControl,denyGroups):
+	def applyGroupChanges(self,groupAccessControl,groupsInfo):
 
 		disableControl=False
-		updateDenyGroup=False
+		updateGroupInfo=False
 		result=[]
 
 
@@ -127,12 +112,12 @@ class N4dManager:
 			if groupAccessControl != self.isAccessDenyGroupEnabled:
 				disableControl=True
 		else:
-			if len(denyGroups)==0:
+			if not self.thereAreGroupsLocked(groupsInfo):
 				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_GROUP]
 				return result
 			else:
-				if denyGroups != self.denyGroups:
-					updateDenyGroup=True
+				if groupsInfo != self.groupsInfo:
+					updateGroupInfo=True
 
 		if disableControl:
 			try:
@@ -141,12 +126,13 @@ class N4dManager:
 			except n4d.client.CallFailedError as e:
 				result=[False,e.code]
 
-		if updateDenyGroup:
-			try:
-				ret=self.client.AccessControlManager.setDenyGroups(denyGroups)		
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				result=[False,e.code]
+		else:
+			if updateGroupInfo:
+				try:
+					ret=self.client.AccessControlManager.setGroupsInfo(groupsInfo)		
+					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+				except n4d.client.CallFailedError as e:
+					result=[False,e.code]
 
 		if result[0]:
 			self.loadGroupConfig()
@@ -154,60 +140,90 @@ class N4dManager:
 
 	#def applyGroupChanges
 
-	def applyUsersChanges(self,userAccessControl,denyUsers,usersList):
+	def applyUsersChanges(self,userAccessControl,usersInfo):
 
 		disableControl=False
-		updateDenyUser=False
-		updateUsersList=False
+		updateUsersInfo=False
 		result=[]
 
-		if not userAccessControl:
-			if userAccessControl != self.isAccessDenyUserEnabled:
-				disableControl=True
+		if usersInfo!=self.usersInfo:
+			updateUsersInfo=True
 
-			if usersList!=self.usersList:
-					updateUsersList=True	
-		else:
-			if len(usersList)==0:
+		if userAccessControl != self.isAccessDenyUserEnabled:
+			if userAccessControl and not self.thereAreUsersLocked(usersInfo):
 				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_USER]
 				return result
 			else:
-				if usersList!=self.usersList:
-					updateUsersList=True
-
-			if len(denyUsers)==0:
-				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_USER]
-				return result
-			else:
-				if denyUsers != self.denyUsers:
-					updateDenyUser=True
-
-		if disableControl:
+				if not userAccessControl:
+					disableControl=True
+	
+		if updateUsersInfo:
 			try:
-				ret=self.client.AccessControlManager.disableAccessDenyUser()
+				ret=self.client.AccessControlManager.setUsersInfo(usersInfo)
+				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+				if disableControl:
+					ret=self.client.AccessControlManager.disableAccessDenyUser()		
+					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+			except n4d.client.CallFailedError as e:
+				result=[False,e.code]
+
+		if disableControl and not updateUsersInfo:
+			try:
+				ret=self.client.AccessControlManager.disableAccessDenyUser()		
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			except n4d.client.CallFailedError as e:
 				result=[False,e.code]
 
-		if updateDenyUser:
-			try:
-				ret=self.client.AccessControlManager.setDenyUsers(denyUsers)		
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				result=[False,e.code]
-
-		if updateUsersList:
-			try:
-				ret=self.client.AccessControlManager.setUsersList(usersList)
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				result=[False,e.code]
-		
 		if result[0]:
 			self.loadUserConfig()
 		return result
 
 	#def applyUsersChanges
+
+	def thereAreGroupsLocked(self,groupsInfo):
+
+		thereAreGroupLocked=False
+
+		for item in groupsInfo:
+			if groupsInfo[item]["isLocked"]:
+				thereAreGroupLocked=True
+				break
+
+		return thereAreGroupLocked
+
+	#def thereAreGroupsLocked
+	
+	def thereAreUsersLocked(self,usersInfo):
+
+		thereAreUsersLocked=False
+
+		for item in usersInfo:
+			if usersInfo[item]["isLocked"]:
+				thereAreUsersLocked=True
+				break
+
+		return thereAreUsersLocked
+
+	#def thereAreUsersLocked
+	
+	def checkIfUserIsLocalAdmin(self,user):
+
+		localAdminPID=1000
+		isLocalAdmin=False
+
+		try:
+			gid = pwd.getpwnam(user).pw_gid
+			if gid==localAdminPID:
+				isLocalAdmin=True 
+			else:
+				isLocalAdmin=False
+		except:
+			isLocalAdmin=False
+
+		return isLocalAdmin
+
+	#def checkIfUserIsLocalAdmin
+
 
 
 #class N4dManager

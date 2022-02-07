@@ -8,7 +8,7 @@ Components.ListItem{
 
     id: listGroupItem
     property string groupId
-    property bool isChecked
+    property bool isLocked
     property string description
 
     enabled:true
@@ -28,7 +28,7 @@ Components.ListItem{
         height:visible?30:0
         CheckBox {
             id:groupCheck
-            checked:isChecked
+            checked:isLocked
             onToggled:{
                 accessControlBridge.manageGroupChecked([groupId,checked])
             }

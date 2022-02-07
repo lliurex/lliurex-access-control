@@ -40,7 +40,7 @@ Rectangle {
             highlightResizeDuration: 0
             delegate: ListDelegateUserItem{
                 userId:model.userId
-                isChecked:model.isChecked
+                isLocked:model.isLocked
             }
 
       } 

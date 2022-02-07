@@ -3,6 +3,7 @@ import org.kde.kirigami 2.6 as Kirigami
 import QtQuick 2.6
 import QtQuick.Controls 2.6
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.3
 
 Rectangle{
     color:"transparent"
@@ -72,6 +73,7 @@ Rectangle{
                     placeholderText:i18nd("lliurex-acces-control","Username")
                     implicitWidth:310
                     font.pointSize:10
+                    focus:true
 
                 }
                 Button{
@@ -81,6 +83,7 @@ Rectangle{
                    onClicked:{
                         accessControlBridge.addUser(userEntry.text)
                         entryRow.visible=false
+                        userEntry.text=""
                    }
                 }
 
@@ -103,10 +106,11 @@ Rectangle{
                         icon.name:"contact-new.svg"
                         text:i18nd("lliurex-access-control","Add user")
                         implicitWidth:110
-                        enabled:userControlCb.checked
+                        enabled:userControlCb.checked && userEntry.text==""
+                        focusPolicy: Qt.NoFocus
                         onClicked:{
                             entryRow.visible=true
-                            userEntry.text=""
+                            userEntry.forceActiveFocus()
                         }
                     }    
                     Button{
@@ -115,7 +119,7 @@ Rectangle{
                         icon.name:"delete.svg"
                         text:i18nd("lliurex-access-control","Remove List")
                         implicitWidth:110
-                        enabled:userControlCb.checked
+                        enabled:userList.listCount>0?true:false
                         onClicked:{
                             accessControlBridge.removeUserList()
                         }
@@ -173,10 +177,76 @@ Rectangle{
 
                     }
                   })
-                accessControlBridge.cancelChanges()
+                accessControlBridge.cancelUserChanges()
             }
         }
     } 
+
+    Dialog {
+        id:localAdminDialog
+        visible:accessControlBridge.showLocalAdminDialog
+        title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
+        modality:Qt.WindowModal
+
+        contentItem: Rectangle {
+            color: "#ebeced"
+            implicitWidth: 480
+            implicitHeight: 105
+            anchors.topMargin:5
+            anchors.leftMargin:5
+
+            Image{
+                id:adminDialogIcon
+                source:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+
+            }
+            Text {
+                id:adminDialogText
+                text:i18nd("lliurex-access-control","The user you want to add is a local administrator of the computer.\nDo you wish to continue?")
+                font.family: "Quattrocento Sans Bold"
+                font.pointSize: 10
+                anchors.left:adminDialogIcon.right
+                anchors.verticalCenter:adminDialogIcon.verticalCenter
+                anchors.leftMargin:10
+            
+            }
+             DialogButtonBox {
+                buttonLayout:DialogButtonBox.KdeLayout
+                anchors.bottom:parent.bottom
+                anchors.right:parent.right
+                anchors.topMargin:15
+
+                Button {
+                    id:adminDialogApplyBtn
+                    display:AbstractButton.TextBesideIcon
+                    icon.name:"dialog-ok.svg"
+                    text: i18nd("lliurex-access-control","Accept")
+                    font.family: "Quattrocento Sans Bold"
+                    font.pointSize: 10
+                    DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
+                }
+
+                Button {
+                    id:adminDialogCancelBtn
+                    display:AbstractButton.TextBesideIcon
+                    icon.name:"dialog-cancel.svg"
+                    text: i18nd("lliurex-access-control","Cancel")
+                    font.family: "Quattrocento Sans Bold"
+                    font.pointSize: 10
+                    DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
+                }
+
+                onApplied:{
+                    accessControlBridge.manageLocalAdminDialog("Accept")
+                }
+
+                onRejected:{
+                    accessControlBridge.manageLocalAdminDialog("Cancel")
+
+                }
+            }
+        }
+     }
 
     CustomPopup{
         id:synchronizePopup
@@ -201,20 +271,14 @@ Rectangle{
             case 10:
                 msg=i18nd("lliurex-access-control","Changes applied successfully");
                 break;
-            case -30:
-                msg=i18nd("lliurex-access-control","It is not possible to remove user list");
-                break;
             case -40:
                 msg=i18nd("lliurex-access-control","It is not possible to deactive access control by user");
                 break;
             case -50:
-                msg=i18nd("lliurex-access-control","Unable to update the list of groups with restricted access");
+                msg=i18nd("lliurex-access-control","Unable to update the list of users with restricted access");
                 break;
-            case -60:
-                msg=i18nd("lliurex-access-control","Unable to update the user list");
-                break;                
             case -80:
-                msg=i18nd("lliurex-access-control","No group selected");
+                msg=i18nd("lliurex-access-control","No user selected");
                 break;
             default:
                 break;

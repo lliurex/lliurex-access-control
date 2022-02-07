@@ -6,7 +6,7 @@ from PySide2 import QtCore, QtGui, QtQml
 class UsersModel(QtCore.QAbstractListModel):
 
 	UserIdRole= QtCore.Qt.UserRole + 1000
-	IsCheckedRole = QtCore.Qt.UserRole + 1001
+	IsLockedRole = QtCore.Qt.UserRole + 1001
 
 	def __init__(self,parent=None):
 		
@@ -28,31 +28,28 @@ class UsersModel(QtCore.QAbstractListModel):
 			item = self._entries[index.row()]
 			if role == UsersModel.UserIdRole:
 				return item["userId"]
-			elif role == UsersModel.IsCheckedRole:
-				return item["isChecked"]
+			elif role == UsersModel.IsLockedRole:
+				return item["isLocked"]
 	#def data
 
 	def roleNames(self):
 		
 		roles = dict()
 		roles[UsersModel.UserIdRole] = b"userId"
-		roles[UsersModel.IsCheckedRole] = b"isChecked"
+		roles[UsersModel.IsLockedRole] = b"isLocked"
 
 		return roles
 
 	#def roleName
 
-	def appendRow(self,ui, ic):
+	def appendRow(self,ui,il):
 		
 		tmpId=[]
 		for item in self._entries:
-			print(item)
 			tmpId.append(item["userId"])
-		print(tmpId)
-		if ui not in tmpId:
+		if ui not in tmpId and ui !="":
 			self.beginInsertRows(QtCore.QModelIndex(), self.rowCount(),self.rowCount())
-			self._entries.append(dict(userId=ui, isChecked=ic))
-			print(self._entries)
+			self._entries.append(dict(userId=ui, isLocked=il))
 			self.endInsertRows()
 
 	#def appendRow
@@ -68,7 +65,7 @@ class UsersModel(QtCore.QAbstractListModel):
 		
 		if role == QtCore.Qt.EditRole:
 			row = index.row()
-			if param in ["isChecked"]:
+			if param in ["isLocked"]:
 				self._entries[row][param]=value
 				self.dataChanged.emit(index,index)
 				return True
