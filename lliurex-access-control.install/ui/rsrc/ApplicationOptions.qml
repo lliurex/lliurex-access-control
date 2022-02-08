@@ -26,7 +26,8 @@ GridLayout{
                 optionIcon:"/usr/share/icons/breeze/actions/16/group.svg"
                 Connections{
                     function onMenuOptionClicked(){
-                        optionsLayout.currentIndex=0;
+                        /*optionsLayout.currentIndex=0;*/
+                        accessControlBridge.manageTransitions(0)
                     }
                 }
             }
@@ -37,7 +38,9 @@ GridLayout{
                 optionIcon:"/usr/share/icons/breeze/actions/16/user.svg"
                 Connections{
                     function onMenuOptionClicked(){
-                        optionsLayout.currentIndex=1;
+                        /*optionsLayout.currentIndex=1;*/
+                        accessControlBridge.manageTransitions(1)
+                   
                     }
                 }
             }

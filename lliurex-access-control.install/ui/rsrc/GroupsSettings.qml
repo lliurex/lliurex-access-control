@@ -3,6 +3,7 @@ import org.kde.kirigami 2.6 as Kirigami
 import QtQuick 2.6
 import QtQuick.Controls 2.6
 import QtQuick.Layouts 1.12
+import QtQuick.Dialogs 1.3
 
 Rectangle{
     color:"transparent"
@@ -85,15 +86,7 @@ Rectangle{
             Layout.preferredHeight:40
             enabled:accessControlBridge.settingsGroupChanged
             onClicked:{
-                synchronizePopup.open()
-                synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
-                delay(1000, function() {
-                    if (accessControlBridge.closePopUp){
-                        synchronizePopup.close(),
-                        timer.stop(),
-                        groupList.structModel=accessControlBridge.groupsModel
-                    }
-                  })
+                applyChanges()
                 accessControlBridge.applyGroupChanges()
             }
         }
@@ -106,20 +99,99 @@ Rectangle{
             Layout.preferredHeight: 40
             enabled:accessControlBridge.settingsGroupChanged
             onClicked:{
-                synchronizePopup.open()
-                synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
-                delay(1000, function() {
-                    if (accessControlBridge.closePopUp){
-                        synchronizePopup.close(),
-                        timer.stop(),
-                        groupList.structModel=accessControlBridge.groupsModel
-
-                    }
-                  })
+                discardChanges()
                 accessControlBridge.cancelGroupChanges()
             }
         }
     } 
+
+
+    Dialog {
+        id: customGroupDialog
+        visible:accessControlBridge.showGroupChangesDialog
+        title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by groups")
+        modality:Qt.WindowModal
+
+        contentItem: Rectangle {
+            color: "#ebeced"
+            implicitWidth: 400
+            implicitHeight: 105
+            anchors.topMargin:5
+            anchors.leftMargin:5
+
+            Image{
+                id:dialogIcon
+                source:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+
+            }
+            
+            Text {
+                id:dialogText
+                text:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
+                font.family: "Quattrocento Sans Bold"
+                font.pointSize: 10
+                anchors.left:dialogIcon.right
+                anchors.verticalCenter:dialogIcon.verticalCenter
+                anchors.leftMargin:10
+            
+            }
+          
+            DialogButtonBox {
+                buttonLayout:DialogButtonBox.KdeLayout
+                anchors.bottom:parent.bottom
+                anchors.right:parent.right
+                anchors.topMargin:15
+
+                Button {
+                    id:dialogApplyBtn
+                    display:AbstractButton.TextBesideIcon
+                    icon.name:"dialog-ok.svg"
+                    text: i18nd("lliurex-access-control","Apply")
+                    font.family: "Quattrocento Sans Bold"
+                    font.pointSize: 10
+                    DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
+                }
+
+                Button {
+                    id:dialogDiscardBtn
+                    display:AbstractButton.TextBesideIcon
+                    icon.name:"delete.svg"
+                    text: i18nd("lliurex-access-control","Discard")
+                    font.family: "Quattrocento Sans Bold"
+                    font.pointSize: 10
+                    DialogButtonBox.buttonRole: DialogButtonBox.DestructiveRole
+
+                }
+
+                Button {
+                    id:dialogCancelBtn
+                    display:AbstractButton.TextBesideIcon
+                    icon.name:"dialog-cancel.svg"
+                    text: i18nd("lliurex-access-control","Cancel")
+                    font.family: "Quattrocento Sans Bold"
+                    font.pointSize: 10
+                    DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
+                }
+
+                onApplied:{
+                    applyChanges()
+                    accessControlBridge.manageSettingsDialog("Accept")
+                
+                }
+
+                onDiscarded:{
+                    discardChanges()
+                    accessControlBridge.manageSettingsDialog("Discard")
+
+                }
+
+                onRejected:{
+                    accessControlBridge.manageSettingsDialog("Cancel")
+
+                }
+            }
+        }
+     }
 
     CustomPopup{
         id:synchronizePopup
@@ -171,5 +243,30 @@ Rectangle{
                 return Kirigami.MessageType.Error
         }
 
-    }    
+    } 
+
+    function applyChanges(){
+        synchronizePopup.open()
+        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
+        delay(1000, function() {
+            if (accessControlBridge.closePopUp){
+                synchronizePopup.close(),
+                timer.stop(),
+                groupList.structModel=accessControlBridge.groupsModel
+            }
+          })
+    } 
+
+    function discardChanges(){
+        synchronizePopup.open()
+        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
+        delay(1000, function() {
+            if (accessControlBridge.closePopUp){
+                synchronizePopup.close(),
+                timer.stop(),
+                groupList.structModel=accessControlBridge.groupsModel
+
+            }
+          })
+    }  
 } 

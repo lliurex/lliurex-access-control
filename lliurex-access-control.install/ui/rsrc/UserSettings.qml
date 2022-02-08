@@ -71,7 +71,7 @@ Rectangle{
                 TextField{
                     id:userEntry
                     placeholderText:i18nd("lliurex-acces-control","Username")
-                    implicitWidth:310
+                    implicitWidth:275
                     font.pointSize:10
                     focus:true
 
@@ -81,7 +81,27 @@ Rectangle{
                    display:AbstractButton.IconOnly
                    icon.name:"dialog-ok.svg"
                    onClicked:{
+                        synchronizePopup.open()
+                        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Validating data. Wait a moment...")
+                        delay(500, function() {
+                            if (accessControlBridge.closePopUp){
+                                userList.structModel=accessControlBridge.usersModel,
+                                synchronizePopup.close(),
+                                timer.stop
+
+                            }
+                        })
                         accessControlBridge.addUser(userEntry.text)
+                        entryRow.visible=false
+                        userEntry.text=""
+
+                   }
+                }
+                Button{
+                   id:cancelUserBtn
+                   display:AbstractButton.IconOnly
+                   icon.name:"dialog-cancel.svg"
+                   onClicked:{
                         entryRow.visible=false
                         userEntry.text=""
                    }
@@ -122,6 +142,7 @@ Rectangle{
                         enabled:userList.listCount>0?true:false
                         onClicked:{
                             accessControlBridge.removeUserList()
+                            userList.structModel=accessControlBridge.usersModel
                         }
                     }
 
