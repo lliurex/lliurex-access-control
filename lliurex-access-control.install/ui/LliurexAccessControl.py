@@ -260,8 +260,6 @@ class LliurexAccessControl(QObject):
 		self._usersModel=UsersModel.UsersModel()
 		usersEntries=self.n4dMan.usersConfigData
 		for item in usersEntries:
-			print("Llenando el modelo")
-			print(item)
 			if item["userId"]!="":
 				self._usersModel.appendRow(item["userId"],item["isLocked"])
 		

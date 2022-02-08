@@ -89,8 +89,6 @@ class N4dManager:
 		#self._readDefaultGroups()
 		self.usersConfigData=[]
 
-		print("lista de usuarios recibida")
-		print(self.usersInfo)
 		for item in self.usersInfo:
 			if item !="":
 				tmp={}
