@@ -260,6 +260,7 @@ class LliurexAccessControl(QObject):
 		self._groupsModel=GroupsModel.GroupsModel()
 		groupsEntries=self.n4dMan.groupsConfigData
 		for item in groupsEntries:
+			print(item)
 			self._groupsModel.appendRow(item["groupId"],item["isLocked"],item["description"])
 		
 	#def _updateGroupModel
@@ -275,7 +276,11 @@ class LliurexAccessControl(QObject):
 		ret=self._usersModel.clear()
 		self._usersModel=UsersModel.UsersModel()
 		usersEntries=self.n4dMan.usersConfigData
+		print("usersEntries")
+		print(usersEntries)
 		for item in usersEntries:
+			print("Llenando el modelo")
+			print(item)
 			if item["userId"]!="":
 				self._usersModel.appendRow(item["userId"],item["isLocked"])
 		
@@ -309,6 +314,8 @@ class LliurexAccessControl(QObject):
 		else:
 			self.settingsUserChanged=False
 
+		print("cambiando setting checked")
+		print(self.settingsUserChanged)
 	#def manageUserAccessControl
 	
 	@Slot('QVariantList')
@@ -368,9 +375,12 @@ class LliurexAccessControl(QObject):
 
 	def _checkNewUser(self,userId):
 
+		print("comprobando usuario: "+userId)
 		isLocalAdmin=self.n4dMan.checkIfUserIsLocalAdmin(userId)
+		print(isLocalAdmin)
 		self.tmpNewUser=""
 		if self._usersModel.rowCount()==0:
+			print("modelo vacio")
 			self._usersModel.clear()
 			self._usersModel=UsersModel.UsersModel()
 		
@@ -378,8 +388,10 @@ class LliurexAccessControl(QObject):
 			self.showLocalAdminDialog=True 
 			self.tmpNewUser=userId
 		else:
+			print("no es admin")
 			self._usersModel.appendRow(userId,True)
 			self._updateUserList(userId,False)
+			print(self._usersModel.rowCount())
 
 		self.closePopUp=True
 
@@ -402,6 +414,8 @@ class LliurexAccessControl(QObject):
 		tmpUser=self._usersModel._entries[index]
 		self._usersModel.removeRow(index)
 		self._updateUserList(tmpUser["userId"],True)
+		print("elimando usuario")
+		print(self._usersModel.rowCount())
 		if self._usersModel.rowCount()==0:
 			self._usersModel=UsersModel.UsersModel()	
 
@@ -415,6 +429,7 @@ class LliurexAccessControl(QObject):
 		self.usersInfo={}
 		self.isAccessDenyUserEnabled=False
 		if self.usersInfo!=self.n4dMan.usersInfo:
+			print("diferente")
 			self.settingsUserChanged=True
 		else:
 			if self.isAccessDenyUserEnabled!=self.n4dMan.isAccessDenyUserEnabled:
@@ -422,6 +437,8 @@ class LliurexAccessControl(QObject):
 			else:
 				self.settingsUserChanged=False
 
+		print("cambiando lista")
+		print(self.settingsUserChanged)
 	#def removeUserList
 
 	def _updateUserList(self,userId,delete):
@@ -429,11 +446,9 @@ class LliurexAccessControl(QObject):
 		tmpList=copy.deepcopy(self.usersInfo)
 		userIdMatch=False
 
-		for item in tmpList:
-			if item == userId:
-				userIdMatch=True
-				break
-
+		if userId in tmpList.keys():
+			userIdMatch=True
+		
 		if userIdMatch:
 			if delete:
 				del tmpList[userId]
@@ -450,7 +465,7 @@ class LliurexAccessControl(QObject):
 
 			self.usersInfo=tmpList
 
-		if not self.n4dMan.thereAreUsersLocked(self.usersInfo) and not delete:
+		if not self.n4dMan.thereAreUsersLocked(self.usersInfo):
 			self.isAccessDenyUserEnabled=False
 		
 	#def _updateUserList
@@ -458,6 +473,7 @@ class LliurexAccessControl(QObject):
 	@Slot()
 	def applyGroupChanges(self):
 
+		print("aplicando")
 		self.showSettingsGroupMessage=[False,"","Success"]
 		self.closePopUp=False
 		self.showGroupChangesDialog=False
@@ -470,7 +486,6 @@ class LliurexAccessControl(QObject):
 	def _applyGroupChanges(self):
 
 		ret=self.n4dMan.applyGroupChanges(self.isAccessDenyGroupEnabled,self.groupsInfo)
-		self.closePopUp=True
 
 		if ret[0]:
 			self._updateGroupConfig()
@@ -488,13 +503,13 @@ class LliurexAccessControl(QObject):
 			self.moveToStack=""
 
 		self.settingsGroupChanged=False
-		self.showChangesDialog=False
+		self.closePopUp=True
 
 	#def _applyGroupChanges
 
 	@Slot()
 	def cancelGroupChanges(self):
-
+		print("ejecutando la cancelaciom")
 		self.showSettingsGroupMessage=[False,"","Success"]
 		self.closePopUp=False
 		self.showGroupChangesDialog=False
@@ -531,6 +546,7 @@ class LliurexAccessControl(QObject):
 
 		self.showSettingsUserMessage=[False,"","Success"]
 		self.closePopUp=False
+		self.showUserChangesDialog=False
 		t = threading.Thread(target=self._applyUserChanges)
 		t.daemon=True
 		t.start()
@@ -540,26 +556,34 @@ class LliurexAccessControl(QObject):
 	def _applyUserChanges(self):
 
 		ret=self.n4dMan.applyUsersChanges(self.isAccessDenyUserEnabled,self.usersInfo)
-		self.closePopUp=True
 
 		if ret[0]:
 			self._updateUsersConfig()
+			time.sleep(1)
 			self.showSettingsUserMessage=[True,ret[1],"Success"]
 			self.closeGui=True
 		else:
 			self.showSettingsUserMessage=[True,ret[1],"Error"]
 			self.closeGui=False
+			self.moveToStack=""
+
+		if self.moveToStack!="":
+			self.currentOptionsStack=self.moveToStack
+			self.showSettingsUserMessage=[False,"","Info"]
+			self.moveToStack=""
 
 		self.settingsUserChanged=False
-		self.showChangesDialog=False
+		self.closePopUp=True
 
-	#def _applyGroupChanges
+
+	#def _applyUserChanges
 
 	@Slot()
 	def cancelUserChanges(self):
 
 		self.showSettingsUserMessage=[False,"","Success"]
 		self.closePopUp=False
+		self.showUserChangesDialog=False
 		t = threading.Thread(target=self._cancelUserChanges)
 		t.daemon=True
 		t.start()
@@ -569,12 +593,16 @@ class LliurexAccessControl(QObject):
 	def _cancelUserChanges(self):
 
 		self._updateUsersConfig()
+		time.sleep(1)
 		self.settingsUserChanged=False
 		self.closePopUp=True
-		self.showChangesDialog=False
+		if self.moveToStack!="":
+			self.currentOptionsStack=self.moveToStack
+		self.moveToStack=""
+		
 		self.closeGui=True
 
-	#def _cancelGroupChanges
+	#def _cancelUserChanges
 
 	def _updateUsersConfig(self):
 
@@ -583,7 +611,6 @@ class LliurexAccessControl(QObject):
 		self._updateUserModel()
 	
 	#def _updateUsersConfig
-
 	@Slot(int)
 	def manageTransitions(self,stack):
 
@@ -596,6 +623,7 @@ class LliurexAccessControl(QObject):
 			else:
 				self.currentOptionsStack=stack
 				self.moveToStack=""
+	
 	#def manageTransitions
 
 	@Slot(str)

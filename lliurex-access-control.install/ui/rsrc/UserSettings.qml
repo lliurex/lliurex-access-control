@@ -80,6 +80,7 @@ Rectangle{
                    id:applyUserBtn
                    display:AbstractButton.IconOnly
                    icon.name:"dialog-ok.svg"
+                   enabled:userEntry.text.trim().length>0?true:false
                    onClicked:{
                         synchronizePopup.open()
                         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Validating data. Wait a moment...")
@@ -167,15 +168,7 @@ Rectangle{
             Layout.preferredHeight:40
             enabled:accessControlBridge.settingsUserChanged
             onClicked:{
-                synchronizePopup.open()
-                synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
-                delay(1000, function() {
-                    if (accessControlBridge.closePopUp){
-                        synchronizePopup.close(),
-                        timer.stop(),
-                        userList.structModel=accessControlBridge.usersModel
-                    }
-                  })
+                applyChanges(),
                 accessControlBridge.applyUserChanges()
             }
         }
@@ -188,16 +181,7 @@ Rectangle{
             Layout.preferredHeight: 40
             enabled:accessControlBridge.settingsUserChanged
             onClicked:{
-                synchronizePopup.open()
-                synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
-                delay(1000, function() {
-                    if (accessControlBridge.closePopUp){
-                        synchronizePopup.close(),
-                        timer.stop(),
-                        userList.structModel=accessControlBridge.usersModel
-
-                    }
-                  })
+                discardChanges(),
                 accessControlBridge.cancelUserChanges()
             }
         }
@@ -269,6 +253,24 @@ Rectangle{
         }
      }
 
+    ChangesDialog{
+        id:userChangesDialog
+        dialogTitle:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
+        dialogVisible:accessControlBridge.showUserChangesDialog
+        dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
+        Connections{
+            target:userChangesDialog
+            function onDialogApplyClicked(){
+                applyChanges()
+                
+            }
+            function onDiscardDialogClicked(){
+                discardChanges()
+            }
+
+        }
+    }
+
     CustomPopup{
         id:synchronizePopup
      }
@@ -292,14 +294,14 @@ Rectangle{
             case 10:
                 msg=i18nd("lliurex-access-control","Changes applied successfully");
                 break;
-            case -40:
+            case -30:
                 msg=i18nd("lliurex-access-control","It is not possible to deactive access control by user");
                 break;
-            case -50:
-                msg=i18nd("lliurex-access-control","Unable to update the list of users with restricted access");
-                break;
+            case -40:
+                msg=i18nd("lliurex-access-control","Unable to update the user list");
+                break;                
             case -80:
-                msg=i18nd("lliurex-access-control","No user selected");
+                msg=i18nd("lliurex-access-control","There are no users selected to lock their access");
                 break;
             default:
                 break;
@@ -319,5 +321,30 @@ Rectangle{
                 return Kirigami.MessageType.Error
         }
 
-    }    
+    } 
+
+    function applyChanges(){
+        synchronizePopup.open()
+        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
+        delay(500, function() {
+            if (accessControlBridge.closePopUp){
+                synchronizePopup.close(),
+                timer.stop(),
+                userList.structModel=accessControlBridge.usersModel
+            }
+          })
+    } 
+
+    function discardChanges(){
+        synchronizePopup.open()
+        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
+        delay(1000, function() {
+            if (accessControlBridge.closePopUp){
+                synchronizePopup.close(),
+                timer.stop(),
+                userList.structModel=accessControlBridge.usersModel
+
+            }
+          })
+    }      
 } 
