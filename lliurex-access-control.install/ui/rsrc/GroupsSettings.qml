@@ -152,7 +152,7 @@ Rectangle{
                 msg=i18nd("lliurex-access-control","Unable to update the list of groups with restricted access");
                 break;
             case -70:
-                msg=i18nd("lliurex-access-control","No group selected");
+                msg=i18nd("lliurex-access-control","There are no groups selected to lock their access");
                 break;
             default:
                 break;

@@ -142,8 +142,7 @@ Rectangle{
                         implicitWidth:110
                         enabled:userList.listCount>0?true:false
                         onClicked:{
-                            accessControlBridge.removeUserList()
-                            userList.structModel=accessControlBridge.usersModel
+                           removeListDialog.open()
                         }
                     }
 
@@ -271,6 +270,75 @@ Rectangle{
         }
     }
 
+    Dialog{
+        id:removeListDialog
+        title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
+        visible:false
+        modality:Qt.WindowModal
+
+        contentItem: Rectangle {
+            color: "#ebeced"
+            implicitWidth: 480
+            implicitHeight: 105
+            anchors.topMargin:5
+            anchors.leftMargin:5
+
+            Image{
+                id:removeListDialogIcon
+                source:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
+            }
+
+            Text {
+                id:removeListDialogText
+                text:i18nd("lliurex-access-control","The user list is going to be delete.Do you wish to continue?")
+                font.family: "Quattrocento Sans Bold"
+                font.pointSize: 10
+                anchors.left:removeListDialogIcon.right
+                anchors.verticalCenter:removeListDialogIcon.verticalCenter
+                anchors.leftMargin:10
+            }
+           
+           DialogButtonBox {
+                buttonLayout:DialogButtonBox.KdeLayout
+                anchors.bottom:parent.bottom
+                anchors.right:parent.right
+                anchors.topMargin:15
+
+                Button {
+                    id:removeListDialogApplyBtn
+                    display:AbstractButton.TextBesideIcon
+                    icon.name:"dialog-ok.svg"
+                    text: i18nd("lliurex-access-control","Accept")
+                    font.family: "Quattrocento Sans Bold"
+                    font.pointSize: 10
+                    DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
+                }
+
+                Button {
+                    id:removeListDialogCancelBtn
+                    display:AbstractButton.TextBesideIcon
+                    icon.name:"dialog-cancel.svg"
+                    text: i18nd("lliurex-access-control","Cancel")
+                    font.family: "Quattrocento Sans Bold"
+                    font.pointSize: 10
+                    DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
+                }
+
+                onApplied:{
+                    accessControlBridge.removeUserList()
+                    userList.structModel=accessControlBridge.usersModel
+                    removeListDialog.close()
+                }
+
+                onRejected:{
+                    accessControlBridge.manageLocalAdminDialog("Cancel")
+                    removeListDialog.close()
+
+                }
+            }
+        }
+    }
+
     CustomPopup{
         id:synchronizePopup
      }
@@ -303,6 +371,9 @@ Rectangle{
             case -80:
                 msg=i18nd("lliurex-access-control","There are no users selected to lock their access");
                 break;
+            case -90:
+                msg=i18nd("lliurex-access-control","The user already exists in the list");
+		break;
             default:
                 break;
         }

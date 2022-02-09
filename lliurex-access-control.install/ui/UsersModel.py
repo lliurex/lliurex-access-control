@@ -47,7 +47,8 @@ class UsersModel(QtCore.QAbstractListModel):
 		tmpId=[]
 		for item in self._entries:
 			tmpId.append(item["userId"])
-		if ui not in tmpId and ui !="":
+		tmpUI=ui.strip()
+		if ui not in tmpId and ui !="" and len(tmpUI)>0:
 			self.beginInsertRows(QtCore.QModelIndex(), self.rowCount(),self.rowCount())
 			self._entries.append(dict(userId=ui, isLocked=il))
 			self.endInsertRows()
