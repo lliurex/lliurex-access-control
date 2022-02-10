@@ -68,8 +68,8 @@ GridLayout{
             id:groupsSettings
         }
 
-        UserSettings{
-            id:usersSettings
+        UsersSettings{
+            id:userSettings
         }
 
     }
