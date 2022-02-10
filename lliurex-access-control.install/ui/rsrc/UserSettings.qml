@@ -59,7 +59,7 @@ Rectangle{
                     id:usersList
                     text:i18nd("lliurex-access-control","Users with restricted access:")
                     font.pointSize:10
-                    Layout.leftMargin:80
+                    Layout.leftMargin:60
                 }
             }
             RowLayout {
@@ -70,8 +70,8 @@ Rectangle{
 
                 TextField{
                     id:userEntry
-                    placeholderText:i18nd("lliurex-acces-control","Username")
-                    implicitWidth:275
+                    placeholderText:i18nd("lliurex-access-control","Username")
+                    implicitWidth:265
                     font.pointSize:10
                     focus:true
 
@@ -134,7 +134,7 @@ Rectangle{
                         display:AbstractButton.TextBesideIcon
                         icon.name:"contact-new.svg"
                         text:i18nd("lliurex-access-control","Add user")
-                        implicitWidth:110
+                        implicitWidth:120
                         enabled:userControlCb.checked && userEntry.text==""
                         focusPolicy: Qt.NoFocus
                         onClicked:{
@@ -147,7 +147,7 @@ Rectangle{
                         display:AbstractButton.TextBesideIcon
                         icon.name:"delete.svg"
                         text:i18nd("lliurex-access-control","Remove List")
-                        implicitWidth:110
+                        implicitWidth:120
                         enabled:{
                             if ((userList.listCount>0)&&(userEntry.text=="")){
                                 true

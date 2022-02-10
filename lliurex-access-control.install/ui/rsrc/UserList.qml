@@ -13,7 +13,7 @@ Rectangle {
 
     id:userTable
     visible: true
-    width: 345; height: 125
+    width: 335; height: 125
     color:"white"
     border.color: "#d3d3d3"
 

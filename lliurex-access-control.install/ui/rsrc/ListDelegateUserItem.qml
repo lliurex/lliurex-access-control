@@ -49,7 +49,7 @@ Components.ListItem{
         Text{
             id: userName
             text: userId
-            width:250
+            width:240
             clip: true
             anchors.left:userCheck.right
             anchors.leftMargin:5
