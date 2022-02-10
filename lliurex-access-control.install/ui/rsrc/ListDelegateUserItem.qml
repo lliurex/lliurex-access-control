@@ -34,7 +34,16 @@ Components.ListItem{
             anchors.left:parent.left
             anchors.leftMargin:5
             anchors.verticalCenter:parent.verticalCenter
-
+            ToolTip.delay: 1000
+            ToolTip.timeout: 3000
+            ToolTip.visible: hovered
+            ToolTip.text:{
+                if (userCheck.checked){
+                    i18nd("lliurex-access-control","Check to unlock access to this user")
+                }else{
+                     i18nd("lliurex-access-control","Check to lock access to this user")                   
+                }
+            }
         }
 
         Text{
@@ -57,6 +66,10 @@ Components.ListItem{
                 accessControlBridge.removeUser(index)
                 entryRow.visible=false
             }
+            ToolTip.delay: 1000
+            ToolTip.timeout: 3000
+            ToolTip.visible: hovered
+            ToolTip.text:i18nd("lliurex-access-control","Clic to remove this user from the list")
         }
 
     }

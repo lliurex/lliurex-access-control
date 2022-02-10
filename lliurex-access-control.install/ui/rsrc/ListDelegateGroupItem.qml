@@ -35,6 +35,16 @@ Components.ListItem{
             anchors.left:parent.left
             anchors.leftMargin:5
             anchors.verticalCenter:parent.verticalCenter
+            ToolTip.delay: 1000
+            ToolTip.timeout: 3000
+            ToolTip.visible: hovered
+            ToolTip.text:{
+                if (groupCheck.checked){
+                    i18nd("lliurex-access-control","Check to unlock access to this group")
+                }else{
+                    i18nd("lliurex-access-control","Check to lock access to this group")                   
+                }
+            }
 
         }
 

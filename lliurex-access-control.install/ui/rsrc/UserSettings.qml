@@ -81,7 +81,11 @@ Rectangle{
                    display:AbstractButton.IconOnly
                    icon.name:"dialog-ok.svg"
                    enabled:userEntry.text.trim().length>0?true:false
-                   onClicked:{
+                   ToolTip.delay: 1000
+                   ToolTip.timeout: 3000
+                   ToolTip.visible: hovered
+                   ToolTip.text:i18nd("lliurex-access-control","Click to add the user to list")
+                   onPressed:{
                         synchronizePopup.open()
                         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Validating data. Wait a moment...")
                         delay(500, function() {
@@ -101,7 +105,11 @@ Rectangle{
                 Button{
                    id:cancelUserBtn
                    display:AbstractButton.IconOnly
-                   icon.name:"dialog-cancel.svg"
+                   icon.name:"dialog-close.svg"
+                   ToolTip.delay: 1000
+                   ToolTip.timeout: 3000
+                   ToolTip.visible: hovered
+                   ToolTip.text:i18nd("lliurex-access-control","Click to close")
                    onClicked:{
                         entryRow.visible=false
                         userEntry.text=""
@@ -140,7 +148,13 @@ Rectangle{
                         icon.name:"delete.svg"
                         text:i18nd("lliurex-access-control","Remove List")
                         implicitWidth:110
-                        enabled:userList.listCount>0?true:false
+                        enabled:{
+                            if ((userList.listCount>0)&&(userEntry.text=="")){
+                                true
+                            }else{
+                                false
+                            }
+                        }
                         onClicked:{
                            removeListDialog.open()
                         }
