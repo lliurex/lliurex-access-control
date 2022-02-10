@@ -69,7 +69,7 @@ GridLayout{
         }
 
         UserSettings{
-            id:userSettings
+            id:usersSettings
         }
 
     }
