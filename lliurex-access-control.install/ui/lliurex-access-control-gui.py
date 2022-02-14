@@ -12,7 +12,7 @@ app = QApplication()
 engine = QQmlApplicationEngine()
 engine.clearComponentCache()
 context=engine.rootContext()
-accessControlBridge=LliurexAccessControl.LliurexAccessControl(sys.argv[1])
+accessControlBridge=LliurexAccessControl.LliurexAccessControl()
 context.setContextProperty("accessControlBridge", accessControlBridge)
 
 url = QUrl("/usr/share/lliurex-access-control/rsrc/lliurex-access-control.qml")
