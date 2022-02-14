@@ -11,6 +11,26 @@ import GroupsModel
 import UsersModel
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+class UserValidation(QThread):
+
+	def __init__(self,*args):
+
+		QThread.__init__(self)
+
+		self.user=args[0]
+		self.password=args[1]
+		self.ret=[]
+
+	#def __init__
+
+	def run(self, *args):
+
+		self.ret=LliurexAccessControl.n4dMan.validateUser(self.user,self.password)
+
+	#def run
+
+#class UserValidation
+
 class GatherInfo(QThread):
 
 	def __init__(self,*args):
@@ -79,15 +99,17 @@ class LliurexAccessControl(QObject):
 	USER_DUPLICATE_ERROR=-90
 	n4dMan=N4dManager.N4dManager()
 
-	def __init__(self,ticket=None):
+	def __init__(self):
 
 		QObject.__init__(self)
-		self.initBridge(ticket)
+		self.initBridge()
 
 	#def __init__
 
-	def initBridge(self,ticket):
+	def initBridge(self):
 
+		self._showLoginMessage=[False,'']
+		self._runningLogin=False
 		self._groupsModel=GroupsModel.GroupsModel()
 		self._usersModel=UsersModel.UsersModel()
 		self._settingsGroupChanged=False
@@ -104,14 +126,54 @@ class LliurexAccessControl(QObject):
 		self._isAccessDenyGroupEnabled=False
 		self._isAccessDenyUserEnabled=False
 		self.tmpNewUser=""
-		self.moveToStack=""
-		LliurexAccessControl.n4dMan.setServer(ticket)
-		self.gatherInfo=GatherInfo()
-		self.gatherInfo.start()
-		self.gatherInfo.finished.connect(self._loadConfig)
+		self.moveToStack=""	
 
 	#def initBridge
 
+	@Slot('QVariantList')
+	def validate(self,value):
+
+		self.showLoginMessage=[False,""]
+		self.user=value[0]
+		self.password=value[1]
+		server='localhost'
+		
+		LliurexAccessControl.n4dMan.setServer(server)
+
+		if not self.runningLogin:
+			self.runningLogin = True
+			self.userValidation=UserValidation(self.user,self.password)
+			self.userValidation.start()
+			self.userValidation.finished.connect(self._validate)
+	
+	#def validate
+
+	def _validate(self):
+
+		LOGIN_FAILED=-40
+
+		if self.userValidation.ret:
+			group_found=False
+			for g in ["sudo","admins"]:
+				if g in LliurexAccessControl.n4dMan.user_groups:
+					group_found=True
+					break
+					
+			if group_found:
+				self.gatherInfo=GatherInfo()
+				self.gatherInfo.start()
+				self.gatherInfo.finished.connect(self._loadConfig)
+			else:
+				self.showLoginMessage=[True,LOGIN_FAILED]
+				self.currentStack=0
+				self.runningLogin=False
+		else:
+			self.showLoginMessage=[True,LOGIN_FAILED]
+			self.currentStack=0
+			self.runningLogin=False
+
+	#def _validate	
+	
 	def _loadConfig(self):		
 
 		self.isAccessDenyGroupEnabled=copy.deepcopy(LliurexAccessControl.n4dMan.isAccessDenyGroupEnabled)
@@ -120,6 +182,7 @@ class LliurexAccessControl(QObject):
 		self.usersInfo=copy.deepcopy(LliurexAccessControl.n4dMan.usersInfo)
 		self._updateGroupModel()
 		self._updateUserModel()
+		self.runningLogin=False
 		self.currentStack=1
 
 	#def _loadConfig
@@ -151,6 +214,34 @@ class LliurexAccessControl(QObject):
 			self.on_currentOptionsStack.emit()
 
 	#def _setCurrentOptionsStack
+
+	def _getShowLoginMessage(self):
+
+		return self._showLoginMessage
+
+	#def _getShoLoginMessage
+
+	def _setShowLoginMessage(self,showLoginMessage):
+
+		if self._showLoginMessage!=showLoginMessage:
+			self._showLoginMessage=showLoginMessage
+			self.on_showLoginMessage.emit()
+
+	#def _setShowLoginMessage
+
+	def _getRunningLogin(self):
+
+		return self._runningLogin
+
+	#def _getRunningLogin
+
+	def _setRunningLogin(self,runningLogin):
+
+		if self._runningLogin!=runningLogin:
+			self._runningLogin=runningLogin
+			self.on_runningLogin.emit()
+
+	#def _setRunningLogin
 
 	def _getIsAccessDenyGroupEnabled(self):
 
@@ -717,6 +808,12 @@ class LliurexAccessControl(QObject):
 	
 	on_currentOptionsStack=Signal()
 	currentOptionsStack=Property(int,_getCurrentOptionsStack,_setCurrentOptionsStack, notify=on_currentOptionsStack)
+
+	on_showLoginMessage=Signal()
+	showLoginMessage=Property('QVariantList',_getShowLoginMessage,_setShowLoginMessage, notify=on_showLoginMessage)
+
+	on_runningLogin=Signal()
+	runningLogin=Property(bool,_getRunningLogin,_setRunningLogin, notify=on_runningLogin)
 
 	on_isAccessDenyGroupEnabled=Signal()
 	isAccessDenyGroupEnabled=Property(bool,_getIsAccessDenyGroupEnabled,_setIsAccessDenyGroupEnabled,notify=on_isAccessDenyGroupEnabled)

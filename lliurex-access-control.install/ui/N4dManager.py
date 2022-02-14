@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-import n4d.client
+import xmlrpc.client
+import ssl
 import os
 import json
 import codecs
@@ -26,13 +27,29 @@ class N4dManager:
 
 	#def __init__
 
-	def setServer(self,ticket):
-		
-		ticket=ticket.replace('##U+0020##',' ')
-		tk=n4d.client.Ticket(ticket)
-		self.client=n4d.client.Client(ticket=tk)
+	def setServer(self,server):
+
+		context=ssl._create_unverified_context()	
+		self.client=xmlrpc.client.ServerProxy("https://%s:9779"%server,allow_none=True,context=context)
 	
 	#def setServer
+
+	def validateUser(self,user,password):
+		
+		userValidated=False
+		try:
+			ret=self.client.validate_user(user,password)
+		except:
+			return userValidated
+			
+		userValidated,self.user_groups=ret
+			
+		if userValidated:
+			self.validation=(user,password)
+
+		return userValidated
+
+	#def validateUser
 
 	def loadConfig(self):
 		
@@ -43,16 +60,16 @@ class N4dManager:
 
 	def loadGroupConfig(self):
 
-		self.isAccessDenyGroupEnabled=self.client.AccessControlManager.isAccessDenyGroupEnabled()
-		self.groupsInfo=self.client.AccessControlManager.getGroupsInfo()
+		self.isAccessDenyGroupEnabled=self.client.isAccessDenyGroupEnabled(self.validation,"AccessControlManager")['status']
+		self.groupsInfo=self.client.getGroupsInfo(self.validation,"AccessControlManager")['data']
 		self.getGroupsConfig()
 		
 	#def loadGroupConfig()
 
 	def loadUserConfig(self):
 		
-		self.isAccessDenyUserEnabled=self.client.AccessControlManager.isAccessDenyUserEnabled()
-		self.usersInfo=self.client.AccessControlManager.getUsersInfo()
+		self.isAccessDenyUserEnabled=self.client.isAccessDenyUserEnabled(self.validation,"AccessControlManager")['status']
+		self.usersInfo=self.client.getUsersInfo(self.validation,"AccessControlManager")["data"]
 		self.getUsersConfig()
 
 	#def loadUserConfig
@@ -83,7 +100,6 @@ class N4dManager:
 
 	def getUsersConfig(self):
 
-		#self._readDefaultGroups()
 		self.usersConfigData=[]
 
 		for item in self.usersInfo:
@@ -115,19 +131,19 @@ class N4dManager:
 					updateGroupInfo=True
 
 		if disableControl:
-			try:
-				ret=self.client.AccessControlManager.disableAccessDenyGroup()
+			ret=self.client.disableAccessDenyGroup(self.validation,"AccessControlManager")
+			if ret['status']:
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				result=[False,e.code]
+			else:
+				result=[False,ret['msg']]
 
 		else:
 			if updateGroupInfo:
-				try:
-					ret=self.client.AccessControlManager.setGroupsInfo(groupsInfo)		
+				ret=self.client.setGroupsInfo(self.validation,"AccessControlManager",groupsInfo)		
+				if ret['status']:
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-				except n4d.client.CallFailedError as e:
-					result=[False,e.code]
+				else:
+					result=[False,ret['msg']]
 
 		if result[0]:
 			self.loadGroupConfig()
@@ -153,21 +169,25 @@ class N4dManager:
 					disableControl=True
 	
 		if updateUsersInfo:
-			try:
-				ret=self.client.AccessControlManager.setUsersInfo(usersInfo)
+			ret=self.client.setUsersInfo(self.validation,"AccessControlManager",usersInfo)
+			if ret['status']:
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 				if disableControl:
-					ret=self.client.AccessControlManager.disableAccessDenyUser()		
-					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				result=[False,e.code]
+					ret=self.client.disableAccessDenyUser(self.validation,"AccessControlManager")
+					if ret['status']:		
+						result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+					else:		
+						result=[False,ret['msg']]
+			else:
+				result=[False,ret['msg']]
 
 		if disableControl and not updateUsersInfo:
-			try:
-				ret=self.client.AccessControlManager.disableAccessDenyUser()		
+	
+			ret=self.client.disableAccessDenyUser(self.validation,"AccessControlManager")		
+			if ret['status']:
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				result=[False,e.code]
+			else:
+				result=[False,ret['msg']]
 
 		if result[0]:
 			self.loadUserConfig()

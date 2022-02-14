@@ -71,8 +71,8 @@ ApplicationWindow {
             Layout.fillWidth:true
             Layout.fillHeight: true
 
-            Loading{
-                id:loading
+            Login{
+                id:login
             }
 
             ApplicationOptions{
