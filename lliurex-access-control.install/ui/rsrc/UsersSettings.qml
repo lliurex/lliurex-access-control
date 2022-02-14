@@ -90,7 +90,6 @@ Rectangle{
                         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Validating data. Wait a moment...")
                         delay(500, function() {
                             if (accessControlBridge.closePopUp){
-                                userList.structModel=accessControlBridge.usersModel,
                                 synchronizePopup.close(),
                                 timer.stop
 
@@ -414,8 +413,7 @@ Rectangle{
         delay(500, function() {
             if (accessControlBridge.closePopUp){
                 synchronizePopup.close(),
-                timer.stop(),
-                userList.structModel=accessControlBridge.usersModel
+                timer.stop()
             }
           })
     } 
@@ -426,9 +424,7 @@ Rectangle{
         delay(1000, function() {
             if (accessControlBridge.closePopUp){
                 synchronizePopup.close(),
-                timer.stop(),
-                userList.structModel=accessControlBridge.usersModel
-
+                timer.stop()
             }
           })
     }      

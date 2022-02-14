@@ -180,8 +180,7 @@ Rectangle{
         delay(500, function() {
             if (accessControlBridge.closePopUp){
                 synchronizePopup.close(),
-                timer.stop(),
-                groupList.structModel=accessControlBridge.groupsModel
+                timer.stop()
             }
           })
     } 
@@ -192,8 +191,7 @@ Rectangle{
         delay(1000, function() {
             if (accessControlBridge.closePopUp){
                 synchronizePopup.close(),
-                timer.stop(),
-                groupList.structModel=accessControlBridge.groupsModel
+                timer.stop()
 
             }
           })

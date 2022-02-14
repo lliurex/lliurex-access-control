@@ -12,10 +12,9 @@ class N4dManager:
 	APPLY_CHANGES_WITHOUT_GROUP=-70
 	APPLY_CHANGES_WITHOUT_USER=-80
 
-	def __init__(self,ticket):
+	def __init__(self):
 
 		self.debug=True
-		ticket=ticket.replace('##U+0020##',' ')
 		self.groupsInfo={}
 		self.groupsConfigData=[]
 		self.sessionLang=""
@@ -23,15 +22,13 @@ class N4dManager:
 		self.usersInfo={}
 		self.usersConfigData=[]
 		self.isAccessDenyUserEnabled=False
-		self.setServer(ticket)
 		self.getSessionLang()
-		self.loadConfig()
-
 
 	#def __init__
 
 	def setServer(self,ticket):
-
+		
+		ticket=ticket.replace('##U+0020##',' ')
 		tk=n4d.client.Ticket(ticket)
 		self.client=n4d.client.Client(ticket=tk)
 	
@@ -221,7 +218,5 @@ class N4dManager:
 		return isLocalAdmin
 
 	#def checkIfUserIsLocalAdmin
-
-
 
 #class N4dManager
