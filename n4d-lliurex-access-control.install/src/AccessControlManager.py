@@ -1,11 +1,6 @@
-#!/usr/bin/python3
-
 import os
 import json
 import codecs
-
-import n4d.responses
-import n4d.server.core as n4dcore
 
 class AccessControlManager:
 
@@ -17,7 +12,6 @@ class AccessControlManager:
 
 	def __init__(self):
 
-		self.core=n4dcore.Core.get_core()
 		self.configPath="/etc/lliurex-access-control"
 		self.groupDenyListPath=os.path.join(self.configPath,"login.group.deny")
 		self.defaultGroupsFile=os.path.join(self.configPath+"/groups-lists","defaultGroups.json")
@@ -33,7 +27,7 @@ class AccessControlManager:
 		if os.path.exists(self.groupDenyListPath):
 			isEnabled=True
 
-		return n4d.responses.build_successful_call_response(isEnabled)
+		return {'status':isEnabled,'msg':'','data':''}
 
 	#def isAccessDenyGroupEnabled
 
@@ -48,7 +42,7 @@ class AccessControlManager:
 			else:
 				groupsInfo[item]["isLocked"]=False
 
-		return n4d.responses.build_successful_call_response(groupsInfo)
+		return {'status':True, 'msg':'','data':groupsInfo}
 
 	#def getDenyGroups 
 
@@ -56,7 +50,7 @@ class AccessControlManager:
 
 		denyGroups=[]
 
-		if self.isAccessDenyGroupEnabled()['return']:
+		if self.isAccessDenyGroupEnabled()['status']:
 			with open(self.groupDenyListPath,'r') as fd:
 				lines=fd.readlines()
 				for line in lines:
@@ -93,24 +87,23 @@ class AccessControlManager:
 					with open(self.groupDenyListPath,'w') as fd:
 						for item in denyGroups:
 							fd.write(item+"\n")
-					return n4d.responses.build_successful_call_response()
-
+					return {'status':True,'msg':'Group info update successful','data':''}
 				else:
 					return self.disableAccessDenyGroup()
 		except:
-			return n4d.responses.build_failed_call_response(AccessControlManager.SET_GROUP_ERROR)
+			return {'status':False,'msg':AccessControlManager.SET_GROUP_ERROR,'data':''}
 	
 	#def setDennyGroups
 
 	def disableAccessDenyGroup(self):
 
 		try:
-			if self.isAccessDenyGroupEnabled()['return']:
+			if self.isAccessDenyGroupEnabled()['status']:
 				os.remove(self.groupDenyListPath)
 		
-			return n4d.responses.build_successful_call_response()
+			return {'status':True,'msg':'','data':''}
 		except:
-			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_GROUP_ACCESS_CONTROL_ERROR)
+			return {'status':False,'msg':AccessControlManager.DISABLE_GROUP_ACCESS_CONTROL_ERROR,'data':''}
 	
 	#def disableAccessDenyGroup
 
@@ -121,7 +114,7 @@ class AccessControlManager:
 		if os.path.exists(self.userDenyListPath):
 			isEnabled=True
 
-		return n4d.responses.build_successful_call_response(isEnabled)
+		return {'status':isEnabled,'msg':'','data':''}
 
 	#def isAccessDenyUserEnabled
 
@@ -148,7 +141,7 @@ class AccessControlManager:
 					usersInfo[item]={}
 					usersInfo[item]["isLocked"]=True
 
-		return n4d.responses.build_successful_call_response(usersInfo)
+		return {'status':True,'msg':'','data':usersInfo}
 
 	#def getDenyUsers 
 
@@ -156,7 +149,7 @@ class AccessControlManager:
 
 		denyUsers=[]
 
-		if self.isAccessDenyUserEnabled()['return']:
+		if self.isAccessDenyUserEnabled()['status']:
 			with open(self.userDenyListPath,'r') as fd:
 				lines=fd.readlines()
 				for line in lines:
@@ -200,7 +193,7 @@ class AccessControlManager:
 					with open(self.userDenyListPath,'w') as fd:
 						for item in denyUsers:
 							fd.write(item+"\n")
-					return n4d.responses.build_successful_call_response()
+					return {'status':True,'msg':'Users info updated successfull','data':''}
 				else:
 					return self.disableAccessDenyUser()
 
@@ -211,19 +204,19 @@ class AccessControlManager:
 				return self.disableAccessDenyUser()
 			
 		except Exception as e:
-			return n4d.responses.build_failed_call_response(AccessControlManager.SET_USER_ERROR)
+			return {'status':False,'msg':AccessControlManager.SET_USER_ERROR,'data':''}
 	
 	#def setDennyGroups
 
 	def disableAccessDenyUser(self):
 
 		try:
-			if self.isAccessDenyUserEnabled()['return']:
+			if self.isAccessDenyUserEnabled()['status']:
 				os.remove(self.userDenyListPath)
 		
-			return n4d.responses.build_successful_call_response()
+			return {'status':True,'msg':'','data':''}
 		except:
-			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_USER_ACCESS_CONTROL_ERROR)
+			return {'status':False,'msg':AccessControlManager.DISABLE_USER_ACCESS_CONTROL_ERROR,'data':''}
 	
 	#def disableAccessDenyGroup
 	

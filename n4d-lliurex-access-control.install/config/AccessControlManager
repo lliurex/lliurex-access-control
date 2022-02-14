@@ -1,0 +1,13 @@
+[SETUP]
+type=python
+path=AccessControlManager.py
+class=AccessControlManager
+[METHODS]
+isAccessDenyGroupEnabled=anonymous
+getGroupsInfo=anonymous
+setGroupsInfo=sudo,admins
+disableAccessDenyGroup=sudo,admins
+isAccessDenyUserEnabled=anonymous
+getUsersInfo=anonymous
+setUsersInfo=sudo,admins
+disableAccessDenyUser=sudo,admins
