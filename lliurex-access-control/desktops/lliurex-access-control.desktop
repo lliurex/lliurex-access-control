@@ -1,0 +1,20 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=Lliurex-Access-Control
+Name[es]=Lliurex-Access-Control
+Name[ca@valencia]=Lliurex-Access-Control
+Name[ca_ES.UTF-8@valencia]=Lliurex-Access-Control
+Comment=Program to restrict access to the computer
+Comment[es]=Programa restringir el acceso al equipo
+Comment[ca@valencia]=Programa restringir l'accés a l'equip
+Comment[ca_ES.UTF-8@valencia]=Programa restringir l'accés a l'equip
+GenericName=lliurex-access-control
+Type=Application
+Exec=/usr/sbin/lliurex-access-control.py
+TryExec=/usr/sbin/lliurex-access-control.py
+Icon=lliurex-access-control
+Terminal=false
+StartupNotify=true
+NoDisplay=false
+Categories=LliureX-Administration;
