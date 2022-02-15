@@ -1,0 +1,100 @@
+#! /usr/bin/python3
+import sys
+
+from clint import arguments
+from clint.textui import puts, indent, colored
+
+from accesscontrolcli import AccessControlCliManager
+
+def usage():
+	puts("Usage")
+	with indent(4):
+		puts("lliurex-access-control-cli [FLAGS...] ACTION")
+		puts("Actions")
+		with indent(4):	
+			puts("currentconfig [groups|users|all] : Shows information about access control for groups, users or all  ")
+			puts("lockgroup <GROUP> <GROUP>...: Lock access to computer for the indicated groups")
+			puts("unlockgroup <GROUP> <GROUP>...: Unlock access to computer for the indicated groups")
+			puts("disablecontrolgroup: Disable access control by group")
+			puts("lockuser <USERNAME> <USENAME>...: Lock access to computer for the indicated usernames")
+			puts("unlockuser <USERNAME> <USERNAME>...: Unlock access to computer for the indicated usernames")
+			puts("disablecontroluser: Disable access control by user")
+			puts("removeuser <USERNAME> <USERNAME>...: Removed the indicated usernames from the user list")
+			puts("removeuserlist: Remove the user list")
+
+		puts("Flags")
+		with indent(4):
+			puts("-h --help : Show help")
+			puts("-u --unattended: Run the actions without prompting for user confirmation")
+	sys.exit(1)
+
+#def usage	
+		
+if __name__ == '__main__':
+	args = arguments.Args().copy
+	mode=False
+	nocheck=False
+	debug=False
+	infoOption=None
+	groupsSelected=[]
+	usersSelected=[]
+
+	if args.contains(["-h","--help"]) or len(args.all) == 0 :
+		usage()		
+	if args.contains(["-u","--unattended"]):
+		mode=True
+		index = args.first(["-u","--unattended"])
+		args.pop(index)
+
+	action = args.pop(0)
+	
+	if action=="currentconfig":
+		if args.get(0)=="all":
+			infoOption="all"
+		elif args.get(0)=="groups":
+			infoOption="groups"
+		elif args.get(0)=="users":
+			infoOption="users"
+		else:
+			usage()
+	elif action=="lockgroup" or action=="unlockgroup":
+		if len(args)>0:
+			for item in args.all:
+				groupsSelected.append(item)
+		else:
+			usage()
+	elif action=="lockuser" or action=="unlockuser":
+		if len(args)>0:
+			for item in args.all:
+				usersSelected.append(item)
+		else:
+			usage()
+	elif action=="removeuser":
+		if len(args)>0:
+			for item in args.all:
+				usersSelected.append(item)
+		else:
+			usage()
+
+	ac=AccessControlCliManager()
+	
+	if action == "currentconfig":
+		sys.exit(ac.showCurrentConfig(infoOption))
+	elif action=="lockgroup":
+		sys.exit(ac.lockGroup(mode,groupsSelected))
+	elif action=="unlockgroup":
+		sys.exit(ac.unlockGroup(mode,groupsSelected))
+	elif action=="disablecontrolgroup":
+		sys.exit(ac.disableControlGroup(mode))
+	elif action=="lockuser":
+		sys.exit(ac.lockUser(mode,usersSelected))
+	elif action=="unlockuser":
+		sys.exit(ac.unlockUser(mode,usersSelected))
+	elif action=="disablecontroluser":
+		sys.exit(ac.disableControlUser(mode))
+	elif action=="removeuser":
+		sys.exit(ac.removeUser(mode,usersSelected))
+	elif action=="removeuserlist":
+		sys.exit(ac.removeUserList(mode))
+	else:
+		usage()		
