@@ -5,6 +5,7 @@ import os
 import json
 import codecs
 import pwd
+import grp
 
 class N4dManager:
 
@@ -203,15 +204,17 @@ class N4dManager:
 	
 	def checkIfUserIsLocalAdmin(self,user):
 
-		localAdminPID=1000
+		adminGroups=["sudo","admins","adm"]
 		isLocalAdmin=False
 
 		try:
 			gid = pwd.getpwnam(user).pw_gid
-			if gid==localAdminPID:
-				isLocalAdmin=True 
-			else:
-				isLocalAdmin=False
+			groups_gid=os.getgrouplist(user,gid)
+			user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
+			for element in user_groups:
+				if element in adminGroups:
+					isLocalAdmin=True 
+					break
 		except:
 			isLocalAdmin=False
 
