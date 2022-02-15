@@ -58,6 +58,10 @@ GridLayout {
         Button {
             id:loginButton
             text: i18nd("lliurex-access-control","Login")
+            focus:true
+            Keys.onReturnPressed: loginButton.clicked()
+            Keys.onEnterPressed: loginButton.clicked()
+
             onClicked: {
                 loginLabel.text=i18nd("lliurex-access-control","Validating user...")
                 loginLabel.color="black"

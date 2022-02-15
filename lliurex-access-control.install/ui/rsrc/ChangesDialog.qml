@@ -51,9 +51,13 @@ Dialog {
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-ok.svg"
                 text: i18nd("lliurex-access-control","Apply")
+                focus:true
                 font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
                 DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
+                Keys.onReturnPressed: dialogApplyBtn.clicked()
+                Keys.onEnterPressed: dialogApplyBtn.clicked()
+
             }
 
             Button {
@@ -61,9 +65,13 @@ Dialog {
                 display:AbstractButton.TextBesideIcon
                 icon.name:"delete.svg"
                 text: i18nd("lliurex-access-control","Discard")
+                focus:true
                 font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
                 DialogButtonBox.buttonRole: DialogButtonBox.DestructiveRole
+                Keys.onReturnPressed: dialogDiscardBtn.clicked()
+                Keys.onEnterPressed: dialogDiscardBtn.clicked()
+
 
             }
 
@@ -72,9 +80,13 @@ Dialog {
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-cancel.svg"
                 text: i18nd("lliurex-access-control","Cancel")
+                focus:true
                 font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
                 DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
+                Keys.onReturnPressed: dialogCancelBtn.clicked()
+                Keys.onEnterPressed: dialogCancelBtn.clicked()
+        
             }
 
             onApplied:{
