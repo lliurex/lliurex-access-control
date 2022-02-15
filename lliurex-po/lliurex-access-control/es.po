@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-15 17:18+0100\n"
-"PO-Revision-Date: 2022-02-15 17:18+0100\n"
+"PO-Revision-Date: 2022-02-15 18:12+0100\n"
 "Last-Translator: lliurex <lliurex@gva.es>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -103,7 +103,7 @@ msgstr "Marque para desbloquear el acceso a este grupo"
 
 #: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:45
 msgid "Check to lock access to this group"
-msgstr "Marque para bloquear el acceso a este groupo"
+msgstr "Marque para bloquear el acceso a este grupo"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:11
 msgid "Restrict access by user"
