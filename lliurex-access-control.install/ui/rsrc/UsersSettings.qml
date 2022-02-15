@@ -1,8 +1,8 @@
 import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.kirigami 2.6 as Kirigami
-import QtQuick 2.6
-import QtQuick.Controls 2.6
-import QtQuick.Layouts 1.12
+import org.kde.kirigami 2.16 as Kirigami
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 import QtQuick.Dialogs 1.3
 
 Rectangle{
@@ -81,11 +81,14 @@ Rectangle{
                    display:AbstractButton.IconOnly
                    icon.name:"dialog-ok.svg"
                    enabled:userEntry.text.trim().length>0?true:false
+                   focus:true
                    ToolTip.delay: 1000
                    ToolTip.timeout: 3000
                    ToolTip.visible: hovered
                    ToolTip.text:i18nd("lliurex-access-control","Click to add the user to list")
-                   onPressed:{
+                   Keys.onReturnPressed: applyUserBtn.clicked()
+                   Keys.onEnterPressed: applyUserBtn.clicked()
+                   onClicked:{
                         synchronizePopup.open()
                         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Validating data. Wait a moment...")
                         delay(500, function() {
@@ -105,10 +108,13 @@ Rectangle{
                    id:cancelUserBtn
                    display:AbstractButton.IconOnly
                    icon.name:"dialog-close.svg"
+                   focus:true
                    ToolTip.delay: 1000
                    ToolTip.timeout: 3000
                    ToolTip.visible: hovered
                    ToolTip.text:i18nd("lliurex-access-control","Click to close")
+                   Keys.onReturnPressed: cancelUserBtn.clicked()
+                   Keys.onEnterPressed: cancelUserBtn.clicked()
                    onClicked:{
                         entryRow.visible=false
                         userEntry.text=""
@@ -135,7 +141,8 @@ Rectangle{
                         text:i18nd("lliurex-access-control","Add user")
                         implicitWidth:120
                         enabled:userControlCb.checked && userEntry.text==""
-                        focusPolicy: Qt.NoFocus
+                        Keys.onReturnPressed: addUserBtn.clicked()
+                        Keys.onEnterPressed: addUserBtn.clicked()
                         onClicked:{
                             entryRow.visible=true
                             userEntry.forceActiveFocus()
@@ -147,6 +154,7 @@ Rectangle{
                         icon.name:"delete.svg"
                         text:i18nd("lliurex-access-control","Remove List")
                         implicitWidth:120
+                        focus:true
                         enabled:{
                             if ((userList.listCount>0)&&(userEntry.text=="")){
                                 true
@@ -154,6 +162,8 @@ Rectangle{
                                 false
                             }
                         }
+                        Keys.onReturnPressed: removeListBtn.clicked()
+                        Keys.onEnterPressed: removeListBtn.clicked()                    
                         onClicked:{
                            removeListDialog.open()
                         }
@@ -174,11 +184,14 @@ Rectangle{
         Button {
             id:applyBtn
             visible:true
+            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
             enabled:accessControlBridge.settingsUserChanged
+            Keys.onReturnPressed: applyBtn.clicked()
+            Keys.onEnterPressed: applyBtn.clicked()                    
             onClicked:{
                 applyChanges(),
                 accessControlBridge.applyUserChanges()
@@ -187,11 +200,14 @@ Rectangle{
         Button {
             id:cancelBtn
             visible:true
+            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
             enabled:accessControlBridge.settingsUserChanged
+            Keys.onReturnPressed: cancelBtn.clicked()
+            Keys.onEnterPressed: cancelBtn.clicked()                    
             onClicked:{
                 discardChanges(),
                 accessControlBridge.cancelUserChanges()
@@ -238,9 +254,13 @@ Rectangle{
                     display:AbstractButton.TextBesideIcon
                     icon.name:"dialog-ok.svg"
                     text: i18nd("lliurex-access-control","Accept")
+                    focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
                     DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
+                    Keys.onReturnPressed: adminDialogApplyBtn.clicked()
+                    Keys.onEnterPressed: adminDialogApplyBtn.clicked()                    
+
                 }
 
                 Button {
@@ -248,9 +268,13 @@ Rectangle{
                     display:AbstractButton.TextBesideIcon
                     icon.name:"dialog-cancel.svg"
                     text: i18nd("lliurex-access-control","Cancel")
+                    focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
                     DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
+                    Keys.onReturnPressed: adminDialogCancelBtn.clicked()
+                    Keys.onEnterPressed: adminDialogCancelBtn.clicked()                    
+       
                 }
 
                 onApplied:{
@@ -322,9 +346,13 @@ Rectangle{
                     display:AbstractButton.TextBesideIcon
                     icon.name:"dialog-ok.svg"
                     text: i18nd("lliurex-access-control","Accept")
+                    focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
                     DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
+                    Keys.onReturnPressed: removeListDialogApplyBtn.clicked()
+                    Keys.onEnterPressed: removeListDialogApplyBtn.clicked()                    
+
                 }
 
                 Button {
@@ -332,9 +360,13 @@ Rectangle{
                     display:AbstractButton.TextBesideIcon
                     icon.name:"dialog-cancel.svg"
                     text: i18nd("lliurex-access-control","Cancel")
+                    focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
                     DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
+                    Keys.onReturnPressed: removeListDialogCancelBtn.clicked()
+                    Keys.onEnterPressed: removeListDialogCancelBtn.clicked()                    
+
                 }
 
                 onApplied:{

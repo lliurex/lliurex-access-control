@@ -1,8 +1,8 @@
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.kirigami 2.6 as Kirigami
-import QtQuick 2.6
-import QtQuick.Controls 2.6
-import QtQuick.Layouts 1.12
+import org.kde.plasma.core 2.1 as PlasmaCore
+import org.kde.kirigami 2.16 as Kirigami
+import QtQuick 2.15
+import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 import QtQuick.Dialogs 1.3
 
 Rectangle{
@@ -20,7 +20,7 @@ Rectangle{
         rowSpacing:10
         Layout.fillWidth: true
         anchors.left:parent.left
-
+        enabled:true
         Kirigami.InlineMessage {
             id: messageLabel
             visible:accessControlBridge.showSettingsGroupMessage[0]
@@ -44,6 +44,8 @@ Rectangle{
                 checked:accessControlBridge.isAccessDenyGroupEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
+                Keys.onReturnPressed: groupControlCb.toggled()
+                Keys.onEnterPressed: groupControlCb.toggled()
                 onToggled:{
                    accessControlBridge.manageGroupAccessControl(checked)
                 }
@@ -80,11 +82,14 @@ Rectangle{
         Button {
             id:applyBtn
             visible:true
+            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
             enabled:accessControlBridge.settingsGroupChanged
+            Keys.onReturnPressed: applyBtn.clicked()
+            Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
                 applyChanges()
                 accessControlBridge.applyGroupChanges()
@@ -93,11 +98,14 @@ Rectangle{
         Button {
             id:cancelBtn
             visible:true
+            focus:true
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
             enabled:accessControlBridge.settingsGroupChanged
+            Keys.onReturnPressed: cancelBtn.clicked()
+            Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
                 discardChanges()
                 accessControlBridge.cancelGroupChanges()
