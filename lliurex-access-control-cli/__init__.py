@@ -46,9 +46,11 @@ class AccessControlCliManager(object):
 			print('   [Access-Control]: Current access control by user configuration')
 			print('      - Access control by user activated: %s'%(str(self.isAccessDenyUserEnabled)))
 			print('      - Users with restriced access:')
-			for item in self.usersInfo:
-				print('         - %s: locked access %s'%(item,str(self.usersInfo[item]["isLocked"])))
-
+			if len(self.usersInfo)>0:
+				for item in self.usersInfo:
+					print('         - %s: locked access %s'%(item,str(self.usersInfo[item]["isLocked"])))
+			else:
+				print('         - There is no user in users list')
 		return 0
 	
 	#def showCurrentConfig
