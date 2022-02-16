@@ -438,9 +438,8 @@ class LliurexAccessControl(QObject):
 			if self.isAccessDenyGroupEnabled!=LliurexAccessControl.n4dMan.isAccessDenyGroupEnabled:
 				self.settingsGroupChanged=True
 			else:
-				if self.groupsInfo==LliurexAccessControl.n4dMan.groupsInfo:
-					self.settingsGroupChanged=False
-
+				self.settingsGroupChanged=False
+					
 	#def manageGroupAccessControl
 
 	@Slot(bool)
@@ -453,8 +452,7 @@ class LliurexAccessControl(QObject):
 			if self.isAccessDenyUserEnabled!=LliurexAccessControl.n4dMan.isAccessDenyUserEnabled:
 				self.settingsUserChanged=True
 			else:
-				if self.usersInfo==LliurexAccessControl.n4dMan.usersInfo:
-					self.settingsUserChanged=False
+				self.settingsUserChanged=False
 
 	#def manageUserAccessControl
 	
@@ -471,8 +469,7 @@ class LliurexAccessControl(QObject):
 			if self.groupsInfo!=LliurexAccessControl.n4dMan.groupsInfo:
 				self.settingsGroupChanged=True
 			else:
-				if self.isAccessDenyGroupEnabled==LliurexAccessControl.n4dMan.isAccessDenyGroupEnabled:
-					self.settingsGroupChanged=False
+				self.settingsGroupChanged=False
 			
 		if not LliurexAccessControl.n4dMan.thereAreGroupsLocked(self.groupsInfo):
 			self.isAccessDenyGroupEnabled=False	 
@@ -492,12 +489,10 @@ class LliurexAccessControl(QObject):
 				if self.usersInfo!=LliurexAccessControl.n4dMan.usersInfo:
 					self.settingsUserChanged=True
 				else:
-					if self.isAccessDenyUserEnabled==LliurexAccessControl.n4dMan.isAccessDenyUserEnabled:
-						self.settingsUserChanged=False
+					self.settingsUserChanged=False
 			else:		
 				self.settingsUserChanged=True
 
-		
 		if not LliurexAccessControl.n4dMan.thereAreUsersLocked(self.usersInfo):
 			self.isAccessDenyUserEnabled=False
 		
