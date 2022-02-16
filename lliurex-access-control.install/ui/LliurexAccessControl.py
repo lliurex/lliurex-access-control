@@ -773,7 +773,7 @@ class LliurexAccessControl(QObject):
 	def openHelp(self):
 		lang=os.environ["LANG"]
 		
-		if 'valencia' in lang:
+		if 'valencia' in self.n4dMan.sessionLang:
 			self.help_cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Lliurex-Access-Control.'
 		else:
 			self.help_cmd='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Lliurex-Access-Control'
