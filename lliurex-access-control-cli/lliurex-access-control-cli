@@ -19,7 +19,7 @@ def usage():
 			puts("lockuser <USERNAME> <USENAME>...: Lock access to computer for the indicated usernames")
 			puts("unlockuser <USERNAME> <USERNAME>...: Unlock access to computer for the indicated usernames")
 			puts("disablecontroluser: Disable access control by user")
-			puts("removeuser <USERNAME> <USERNAME>...: Removed the indicated usernames from the user list")
+			puts("removeuserfromlist <USERNAME> <USERNAME>...: Removed the indicated usernames from the user list")
 			puts("removeuserlist: Remove the user list")
 
 		puts("Flags")
@@ -60,19 +60,19 @@ if __name__ == '__main__':
 	elif action=="lockgroup" or action=="unlockgroup":
 		if len(args)>0:
 			for item in args.all:
-				groupsSelected.append(item)
+				groupsSelected.append(item.lower())
 		else:
 			usage()
 	elif action=="lockuser" or action=="unlockuser":
 		if len(args)>0:
 			for item in args.all:
-				usersSelected.append(item)
+				usersSelected.append(item.lower())
 		else:
 			usage()
-	elif action=="removeuser":
+	elif action=="removeuserfromlist":
 		if len(args)>0:
 			for item in args.all:
-				usersSelected.append(item)
+				usersSelected.append(item.lower())
 		else:
 			usage()
 
@@ -92,8 +92,8 @@ if __name__ == '__main__':
 		sys.exit(ac.unlockUser(mode,usersSelected))
 	elif action=="disablecontroluser":
 		sys.exit(ac.disableControlUser(mode))
-	elif action=="removeuser":
-		sys.exit(ac.removeUser(mode,usersSelected))
+	elif action=="removeuserfromlist":
+		sys.exit(ac.removeUserFromList(mode,usersSelected))
 	elif action=="removeuserlist":
 		sys.exit(ac.removeUserList(mode))
 	else:

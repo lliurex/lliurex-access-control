@@ -164,13 +164,13 @@ class LliurexAccessControl(QObject):
 				self.gatherInfo.start()
 				self.gatherInfo.finished.connect(self._loadConfig)
 			else:
+				self.runningLogin=False
 				self.showLoginMessage=[True,LOGIN_FAILED]
 				self.currentStack=0
-				self.runningLogin=False
 		else:
+			self.runningLogin=False
 			self.showLoginMessage=[True,LOGIN_FAILED]
 			self.currentStack=0
-			self.runningLogin=False
 
 	#def _validate	
 	
@@ -508,9 +508,9 @@ class LliurexAccessControl(QObject):
 
 		self.showSettingsUserMessage=[False,"","Success"]
 		self.closePopUp=False
-		self.addNewUser=AddNewUser(userId)
+		self.userId=userId.lower()
+		self.addNewUser=AddNewUser(self.userId)
 		self.addNewUser.start()
-		self.userId=userId
 		self.addNewUser.finished.connect(self._checkNewUser)
 
 	#def addUser	
