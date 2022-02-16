@@ -1,0 +1,26 @@
+have lliurex-access-control-cli &&
+_lliurex-access-control-cli() 
+{
+    local cur prev opts base
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    #
+    #  The basic options we'll complete.
+    #
+    opts="currentconfig lockgroup unlockgroup disablecontrolgroup lockuser unlockuser disablecontroluser removeuserfromlist removeuserlist help"
+
+    case "${prev}" in 
+        currentconfig)
+            local running="groups users all"
+            COMPREPLY=( $(compgen -W "${running}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+           COMPREPLY=($(compgen -W "${opts}" -- ${cur}))  
+           return 0
+           ;;
+    esac
+}
+[ "$have" ] && complete -F _lliurex-access-control-cli lliurex-access-control-cli

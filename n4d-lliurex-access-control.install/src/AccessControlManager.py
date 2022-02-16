@@ -86,6 +86,7 @@ class AccessControlManager:
 		try:
 			if len(groupsInfo)>0:
 				for item in groupsInfo:
+					item=item.lower()
 					if groupsInfo[item]["isLocked"]:
 						denyGroups.append(item)
 
@@ -136,6 +137,7 @@ class AccessControlManager:
 
 		if len(usersList)>0:
 			for item in usersList:
+				item=item.lower()
 				usersInfo[item]={}
 				if item in denyUsers:
 					usersInfo[item]["isLocked"]=True
@@ -144,6 +146,7 @@ class AccessControlManager:
 
 		if len(denyUsers)>0:
 			for item in denyUsers:
+				item=item.lower()
 				if item not in usersList:
 					usersInfo[item]={}
 					usersInfo[item]["isLocked"]=True
@@ -189,11 +192,13 @@ class AccessControlManager:
 		try:
 			if len(usersInfo)>0:
 				for item in usersInfo:
+					item=item.lower()
 					usersList.append(item)
 					if usersInfo[item]["isLocked"]:
 						denyUsers.append(item)
 				with open(self.usersList,'w') as fd:
 					for item in usersList:
+						item=item.lower()
 						fd.write(item+"\n")
 				
 				if len(denyUsers)>0:
