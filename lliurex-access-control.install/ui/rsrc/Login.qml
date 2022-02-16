@@ -66,10 +66,10 @@ GridLayout {
                 loginLabel.text=i18nd("lliurex-access-control","Validating user...")
                 loginLabel.color="black"
                 loginGrid.enabled=false
-                delay(1000, function() {
+                delay(100, function() {
                     if (!accessControlBridge.runningLogin){
-                        loginGrid.enabled=true
                         loginLabel.text=""
+                        loginGrid.enabled=true
                         timer.stop();
                     }
                 })
