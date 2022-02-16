@@ -129,7 +129,7 @@ class AccessControlCliManager(object):
 
 	#def disableControlUser
 
-	def removeUser(self,mode,usersSelected):
+	def removeUserFromList(self,mode,usersSelected):
 
 		correctUsers=self._checkCorrectUsers(usersSelected)
 
@@ -367,17 +367,18 @@ class AccessControlCliManager(object):
 		adminUser=[]
 
 		for item in usersSelected:
-			try:
-				gid = pwd.getpwnam(item).pw_gid
-				groups_gid=os.getgrouplist(item,gid)
-				user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
-				for element in user_groups:
-					if element in adminGroups:
-						match+=1
-						adminUser.append(item)
-						break
-			except:
-				pass
+			if item not in self.usersInfo.keys():
+				try:
+					gid = pwd.getpwnam(item).pw_gid
+					groups_gid=os.getgrouplist(item,gid)
+					user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
+					for element in user_groups:
+						if element in adminGroups:
+							match+=1
+							adminUser.append(item)
+							break
+				except:
+					pass
 
 		if match>0:
 			return [True,adminUser]

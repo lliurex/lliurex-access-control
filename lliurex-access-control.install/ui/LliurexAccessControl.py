@@ -417,9 +417,9 @@ class LliurexAccessControl(QObject):
 
 		self.showSettingsUserMessage=[False,"","Success"]
 		self.closePopUp=False
-		self.addNewUser=AddNewUser(userId)
+		self.userId=userId.lower()
+		self.addNewUser=AddNewUser(self.userId)
 		self.addNewUser.start()
-		self.userId=userId
 		self.addNewUser.finished.connect(self._checkNewUser)
 
 	#def addUser	
