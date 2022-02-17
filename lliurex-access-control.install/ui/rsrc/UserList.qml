@@ -39,6 +39,7 @@ Rectangle {
             highlightMoveDuration: 0
             highlightResizeDuration: 0
             delegate: ListDelegateUserItem{
+                width:userTable.width
                 userId:model.userId
                 isLocked:model.isLocked
             }
