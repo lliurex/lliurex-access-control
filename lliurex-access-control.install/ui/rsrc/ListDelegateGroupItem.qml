@@ -24,7 +24,6 @@ Components.ListItem{
 
     Item{
         id: menuItem
-        width: 470
         height:visible?30:0
         CheckBox {
             id:groupCheck
