@@ -33,6 +33,7 @@ Rectangle {
         highlightMoveDuration: 0
         highlightResizeDuration: 0
         delegate: ListDelegateGroupItem{
+            width:groupTable.width
             groupId:model.groupId
             isLocked:model.isLocked
             description:model.description
