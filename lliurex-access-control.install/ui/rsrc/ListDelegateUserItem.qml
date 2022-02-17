@@ -23,7 +23,6 @@ Components.ListItem{
 
     Item{
         id: menuItem
-        width: 320
         height:visible?30:0
         CheckBox {
             id:userCheck
@@ -62,7 +61,6 @@ Components.ListItem{
             anchors.left:userName.right
             visible:listUserItem.ListView.isCurrentItem
             onClicked:{
-                console.log(index)
                 accessControlBridge.removeUser(index)
                 entryRow.visible=false
             }
