@@ -61,14 +61,18 @@ class AddNewUser(QThread):
 		QThread.__init__(self)
 
 		self.newUser=args[0]
-		self.ret=[]
+		self.retCurrentUser=False
+		self.retAdminUser=False
 
 	#def __init__
 
 	def run(self,*args):
 		
 		time.sleep(1)
-		self.ret=LliurexAccessControl.n4dMan.checkIfUserIsLocalAdmin(self.newUser)
+		self.retCurrentUser=LliurexAccessControl.n4dMan.checkIfUserIsCurrrentUser(self.newUser)
+
+		if not self.retCurrentUser:
+			self.retAdminUser=LliurexAccessControl.n4dMan.checkIfUserIsLocalAdmin(self.newUser)
 
 	#def run
 
@@ -77,6 +81,7 @@ class AddNewUser(QThread):
 class LliurexAccessControl(QObject):
 
 	USER_DUPLICATE_ERROR=-90
+	CURRENT_USER_ERROR=-100
 	n4dMan=N4dManager.N4dManager()
 
 	def __init__(self,ticket=None):
@@ -424,13 +429,18 @@ class LliurexAccessControl(QObject):
 		self.tmpNewUser=""
 
 		if self.userId not in self.usersInfo.keys():
-			isLocalAdmin=self.addNewUser.ret
-			if isLocalAdmin:
-				self.showLocalAdminDialog=True 
-				self.tmpNewUser=self.userId
+
+			if not self.addNewUser.retCurrentUser:
+				isLocalAdmin=self.addNewUser.retAdminUser
+				if isLocalAdmin:
+					self.showLocalAdminDialog=True 
+					self.tmpNewUser=self.userId
+				else:
+					self._usersModel.appendRow(self.userId,True)
+					self._updateUserList(self.userId,False)
 			else:
-				self._usersModel.appendRow(self.userId,True)
-				self._updateUserList(self.userId,False)
+				self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
+
 		else:
 			self.showSettingsUserMessage=[True,LliurexAccessControl.USER_DUPLICATE_ERROR,"Error"]
 		self.closePopUp=True

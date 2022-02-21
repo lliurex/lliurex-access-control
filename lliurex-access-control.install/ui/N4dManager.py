@@ -30,6 +30,7 @@ class N4dManager:
 	def setServer(self,ticket):
 		
 		ticket=ticket.replace('##U+0020##',' ')
+		self.currentUser=ticket.split(' ')[2]
 		tk=n4d.client.Ticket(ticket)
 		self.client=n4d.client.Client(ticket=tk)
 	
@@ -221,5 +222,17 @@ class N4dManager:
 		return isLocalAdmin
 
 	#def checkIfUserIsLocalAdmin
+
+	def checkIfUserIsCurrrentUser(self,user):
+
+		userListFilter=[self.currentUser,'root']
+		isCurrentUser=False
+		
+		if user in userListFilter:
+			isCurrentUser=True 
+
+		return isCurrentUser
+
+	#def checkIfUserIsCurrrentUser 
 
 #class N4dManager

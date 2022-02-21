@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import subprocess
 import n4d.client
 import sys
 import pwd
@@ -16,7 +17,10 @@ class AccessControlCliManager(object):
 		self.isAccessDenyGroupEnabled=False
 		self.usersInfo={}
 		self.isAccessDenyUserEnabled=False
+		self.usersFilter=['root']
+		self.currentUser=""
 		self.createClient()
+		self._getCurrentUser()
 
 	#def __init__
 
@@ -238,28 +242,33 @@ class AccessControlCliManager(object):
 				print('   [Access-Control]: The users indicates to %s their acces are not correct. See currentconfig users to get correct users'%action)
 				return 1
 			else:
-				adminInUsers=self._checkIfUserIsLocalAdmin(usersSelected)
-				if adminInUsers[0]:
-					if action=="lock":
-						if not mode:
-							adminUsers=""
-							countAdminUsers=len(adminInUsers[1])
-							count=1
-							for item in adminInUsers[1]:
-								if count<countAdminUsers:
-									adminUsers=adminUsers+item+', '
-								else:
-									adminUsers=adminUsers+item
-								count+=1
-							response=input('   [Access-Control]: The user(s) %s are local computer administrator. Do you want to continue? (yes/no)): '%adminUsers).lower()
-						else:
-							response='yes'
+				if self._checkIfUserIsCurrentUser(usersSelected) and action=="lock":
+					print('   [Access-Control]: It is not possible to lock the user with which you are configuring the access control')
+					return 0
 
-						if not response.startswith('y'):
-							print('   [Access-Control]: Action canceled')
-							return 0
 				else:
-					print('   [Access-Control]: The indicated users that are not in the list will be added')
+					adminInUsers=self._checkIfUserIsLocalAdmin(usersSelected)
+					if adminInUsers[0]:
+						if action=="lock":
+							if not mode:
+								adminUsers=""
+								countAdminUsers=len(adminInUsers[1])
+								count=1
+								for item in adminInUsers[1]:
+									if count<countAdminUsers:
+										adminUsers=adminUsers+item+', '
+									else:
+										adminUsers=adminUsers+item
+									count+=1
+								response=input('   [Access-Control]: The user(s) %s are local computer administrator. Do you want to continue? (yes/no)): '%adminUsers).lower()
+							else:
+								response='yes'
+
+							if not response.startswith('y'):
+								print('   [Access-Control]: Action canceled')
+								return 0
+					else:
+						print('   [Access-Control]: The indicated users that are not in the list will be added')
 
 		currentStatusChanged=self._checkCurrentConfiguration('users',usersSelected,action)
 		
@@ -386,6 +395,55 @@ class AccessControlCliManager(object):
 			return [False,adminUser]
 	
 	#def _checkIfUserIsLocalAdmin
+
+	def _getCurrentUser(self):
+
+		sudoUser=""
+		loginUser=""
+		pkexecUser=""
+
+		try:
+			sudoUser=(os.environ["SUDO_USER"])
+			if sudoUser not in self.usersFilter:
+				self.usersFilter.append(sudoUser)
+		except:
+			pass
+		try:
+			loginUser=os.getlogin()
+			if loginUser not in self.usersFilter:
+				self.usersFilter.append(loginUser)
+		except:
+			pass
+
+		try:
+			cmd="id -un $PKEXEC_UID"
+			p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+			pkexecUser=p.communicate()[0].decode().strip()
+			if pkexecUser not in self.usersFilter:
+				self.usersFilter.append(pkexecUser)
+		except Exception as e:
+			pass
+
+		if pkexecUser!="root" and pkexecUser!="":
+			self.currentUser=pkexecUser
+		elif sudoUser!="root" and sudoUser!="":
+			self.currentUser=sudoUser
+		else:
+			self.currentUser=loginUser
+
+
+	#def _getCurrentUser
+
+
+	def _checkIfUserIsCurrentUser(self,usersSelected):
+
+		for item in usersSelected:
+			if item in self.usersFilter:
+				return True
+
+		return False
+
+	#def _checkIfUserIsCurrentUser
 
 #class AccessControlCliManager	
 
