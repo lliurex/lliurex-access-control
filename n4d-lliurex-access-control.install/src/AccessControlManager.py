@@ -19,6 +19,8 @@ class AccessControlManager:
 
 		self.core=n4dcore.Core.get_core()
 		self.configPath="/etc/lliurex-access-control"
+		self.dataPath="/usr/share/lliurex-access-control-config/GroupsLists"
+		self.groupTemplatePath=os.path.join(self.dataPath,"defaultGroups.json")
 		self.groupDenyListPath=os.path.join(self.configPath,"login.group.deny")
 		self.defaultGroupsFile=os.path.join(self.configPath+"/groups-lists","defaultGroups.json")
 		self.userDenyListPath=os.path.join(self.configPath,"login.user.deny")
@@ -42,15 +44,17 @@ class AccessControlManager:
 		denyGroups=self._readDenyGroupsFile()
 		groupsInfo=self._readGroupsList()
 
-		for item in groupsInfo:
-			if item in denyGroups:
-				groupsInfo[item]["isLocked"]=True
-			else:
-				groupsInfo[item]["isLocked"]=False
+		
+		if len(denyGroups)>0:
+			for item in groupsInfo:
+				if item in denyGroups:
+					groupsInfo[item]["isLocked"]=True
+				else:
+					groupsInfo[item]["isLocked"]=False
 
 		return n4d.responses.build_successful_call_response(groupsInfo)
 
-	#def getDenyGroups 
+	#def getGroupsInfo 
 
 	def _readDenyGroupsFile(self):
 
@@ -64,21 +68,34 @@ class AccessControlManager:
 
 		return denyGroups
 
-	#def __readDenyGroupsFile
+	#def _readDenyGroupsFile
 
 	def _readGroupsList(self):
 
-		groupsInfo={}
+		with open(self.groupTemplatePath) as fd:
+			templateGroups=json.load(fd)
 
-		if os.path.exists(self.defaultGroupsFile):
-			f=open(self.defaultGroupsFile)
-			groupsInfo=json.load(f)
-			f.close()
+		for item in templateGroups:
+			templateGroups[item]["isLocked"]=False
 
-		return groupsInfo
+		if not os.path.exists(self.defaultGroupsFile):
+			self._writeDefaultGroupFile(templateGroups)
+			return templateGroups
 
-	#def __readGroupsList
+		else:
+			with open(self.defaultGroupsFile) as fd:
+				currentGroups=json.load(fd)
 
+			for item in templateGroups:
+				if item not in currentGroups.keys():
+					currentGroups[item]={}
+					currentGroups[item]=templateGroups[item]
+
+			self._writeDefaultGroupFile(currentGroups)
+
+			return currentGroups
+
+	#def _readGroupsList
 
 	def setGroupsInfo(self,groupsInfo):
 
@@ -89,6 +106,8 @@ class AccessControlManager:
 					item=item.lower()
 					if groupsInfo[item]["isLocked"]:
 						denyGroups.append(item)
+
+				self._writeDefaultGroupFile(groupsInfo)
 
 				if len(denyGroups)>0:
 					with open(self.groupDenyListPath,'w') as fd:
@@ -129,29 +148,28 @@ class AccessControlManager:
 	def getUsersInfo(self):
 
 		denyUsers=[]
-		usersList=[]
-		usersInfo={}
+		usersList={}
 
 		denyUsers=self._readDenyUsersFile()
 		usersList=self._readUsersList()
 
 		if len(usersList)>0:
-			for item in usersList:
-				item=item.lower()
-				usersInfo[item]={}
-				if item in denyUsers:
-					usersInfo[item]["isLocked"]=True
-				else:
-					usersInfo[item]["isLocked"]=False
+			if len(denyUsers)>0:
+				for item in usersList:
+					item=item.lower()
+					if item in denyUsers:
+						usersList[item]["isLocked"]=True
+					else:
+						usersList[item]["isLocked"]=False
 
 		if len(denyUsers)>0:
 			for item in denyUsers:
 				item=item.lower()
 				if item not in usersList:
-					usersInfo[item]={}
-					usersInfo[item]["isLocked"]=True
+					usersList[item]={}
+					usersList[item]["isLocked"]=True
 
-		return n4d.responses.build_successful_call_response(usersInfo)
+		return n4d.responses.build_successful_call_response(usersList)
 
 	#def getDenyUsers 
 
@@ -171,13 +189,11 @@ class AccessControlManager:
 
 	def _readUsersList(self):
 
-		usersList=[]
+		usersList={}
 
 		if os.path.exists(self.usersList):
 			with open(self.usersList,'r') as fd:
-				lines=fd.readlines()
-				for line in lines:
-					usersList.append(line.strip())
+				usersList=json.load(fd)
 
 		return usersList
 
@@ -186,20 +202,16 @@ class AccessControlManager:
 
 	def setUsersInfo(self,usersInfo):
 
-		usersList=[]
 		denyUsers=[]
 
 		try:
 			if len(usersInfo)>0:
 				for item in usersInfo:
 					item=item.lower()
-					usersList.append(item)
 					if usersInfo[item]["isLocked"]:
 						denyUsers.append(item)
 				with open(self.usersList,'w') as fd:
-					for item in usersList:
-						item=item.lower()
-						fd.write(item+"\n")
+					json.dump(usersInfo,fd)
 				
 				if len(denyUsers)>0:
 					with open(self.userDenyListPath,'w') as fd:
@@ -231,6 +243,14 @@ class AccessControlManager:
 			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_USER_ACCESS_CONTROL_ERROR)
 	
 	#def disableAccessDenyGroup
+
+	def _writeDefaultGroupFile(self,data):
+
+		with open(self.defaultGroupsFile,'w') as fd:
+			json.dump(data,fd)
+	
+	#def _writeDefaultGroupFile
+
 	
 #class AccessControlManager 
 
