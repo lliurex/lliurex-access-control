@@ -102,8 +102,10 @@ class N4dManager:
 
 		disableControl=False
 		updateGroupInfo=False
-		result=[]
+		result=["",""]
 
+		if groupsInfo != self.groupsInfo:
+			updateGroupInfo=True
 
 		if not groupAccessControl:
 			if groupAccessControl != self.isAccessDenyGroupEnabled:
@@ -112,24 +114,26 @@ class N4dManager:
 			if not self.thereAreGroupsLocked(groupsInfo):
 				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_GROUP]
 				return result
-			else:
-				if groupsInfo != self.groupsInfo:
-					updateGroupInfo=True
 
-		if disableControl:
+		
+		if updateGroupInfo:
+			try:
+				ret=self.client.AccessControlManager.setGroupsInfo(groupsInfo)		
+				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+				if disableControl:
+					ret=self.client.AccessControlManager.disableAccessDenyGroup()
+					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+
+			except n4d.client.CallFailedError as e:
+				result=[False,e.code]
+
+
+		if disableControl and not updateGroupInfo:
 			try:
 				ret=self.client.AccessControlManager.disableAccessDenyGroup()
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			except n4d.client.CallFailedError as e:
 				result=[False,e.code]
-
-		else:
-			if updateGroupInfo:
-				try:
-					ret=self.client.AccessControlManager.setGroupsInfo(groupsInfo)		
-					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-				except n4d.client.CallFailedError as e:
-					result=[False,e.code]
 
 		if result[0]:
 			self.loadGroupConfig()
