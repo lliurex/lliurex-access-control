@@ -16,9 +16,11 @@ def usage():
 			puts("lockgroup <GROUP> <GROUP>...: Lock access to computer for the indicated groups")
 			puts("unlockgroup <GROUP> <GROUP>...: Unlock access to computer for the indicated groups")
 			puts("disablecontrolgroup: Disable access control by group")
+			puts("enablecontrolgroup: Activate access control by groups if there is a previous configuration with locked groups")
 			puts("lockuser <USERNAME> <USENAME>...: Lock access to computer for the indicated usernames")
 			puts("unlockuser <USERNAME> <USERNAME>...: Unlock access to computer for the indicated usernames")
 			puts("disablecontroluser: Disable access control by user")
+			puts("enablecontroluser: Activate access control by users if there is a previous configuration with locked users")
 			puts("removeuserfromlist <USERNAME> <USERNAME>...: Removed the indicated usernames from the user list")
 			puts("removeuserlist: Remove the user list")
 
@@ -86,12 +88,16 @@ if __name__ == '__main__':
 		sys.exit(ac.unlockGroup(mode,groupsSelected))
 	elif action=="disablecontrolgroup":
 		sys.exit(ac.disableControlGroup(mode))
+	elif action=="enablecontrolgroup":
+		sys.exit(ac.enableControlGroup(mode))
 	elif action=="lockuser":
 		sys.exit(ac.lockUser(mode,usersSelected))
 	elif action=="unlockuser":
 		sys.exit(ac.unlockUser(mode,usersSelected))
 	elif action=="disablecontroluser":
 		sys.exit(ac.disableControlUser(mode))
+	elif action=="enablecontroluser":
+		sys.exit(ac.enableControlUser(mode))
 	elif action=="removeuserfromlist":
 		sys.exit(ac.removeUserFromList(mode,usersSelected))
 	elif action=="removeuserlist":

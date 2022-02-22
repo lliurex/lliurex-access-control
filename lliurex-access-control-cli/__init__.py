@@ -96,6 +96,36 @@ class AccessControlCliManager(object):
 
 	#def disableControlGroup
 
+	def enableControlGroup(self,mode):
+
+		if not self.isAccessDenyGroupEnabled:
+			if self._checkIfExistsLock("groups"):
+				if not mode:
+					response=input('   [Access-Control]: Do you want to enable group access control? (yes/no)): ').lower()
+				else:
+					response='yes'
+
+				if response.startswith('y'):
+					try:
+						ret=self.n4dClient.AccessControlManager.setGroupsInfo(self.groupsInfo)
+						print('   [Access-Control]: Action completed successfull')
+						return 0
+					except n4d.client.CallFailedError as e:
+						print('   [Acess-Control]: Error. Unable to activate group access control')
+						return 1
+				else:
+					print('   [Access-Control]: Action canceled')
+					return 0
+
+			else:
+				print('   [Acess-Control]: There is no group with locked access. Is not possible to activate access control by group')
+				return 0
+		else:
+			print('   [Acess-Control]: Access control by groups already enable. Nothing to do ')
+			return 0
+									
+	#def enableControlGroup
+
 	def lockUser(self,mode,usersSelected):
 		
 		return self._changeUserStatus(mode,usersSelected,'lock')
@@ -132,6 +162,36 @@ class AccessControlCliManager(object):
 			return 0
 
 	#def disableControlUser
+
+	def enableControlUser(self,mode):
+
+		if not self.isAccessDenyUserEnabled:
+			if self._checkIfExistsLock("users"):
+				if not mode:
+					response=input('   [Access-Control]: Do you want to enable user access control? (yes/no)): ').lower()
+				else:
+					response='yes'
+
+				if response.startswith('y'):
+					try:
+						ret=self.n4dClient.AccessControlManager.setUsersInfo(self.usersInfo)
+						print('   [Access-Control]: Action completed successfull')
+						return 0
+					except n4d.client.CallFailedError as e:
+						print('   [Acess-Control]: Error. Unable to activate user access control')
+						return 1
+				else:
+					print('   [Access-Control]: Action canceled')
+					return 0
+
+			else:
+				print('   [Acess-Control]: There is no users with locked access. Is not possible to activate access control by user')
+				return 0
+		else:
+			print('   [Acess-Control]: Access control by users already enable. Nothing to do ')
+			return 0
+
+	#def enableControlUser
 
 	def removeUserFromList(self,mode,usersSelected):
 
@@ -446,6 +506,24 @@ class AccessControlCliManager(object):
 		return False
 
 	#def _checkIfUserIsCurrentUser
+
+	def _checkIfExistsLock(self,option):
+
+
+		if option=="groups":
+			data=self.groupsInfo
+		else:
+			data=self.usersInfo
+
+		for item in data:
+			if data[item]["isLocked"]:
+				return True
+
+		return False
+
+	#def _checkIfExistsLock	
+
+
 
 #class AccessControlCliManager	
 
