@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm script for n4d-lliurex-control-access
+# postrm script for lliurex-control-access-config
 #
 # see: dh_installdeb(1)
 
@@ -21,6 +21,7 @@ set -e
 
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        pam-auth-update --force --package lliurex-access-control-config || true
     ;;
 
 

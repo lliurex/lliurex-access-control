@@ -11,7 +11,7 @@ Vcs-Git: https://github.com/lliurex/lliurex-control-access
 Package: lliurex-access-control
 Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, n4d-lliurex-access-control, python3, n4d-qt-agent, python3-n4d-client, python3-pyside2.qtqml, python3-pyside2.qtquick, python3-pyside2.qtgui, python3-pyside2.qtwidgets, python3-pyside2.qtquickwidgets
-Recomends:lliurex-access-control-cli
+Recommends:lliurex-access-control-cli
 Description: App to manage access control to computer
  This package provides a gui to manage access control to computer
 
@@ -21,8 +21,14 @@ Depends: ${shlibs:Depends},n4d-lliurex-access-control, python3, python3-n4d-clie
 Description: CLI to manage access control to computer
  This package provides a cli to manage access control to computer
 
+Package: lliurex-access-control-config
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: App to manage access control to computer
+ This package provides the config to lliurex-access-control tools
+
 Package: n4d-lliurex-access-control
 Architecture: amd64
-Depends: ${shlibs:Depends}, ${misc:Depends},n4d
+Depends: ${shlibs:Depends}, ${misc:Depends},n4d,lliurex-access-control-config
 Description: Plugin to manage control access in computer
  This package provides a n4d-plugin to manage control access in computer

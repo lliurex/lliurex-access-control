@@ -1,0 +1,4 @@
+lliurex-access-control-config.install/pam/* /usr/share/pam-configs/
+lliurex-access-control-config.install/data/* /usr/share/lliurex-access-control-config/GroupsLists
+lliurex-access-control-config.install/logrotate.d/* /etc/logrotate.d/
+lliurex-access-control-config.install/rsyslog.d/* /etc/rsyslog.d/

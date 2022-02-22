@@ -1,4 +1,2 @@
-n4d-lliurex-access-control.install/pam/* /usr/share/pam-configs/
 n4d-lliurex-access-control.install/config/AccessControlManager.json /etc/n4d/conf.d/
-n4d-lliurex-access-control.install/config/defaultGroups.json /etc/lliurex-access-control/groups-lists/
 n4d-lliurex-access-control.install/src/* /usr/share/n4d/python-plugins/
