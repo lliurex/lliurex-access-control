@@ -89,7 +89,7 @@ class AccessControlCliManager(object):
 					ret=self.n4dClient.AccessControlManager.disableAccessDenyGroup()
 					self.writeLog("- Disable access control by group: Change apply successful")
 					print('   [Access-Control]: Action completed successfull')
-					self._getInfo("End")
+					self._getGroupInfo("End")
 					return 0
 				except n4d.client.CallFailedError as e:
 					self.writeLog("- Error applying changes: %s"%e.code)
@@ -120,7 +120,7 @@ class AccessControlCliManager(object):
 						ret=self.n4dClient.AccessControlManager.setGroupsInfo(self.groupsInfo)
 						self.writeLog("- Enable access control by group: Change apply successful")
 						print('   [Access-Control]: Action completed successfull')
-						self._getInfo("End")
+						self._getGroupInfo("End")
 						return 0
 					except n4d.client.CallFailedError as e:
 						self.writeLog("- Error applying changes: %s"%e.code)
@@ -166,7 +166,7 @@ class AccessControlCliManager(object):
 					ret=self.n4dClient.AccessControlManager.disableAccessDenyUser()
 					self.writeLog("- Disable access control by user: Change apply successful")
 					print('   [Access-Control]: Action completed successfull')
-					self._getInfo("End")
+					self._getUserInfo("End")
 					return 0
 				except n4d.client.CallFailedError as e:
 					self.writeLog("- Error applying changes: %s"%e.code)
@@ -197,7 +197,7 @@ class AccessControlCliManager(object):
 						ret=self.n4dClient.AccessControlManager.setUsersInfo(self.usersInfo)
 						self.writeLog("- Enable access control by user: Change apply successful")
 						print('   [Access-Control]: Action completed successfull')
-						self._getInfo("End")
+						self._getUserInfo("End")
 						return 0
 					except n4d.client.CallFailedError as e:
 						self.writeLog("- Error applying changes: %s"%e.code)
@@ -233,7 +233,7 @@ class AccessControlCliManager(object):
 					ret=self._applyUserChanges(usersSelected,"remove")
 					self.writeLog("- New users with locked access: Changes apply successful")
 					print('   [Access-Control]: Action completed successfull')
-					self._getInfo("End")
+					self._getUserInfo("End")
 					return 0
 				except CallFailedError as e:
 					self.writeLog("- Error applying changes: %s"%e.code)
@@ -262,7 +262,7 @@ class AccessControlCliManager(object):
 				try:
 					ret=self.n4dClient.AccessControlManager.setUsersInfo(self.usersInfo)
 					print('   [Access-Control]: Action completed successfull')
-					self._getInfo("End")
+					self._getUserInfo("End")
 					return 0
 				except n4d.client.CallFailedError as e:
 					self.writeLog("Error removing user list: %s"%(str(e)))
@@ -277,7 +277,14 @@ class AccessControlCliManager(object):
 
 	#def removeUserList
 
-	def _getInfo(self,step="Initial"):
+	def _getInfo(self):
+
+		self._getGroupInfo()
+		self._getUserInfo()
+
+	#def _getInfo
+
+	def _getGroupInfo(self,step="Initial"):
 
 		self.writeLog("Access Control by Group. %s configuration:"%step)
 		self.isAccessDenyGroupEnabled=self.n4dClient.AccessControlManager.isAccessDenyGroupEnabled()
@@ -286,6 +293,10 @@ class AccessControlCliManager(object):
 		self.writeLog("- Groups with restricted access: ")
 		for item in self.groupsInfo:
 			self.writeLog("  - %s: locked access %s"%(item,str(self.groupsInfo[item]["isLocked"])))
+
+	#def _getGroupInfo
+
+	def _getUserInfo(self,step="Initial"):
 
 		self.writeLog("Access Control by User. %s configuration:"%step)
 		self.isAccessDenyUserEnabled=self.n4dClient.AccessControlManager.isAccessDenyUserEnabled()
@@ -298,7 +309,7 @@ class AccessControlCliManager(object):
 		else:
 			self.writeLog("  - There is no user list")
 	
-	#def _getInfo
+	#def _getUserInfo
 
 	def _changeGroupStatus(self,groupsSelected,action):
 
@@ -319,7 +330,7 @@ class AccessControlCliManager(object):
 						ret=self._applyGroupChanges(groupsSelected,action)
 						self.writeLog("- New groups with locked access: Changes apply successful")
 						print('   [Access-Control]: Action completed successfull')
-						self._getInfo("End")
+						self._getGroupInfo("End")
 						return 0
 					except n4d.client.CallFailedError as e:
 						self.writeLog("- Error applying changes: %s"%e.code)
@@ -402,7 +413,7 @@ class AccessControlCliManager(object):
 					ret=self._applyUserChanges(usersSelected,action)
 					self.writeLog("- New users with locked access: Changes apply successful")
 					print('   [Access-Control]: Action completed successfull')
-					self._getInfo("End")
+					self._getUserInfo("End")
 					return 0
 				except n4d.client.CallFailedError as e:
 					self.writeLog("- Error applying changes: %s"%e.code)
