@@ -348,12 +348,6 @@ class AccessControlCliManager(object):
 
 	def _applyUserChanges(self,usersSelected,action):
 
-		if action=="lock":
-			for item in usersSelected:
-				if item not in self.usersInfo.keys():
-					self.usersInfo[item]={}
-					self.usersInfo[item]["isLocked"]=True
-
 		if action!="remove":
 			for item in self.usersInfo:
 				if item in usersSelected:
@@ -361,9 +355,16 @@ class AccessControlCliManager(object):
 						self.usersInfo[item]["isLocked"]=True
 					elif action=="unlock":
 						self.usersInfo[item]["isLocked"]=False
+			if action=="lock":
+				for item in usersSelected:
+					if item not in self.usersInfo.keys():
+						self.usersInfo[item]={}
+						self.usersInfo[item]["isLocked"]=True
+	
 		else:
 			for item in usersSelected:
-				del self.usersInfo[item]
+				if item in self.usersInfo.keys():
+					del self.usersInfo[item]
 
 		return self.n4dClient.AccessControlManager.setUsersInfo(self.usersInfo)
 
