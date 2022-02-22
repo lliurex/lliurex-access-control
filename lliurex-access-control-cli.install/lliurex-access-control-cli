@@ -9,7 +9,7 @@ _lliurex-access-control-cli()
     #
     #  The basic options we'll complete.
     #
-    opts="currentconfig lockgroup unlockgroup disablecontrolgroup lockuser unlockuser disablecontroluser removeuserfromlist removeuserlist help"
+    opts="currentconfig lockgroup unlockgroup disablecontrolgroup enablecontrolgroup lockuser unlockuser disablecontroluser enablecontroluser removeuserfromlist removeuserlist help"
 
     case "${prev}" in 
         currentconfig)
