@@ -404,14 +404,10 @@ class AccessControlCliManager(object):
 
 		try:
 			sudoUser=(os.environ["SUDO_USER"])
-			if sudoUser not in self.usersFilter:
-				self.usersFilter.append(sudoUser)
 		except:
 			pass
 		try:
 			loginUser=os.getlogin()
-			if loginUser not in self.usersFilter:
-				self.usersFilter.append(loginUser)
 		except:
 			pass
 
@@ -419,18 +415,23 @@ class AccessControlCliManager(object):
 			cmd="id -un $PKEXEC_UID"
 			p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
 			pkexecUser=p.communicate()[0].decode().strip()
-			if pkexecUser not in self.usersFilter:
-				self.usersFilter.append(pkexecUser)
 		except Exception as e:
 			pass
 
 		if pkexecUser!="root" and pkexecUser!="":
 			self.currentUser=pkexecUser
+			if pkexecUser not in self.usersFilter:
+				self.usersFilter.append(pkexecUser)
+
 		elif sudoUser!="root" and sudoUser!="":
 			self.currentUser=sudoUser
+			if sudoUser not in self.usersFilter:
+				self.usersFilter.append(sudoUser)
+		
 		else:
 			self.currentUser=loginUser
-
+			if loginUser not in self.usersFilter:
+				self.usersFilter.append(loginUser)
 
 	#def _getCurrentUser
 
