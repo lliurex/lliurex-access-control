@@ -453,6 +453,7 @@ class LliurexAccessControl(QObject):
 		self.showLocalAdminDialog=False
 
 		if action=="Accept":
+			LliurexAccessControl.n4dMan.writeLog("Action: Added admin user to user list: %s"%self.tmpNewUser)
 			self._usersModel.appendRow(self.tmpNewUser,True)
 			self._updateUserList(self.tmpNewUser,False)
 
@@ -482,6 +483,9 @@ class LliurexAccessControl(QObject):
 				self.settingsUserChanged=True 
 			else:
 				self.settingsUserChanged=False
+
+		if self.settingsUserChanged:
+			LliurexAccessControl.n4dMan.writeLog("Action: Removed user list")
 
 	#def removeUserList
 
@@ -713,6 +717,7 @@ class LliurexAccessControl(QObject):
 			self.showUserChangesDialog=True
 		else:
 			self.closeGui=True
+			LliurexAccessControl.n4dMan.writeLog("Close Session")
 
 	#def closeApplication
 	
