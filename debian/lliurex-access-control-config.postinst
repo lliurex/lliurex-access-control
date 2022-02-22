@@ -1,5 +1,5 @@
 #!/bin/sh
-# postinst script for n4d-lliurex-access-control
+# postinst script for lliurex-access-control-config
 #
 # see: dh_installdeb(1)
 
@@ -20,7 +20,8 @@ set -e
 
 case "$1" in
     configure)
-        n4d-modules enable-plugin /etc/n4d/conf.d/AccessControlManager || true
+        pam-auth-update --force --package lliurex-access-control-config || true
+        
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
