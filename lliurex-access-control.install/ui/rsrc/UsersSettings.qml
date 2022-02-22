@@ -418,6 +418,10 @@ Rectangle{
                 break;
             case -90:
                 msg=i18nd("lliurex-access-control","The user already exists in the list");
+                break;
+            case -100:
+                msg=i18nd("lliurex-access-control","It is not possible to lock the user with which you are configuring the access control");
+                break;
 		break;
             default:
                 break;
@@ -435,6 +439,9 @@ Rectangle{
                 return Kirigami.MessageType.Positive
             case "Error":
                 return Kirigami.MessageType.Error
+            case "Warning":
+                return Kirigami.MessageType.Warning
+
         }
 
     } 

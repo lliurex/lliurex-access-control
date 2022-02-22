@@ -5,6 +5,8 @@ import ssl
 import os
 import subprocess
 import shutil
+import sys
+import syslog
 import json
 import codecs
 import pwd
@@ -99,6 +101,10 @@ class N4dManager:
 			
 		if userValidated:
 			self.validation=(user,password)
+			self.currentUser=user
+			self.writeLog("Init session in lliurex-access-control GUI")
+			self.writeLog("User login in GUI: %s"%self.currentUser)
+
 
 		return userValidated
 
@@ -111,18 +117,31 @@ class N4dManager:
 
 	#def loadConfig
 
-	def loadGroupConfig(self):
+	def loadGroupConfig(self,step="Initial"):
 
+		self.writeLog("Access Control by Group. %s configuration:"%step)
 		self.isAccessDenyGroupEnabled=self.client.isAccessDenyGroupEnabled(self.validation,"AccessControlManager")['status']
+		self.writeLog("- Access control by group activated: %s"%(str(self.isAccessDenyGroupEnabled)))
 		self.groupsInfo=self.client.getGroupsInfo(self.validation,"AccessControlManager")['data']
+		self.writeLog("- Groups with restricted access: ")
+		for item in self.groupsInfo:
+			self.writeLog("  - %s: locked access %s"%(item,str(self.groupsInfo[item]["isLocked"])))
 		self.getGroupsConfig()
 		
 	#def loadGroupConfig()
 
-	def loadUserConfig(self):
+	def loadUserConfig(self,step="Initial"):
 		
+		self.writeLog("Access Control by User. %s configuration:"%step)
 		self.isAccessDenyUserEnabled=self.client.isAccessDenyUserEnabled(self.validation,"AccessControlManager")['status']
+		self.writeLog("- Access Control by User activated: %s"%(str(self.isAccessDenyUserEnabled)))
 		self.usersInfo=self.client.getUsersInfo(self.validation,"AccessControlManager")["data"]
+		if len(self.usersInfo)>0:
+			for item in self.usersInfo:
+				self.writeLog("  - %s: locked access %s"%(item,str(self.usersInfo[item]["isLocked"])))
+		else:
+			self.writeLog("  - There is no user list")
+
 		self.getUsersConfig()
 
 	#def loadUserConfig
@@ -169,8 +188,12 @@ class N4dManager:
 
 		disableControl=False
 		updateGroupInfo=False
-		result=[]
+		enableControl=False
+		result=["",""]
 
+
+		if groupsInfo != self.groupsInfo:
+			updateGroupInfo=True
 
 		if not groupAccessControl:
 			if groupAccessControl != self.isAccessDenyGroupEnabled:
@@ -180,26 +203,54 @@ class N4dManager:
 				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_GROUP]
 				return result
 			else:
-				if groupsInfo != self.groupsInfo:
-					updateGroupInfo=True
+				if not updateGroupInfo:
+					enableControl=True
 
-		if disableControl:
-			ret=self.client.disableAccessDenyGroup(self.validation,"AccessControlManager")
+
+		self.writeLog("Changes in configuration of access control by Group:")		
+		if updateGroupInfo:
+			self.writeLog("- Try to change group list")
+			ret=self.client.setGroupsInfo(self.validation,"AccessControlManager",groupsInfo)		
 			if ret['status']:
+				self.writeLog("- New groups with locked access: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+				if disableControl:
+					self.writeLog("- Try to disable access control by group")
+					ret=self.client.disableAccessDenyGroup(self.validation,"AccessControlManager")
+					if ret['status']:
+						self.writeLog("- Disable access control by group: Change apply successful")
+						result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+					else:
+						self.writeLog("- Error applying changes: %s"%ret['msg'])
+						result=[False,ret['msg']]
 			else:
+				self.writeLog("- Error applying changes: %s"%ret['msg'])
 				result=[False,ret['msg']]
 
-		else:
-			if updateGroupInfo:
-				ret=self.client.setGroupsInfo(self.validation,"AccessControlManager",groupsInfo)		
-				if ret['status']:
-					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-				else:
-					result=[False,ret['msg']]
+
+		if disableControl and not updateGroupInfo:
+			self.writeLog("- Try to disable access control by group")
+			ret=self.client.disableAccessDenyGroup(self.validation,"AccessControlManager")
+			if ret['status']:
+				self.writeLog("- Disable access control by group: Change apply successful")
+				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+			else:
+				self.writeLog("- Error applying changes: %s"%ret['msg'])
+				result=[False,ret['msg']]
+
+		
+		if enableControl:
+			self.writeLog("- Try to enable access control by group")
+			ret=self.client.setGroupsInfo(self.validation,"AccessControlManager",groupsInfo)		
+			if ret['status']:
+				self.writeLog("- Enable access control by group: Changes apply successful")
+				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+			else:
+				self.writeLog("- Error applying changes: %s"%ret['msg'])
+				result=[False,ret['msg']]
 
 		if result[0]:
-			self.loadGroupConfig()
+			self.loadGroupConfig("End")
 		return result
 
 	#def applyGroupChanges
@@ -207,43 +258,67 @@ class N4dManager:
 	def applyUsersChanges(self,userAccessControl,usersInfo):
 
 		disableControl=False
+		enableControl=False
 		updateUsersInfo=False
 		result=[]
 
 		if usersInfo!=self.usersInfo:
 			updateUsersInfo=True
 
-		if userAccessControl != self.isAccessDenyUserEnabled:
-			if userAccessControl and not self.thereAreUsersLocked(usersInfo):
+		if not userAccessControl:
+			if userAccessControl != self.isAccessDenyUserEnabled:
+				disableControl=True
+		else:
+			if not self.thereAreUsersLocked(usersInfo):
 				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_USER]
 				return result
 			else:
-				if not userAccessControl:
-					disableControl=True
+				if not updateUsersInfo:
+					enableControl=True
 	
+		self.writeLog("Changes in configuration of access control by User:")		
+
 		if updateUsersInfo:
+			self.writeLog("- Try to change user list")
 			ret=self.client.setUsersInfo(self.validation,"AccessControlManager",usersInfo)
 			if ret['status']:
+				self.writeLog("- New users with locked access: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 				if disableControl:
+					self.writeLog("- Try to disable access control by user")
 					ret=self.client.disableAccessDenyUser(self.validation,"AccessControlManager")
-					if ret['status']:		
+					if ret['status']:
+						self.writeLog("- Disable access control by user: Change apply successful")
 						result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-					else:		
+					else:
+						self.writeLog("- Error applying changes: %s"%ret['msg'])
 						result=[False,ret['msg']]
 			else:
+				self.writeLog("- Error applying changes: %s"%ret['msg'])
 				result=[False,ret['msg']]
 
 		if disableControl and not updateUsersInfo:
-	
+			self.writeLog("- Try to disable access control by user")
 			ret=self.client.disableAccessDenyUser(self.validation,"AccessControlManager")		
 			if ret['status']:
+				self.writeLog("- Disable access control by user: Change apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			else:
+				self.writeLog("- Error applying changes: %s"%ret['msg'])
+				result=[False,ret['msg']]
+
+		if enableControl:
+			self.writeLog("- Try to enable access control by user")
+			ret=self.client.setUsersInfo(self.validation,"AccessControlManager",usersInfo)
+			if ret['status']:
+				self.writeLog("- Enable access control by user: Change apply successful")
+				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+			else:
+				self.writeLog("- Error applying changes: %s"%ret['msg'])
 				result=[False,ret['msg']]
 
 		if result[0]:
-			self.loadUserConfig()
+			self.loadUserConfig("End")
 		return result
 
 	#def applyUsersChanges
@@ -293,5 +368,24 @@ class N4dManager:
 		return isLocalAdmin
 
 	#def checkIfUserIsLocalAdmin
+
+	def checkIfUserIsCurrrentUser(self,user):
+
+		userListFilter=[self.currentUser,'root']
+		isCurrentUser=False
+		
+		if user in userListFilter:
+			isCurrentUser=True 
+
+		return isCurrentUser
+
+	#def checkIfUserIsCurrrentUser 
+
+	def writeLog(self,msg):
+
+		syslog.openlog("ACCESS-CONTROL")
+		syslog.syslog(msg)
+
+	#def writeLog
 
 #class N4dManager
