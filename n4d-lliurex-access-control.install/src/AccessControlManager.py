@@ -24,7 +24,7 @@ class AccessControlManager:
 		self.groupDenyListPath=os.path.join(self.configPath,"login.group.deny")
 		self.defaultGroupsFile=os.path.join(self.configPath+"/groups-lists","defaultGroups.json")
 		self.userDenyListPath=os.path.join(self.configPath,"login.user.deny")
-		self.usersList=os.path.join(self.configPath+"/users-lists","usersList")
+		self.usersList=os.path.join(self.configPath+"/users-lists","usersList.json")
 	
 	#def __init__
 
