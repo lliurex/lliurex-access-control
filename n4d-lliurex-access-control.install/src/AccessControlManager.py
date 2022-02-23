@@ -39,10 +39,10 @@ class AccessControlManager:
 
 	#def isAccessDenyGroupEnabled
 
-	def getGroupsInfo(self):
+	def getGroupsInfo(self,initLoad=True):
 
 		denyGroups=self._readDenyGroupsFile()
-		groupsInfo=self._readGroupsList()
+		groupsInfo=self._readGroupsList(initLoad)
 
 		
 		if len(denyGroups)>0:
@@ -70,30 +70,44 @@ class AccessControlManager:
 
 	#def _readDenyGroupsFile
 
-	def _readGroupsList(self):
+	def _readGroupsList(self,initLoad):
 
-		with open(self.groupTemplatePath) as fd:
-			templateGroups=json.load(fd)
+		templateGroups={}
+		currentGroups={}
+		
+		if initLoad:
 
-		for item in templateGroups:
-			templateGroups[item]["isLocked"]=False
-
-		if not os.path.exists(self.defaultGroupsFile):
-			self._writeDefaultGroupFile(templateGroups)
-			return templateGroups
-
-		else:
-			with open(self.defaultGroupsFile) as fd:
-				currentGroups=json.load(fd)
+			with open(self.groupTemplatePath) as fd:
+				templateGroups=json.load(fd)
 
 			for item in templateGroups:
-				if item not in currentGroups.keys():
-					currentGroups[item]={}
-					currentGroups[item]=templateGroups[item]
+				templateGroups[item]["isLocked"]=False
 
-			self._writeDefaultGroupFile(currentGroups)
+			if not os.path.exists(self.defaultGroupsFile):
+				self._writeDefaultGroupFile(templateGroups)
+				return templateGroups
 
-			return currentGroups
+			else:
+				with open(self.defaultGroupsFile) as fd:
+					currentGroups=json.load(fd)
+
+				if templateGroups.keys()!=currentGroups.keys():
+					match=0
+					for item in templateGroups:
+						if item not in currentGroups.keys():
+							match+=1
+							currentGroups[item]={}
+							currentGroups[item]=templateGroups[item]
+
+					if match>0:
+						self._writeDefaultGroupFile(currentGroups)
+
+		else:
+			if os.path.exists(self.defaultGroupsFile):
+				with open(self.defaultGroupsFile) as fd:
+					currentGroups=json.load(fd)
+		
+		return currentGroups
 
 	#def _readGroupsList
 

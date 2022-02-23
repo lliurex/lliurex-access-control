@@ -53,7 +53,11 @@ class N4dManager:
 		self.writeLog("Access Control by Group. %s configuration:"%step)
 		self.isAccessDenyGroupEnabled=self.client.AccessControlManager.isAccessDenyGroupEnabled()
 		self.writeLog("- Access control by group activated: %s"%(str(self.isAccessDenyGroupEnabled)))
-		self.groupsInfo=self.client.AccessControlManager.getGroupsInfo()
+		if step=="Initial":
+			initLoad=True 
+		else:
+			initLoad=False
+		self.groupsInfo=self.client.AccessControlManager.getGroupsInfo(initLoad)
 		self.writeLog("- Groups with restricted access: ")
 		for item in self.groupsInfo:
 			self.writeLog("  - %s: locked access %s"%(item,str(self.groupsInfo[item]["isLocked"])))

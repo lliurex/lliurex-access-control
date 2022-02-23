@@ -289,7 +289,11 @@ class AccessControlCliManager(object):
 		self.writeLog("Access Control by Group. %s configuration:"%step)
 		self.isAccessDenyGroupEnabled=self.n4dClient.AccessControlManager.isAccessDenyGroupEnabled()
 		self.writeLog("- Access control by group activated: %s"%(str(self.isAccessDenyGroupEnabled)))
-		self.groupsInfo=self.n4dClient.AccessControlManager.getGroupsInfo()
+		if step=="Initial":
+			initLoad=True 
+		else:
+			initLoad=False
+		self.groupsInfo=self.n4dClient.AccessControlManager.getGroupsInfo(initLoad)
 		self.writeLog("- Groups with restricted access: ")
 		for item in self.groupsInfo:
 			self.writeLog("  - %s: locked access %s"%(item,str(self.groupsInfo[item]["isLocked"])))
@@ -569,7 +573,7 @@ class AccessControlCliManager(object):
 
 		self.writeLog("Init session in lliurex-access-control CLI")
 		self.writeLog("User login in CLI: %s"%self.currentUser)
-		self.writeLog("Unattended Mode:%s"%(str(self.unattendedMode)))
+		self.writeLog("Unattended Mode: %s"%(str(self.unattendedMode)))
 
 	#def _getCurrentUser
 
