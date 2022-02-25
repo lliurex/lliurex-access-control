@@ -33,7 +33,7 @@ class AccessControlCliManager(object):
 	def createClient(self):
 
 		if self.currentUser!="":
-			password=getpass.getpass('   [Access-Control]: Entry your password:')
+			password=getpass.getpass('   [Access-Control]: Enter your password:')
 			client=n4d.client.Client("https://localhost:9779",self.currentUser,password)
 			
 			try:
