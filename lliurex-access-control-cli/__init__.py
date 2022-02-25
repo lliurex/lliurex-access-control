@@ -7,6 +7,7 @@ import sys
 import syslog
 import pwd
 import grp
+import getpass
 import signal
 signal.signal(signal.SIGINT,signal.SIG_IGN)
 
@@ -21,6 +22,7 @@ class AccessControlCliManager(object):
 		self.usersFilter=['root']
 		self.currentUser=""
 		self.unattendedMode=mode
+		self.credential=""
 		self.createClient('localhost')
 
 	#def __init__
@@ -28,31 +30,49 @@ class AccessControlCliManager(object):
 
 	def createClient(self,server):
 
-		self.credentials=self.getLocalCredential()
-
-		if self.credentials!=None:
-			context=ssl._create_unverified_context()	
-			self.n4dClient=xmlrpc.client.ServerProxy("https://%s:9779"%server,allow_none=True,context=context)
-			self._getCurrentUser()
-			self._getInfo()
-		else:
-			print('   [Access-Control]: You need root privilege to run this tool')
-			sys.exit(1)
+		context=ssl._create_unverified_context()	
+		self.n4dClient=xmlrpc.client.ServerProxy("https://%s:9779"%server,allow_none=True,context=context)
+		self._getCurrentUser()
+		self._getInfo()
 
 	#def createClient
 
-	def getLocalCredential(self):
+	def getCredential(self):
 
-		try:
-			with open('/etc/n4d/key','r') as fd:
-				key=fd.readline().strip()
-				return key
-		except:
-			return None
+		if self.currentUser!="":
+			password=getpass.getpass('   [Access-Control]: Enter your password:')
+			validationError=False
 
-	#def getLocalCredential
+			try:
+				ret=self.n4dClient.validate_user(self.currentUser,password)
+				if ret[0]:
+					self.credential=[self.currentUser,password]
+				else:
+					validationError=True
+
+			except Exception as e:
+				validationError=True
+
+			if validationError:
+				msg="Authentication failed. Unable to execute action"
+				self.writeLog(msg)
+				print("   [Access-Control]: %s"%msg)
+				sys.exit(1)
+		else:
+			try:
+				with open('/etc/n4d/key','r') as fd:
+					key=fd.readline().strip()
+					self.credential=key
+			except:
+				print('   [Access-Control]: You need root privilege to run this tool')
+				sys.exit(1)
+
+	#def getCredential
 
 	def showCurrentConfig(self,optionInfo):
+
+		self.writeLog("- Action: get information about %s"%optionInfo)
+		self.getCredential()
 
 		if optionInfo=="all" or optionInfo=="groups":
 			print('   [Access-Control]: Current access control by group configuration')
@@ -96,8 +116,9 @@ class AccessControlCliManager(object):
 
 			if response.startswith('y'):
 				self.writeLog("Changes in configuration of access control by Group:")		
-				self.writeLog("- Try to disable access control by group")
-				ret=self.n4dClient.disableAccessDenyGroup(self.credentials,"AccessControlManager")
+				self.writeLog("- Action: disable access control by group")
+				self.getCredential()
+				ret=self.n4dClient.disableAccessDenyGroup(self.credential,"AccessControlManager")
 				if ret["status"]:
 					self.writeLog("- Disable access control by group: Change apply successful")
 					print('   [Access-Control]: Action completed successfull')
@@ -105,7 +126,7 @@ class AccessControlCliManager(object):
 					return 0
 				else:
 					self.writeLog("- Error applying changes: %s"%e.code)
-					print('   [Acess-Control]: Error. Unable to disable group access control')
+					print('   [Access-Control]: Error. Unable to disable group access control')
 					return 1			
 			else:
 				print('   [Access-Control]: Action canceled')
@@ -127,8 +148,9 @@ class AccessControlCliManager(object):
 
 				if response.startswith('y'):
 					self.writeLog("Changes in configuration of access control by Group:")		
-					self.writeLog("- Try to enable access control by group")
-					ret=self.n4dClient.setGroupsInfo(self.credentials,'AccessControlManager',self.groupsInfo)
+					self.writeLog("- Action: enable access control by group")
+					self.getCredential()
+					ret=self.n4dClient.setGroupsInfo(self.credential,'AccessControlManager',self.groupsInfo)
 					if ret['status']:
 						self.writeLog("- Enable access control by group: Change apply successful")
 						print('   [Access-Control]: Action completed successfull')
@@ -136,17 +158,17 @@ class AccessControlCliManager(object):
 						return 0
 					else:
 						self.writeLog("- Error applying changes: %s"%ret['msg'])
-						print('   [Acess-Control]: Error. Unable to activate group access control')
+						print('   [Access-Control]: Error. Unable to activate group access control')
 						return 1
 				else:
 					print('   [Access-Control]: Action canceled')
 					return 0
 
 			else:
-				print('   [Acess-Control]: There is no group with locked access. Is not possible to activate access control by group')
+				print('   [Access-Control]: There is no group with locked access. Is not possible to activate access control by group')
 				return 0
 		else:
-			print('   [Acess-Control]: Access control by groups already enable. Nothing to do ')
+			print('   [Access-Control]: Access control by groups already enable. Nothing to do ')
 			return 0
 									
 	#def enableControlGroup
@@ -175,8 +197,9 @@ class AccessControlCliManager(object):
 
 			if response.startswith('y'):
 				self.writeLog("Changes in configuration of access control by User:")		
-				self.writeLog("- Try to disable access control by user")
-				ret=self.n4dClient.disableAccessDenyUser(self.credentials,"AccessControlManager")
+				self.writeLog("- Action: disable access control by user")
+				self.getCredential()
+				ret=self.n4dClient.disableAccessDenyUser(self.credential,"AccessControlManager")
 				if ret["status"]:
 					self.writeLog("- Disable access control by user: Change apply successful")
 					print('   [Access-Control]: Action completed successfull')
@@ -184,7 +207,7 @@ class AccessControlCliManager(object):
 					return 0
 				else:
 					self.writeLog("- Error applying changes: %s"%ret['msg'])
-					print('   [Acess-Control]: Error. Unable to disable user access control')
+					print('   [Access-Control]: Error. Unable to disable user access control')
 					return 1			
 			else:
 				print('   [Access-Control]: Action canceled')
@@ -206,8 +229,9 @@ class AccessControlCliManager(object):
 
 				if response.startswith('y'):
 					self.writeLog("Changes in configuration of access control by User:")		
-					self.writeLog("- Try to enable access control by user")
-					ret=self.n4dClient.setUsersInfo(self.credentials,'AccessControlManager',self.usersInfo)
+					self.writeLog("- Action: enable access control by user")
+					self.getCredential()
+					ret=self.n4dClient.setUsersInfo(self.credential,'AccessControlManager',self.usersInfo)
 					if ret['status']:
 						self.writeLog("- Enable access control by user: Change apply successful")
 						print('   [Access-Control]: Action completed successfull')
@@ -215,17 +239,17 @@ class AccessControlCliManager(object):
 						return 0
 					else:
 						self.writeLog("- Error applying changes: %s"%ret['msg'])
-						print('   [Acess-Control]: Error. Unable to activate user access control')
+						print('   [Access-Control]: Error. Unable to activate user access control')
 						return 1
 				else:
 					print('   [Access-Control]: Action canceled')
 					return 0
 
 			else:
-				print('   [Acess-Control]: There is no users with locked access. Is not possible to activate access control by user')
+				print('   [Access-Control]: There is no users with locked access. Is not possible to activate access control by user')
 				return 0
 		else:
-			print('   [Acess-Control]: Access control by users already enable. Nothing to do ')
+			print('   [Access-Control]: Access control by users already enable. Nothing to do ')
 			return 0
 
 	#def enableControlUser
@@ -242,7 +266,8 @@ class AccessControlCliManager(object):
 		
 			if response.startswith('y'):
 				self.writeLog("Changes in configuration of access control by User:")		
-				self.writeLog("- Try to change user list")
+				self.writeLog("- Action: remove user from list")
+				self.getCredential()
 				ret=self._applyUserChanges(usersSelected,"remove")
 				if ret['status']:
 					self.writeLog("- New users with locked access: Changes apply successful")
@@ -272,15 +297,16 @@ class AccessControlCliManager(object):
 
 			if response.startswith('y'):
 				self.writeLog("Action: Removed user list")
+				self.getCredential()
 				self.usersInfo={}
-				ret=self.n4dClient.setUsersInfo(self.credentials,"AccessControlManager",self.usersInfo)
+				ret=self.n4dClient.setUsersInfo(self.credential,"AccessControlManager",self.usersInfo)
 				if ret["status"]:
 					print('   [Access-Control]: Action completed successfull')
 					self._getUserInfo("End")
 					return 0
 				else:
 					self.writeLog("Error removing user list: %s"%ret["msg"])
-					print('   [Acess-Control]: Unable to delete users list')
+					print('   [Access-Control]: Unable to delete users list')
 					return 1
 			else:
 				print('   [Access-Control]: Action canceled')
@@ -343,7 +369,8 @@ class AccessControlCliManager(object):
 				
 				if response.startswith('y'):
 					self.writeLog("Changes in configuration of access control by Group:")		
-					self.writeLog("- Try to change group list")
+					self.writeLog("- Action: change group list %s"%action)
+					self.getCredential()
 					ret=self._applyGroupChanges(groupsSelected,action)
 					if ret["status"]:
 						self.writeLog("- New groups with locked access: Changes apply successful")
@@ -352,7 +379,7 @@ class AccessControlCliManager(object):
 						return 0
 					else:
 						self.writeLog("- Error applying changes: %s"%ret["msg"])
-						print('   [Acess-Control]: Unable to %s access to the indicated groups'%action)
+						print('   [Access-Control]: Unable to %s access to the indicated groups'%action)
 						return 1			
 				else:
 					print('   [Access-Control]: Action canceled')
@@ -426,7 +453,8 @@ class AccessControlCliManager(object):
 				
 			if response.startswith('y'):
 				self.writeLog("Changes in configuration of access control by User:")		
-				self.writeLog("- Try to change user list")
+				self.writeLog("- Action: change user list %s"%action)
+				self.getCredential()
 				ret=self._applyUserChanges(usersSelected,action)
 				if ret["status"]:
 					self.writeLog("- New users with locked access: Changes apply successful")
@@ -435,7 +463,7 @@ class AccessControlCliManager(object):
 					return 0
 				else:
 					self.writeLog("- Error applying changes: %s"%ret["msg"])
-					print('   [Acess-Control]: Unable to %s access to the indicated users'%action)
+					print('   [Access-Control]: Unable to %s access to the indicated users'%action)
 					return 1			
 			else:
 				print('   [Access-Control]: Action canceled')
@@ -493,7 +521,7 @@ class AccessControlCliManager(object):
 					self.groupsInfo[item]["isLocked"]=False
 
 
-		return self.n4dClient.setGroupsInfo(self.credentials,"AccessControlManager",self.groupsInfo)
+		return self.n4dClient.setGroupsInfo(self.credential,"AccessControlManager",self.groupsInfo)
 
 	#def _applyGroupChanges	
 
@@ -517,7 +545,7 @@ class AccessControlCliManager(object):
 				if item in self.usersInfo.keys():
 					del self.usersInfo[item]
 		
-		return self.n4dClient.setUsersInfo(self.credentials,"AccessControlManager",self.usersInfo)
+		return self.n4dClient.setUsersInfo(self.credential,"AccessControlManager",self.usersInfo)
 
 	#def _applyUserChanges	
 
@@ -586,7 +614,11 @@ class AccessControlCliManager(object):
 				self.usersFilter.append(loginUser)
 
 		self.writeLog("Init session in lliurex-access-control CLI")
-		self.writeLog("User login in CLI: %s"%self.currentUser)
+		if self.currentUser!="":
+			self.writeLog("User login in CLI: %s"%self.currentUser)
+		else:
+			self.writeLog("User login in CLI: No current user detected. A script may have been executed at login")
+		
 		self.writeLog("Unattended Mode: %s"%(str(self.unattendedMode)))
 
 	#def _getCurrentUser
