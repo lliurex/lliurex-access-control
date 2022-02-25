@@ -145,12 +145,12 @@ class N4dManager:
 		self.writeLog("Changes in configuration of access control by Group:")		
 		if updateGroupInfo:
 			try:
-				self.writeLog("- Try to change group list")
+				self.writeLog("- Action: change group list")
 				ret=self.client.AccessControlManager.setGroupsInfo(groupsInfo)		
 				self.writeLog("- New groups with locked access: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 				if disableControl:
-					self.writeLog("- Try to disable access control by group")
+					self.writeLog("- Action: disable access control by group")
 					ret=self.client.AccessControlManager.disableAccessDenyGroup()
 					self.writeLog("- Disable access control by group: Change apply successful")
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
@@ -162,7 +162,7 @@ class N4dManager:
 
 		if disableControl and not updateGroupInfo:
 			try:
-				self.writeLog("- Try to disable access control by group")
+				self.writeLog("- Action: disable access control by group")
 				ret=self.client.AccessControlManager.disableAccessDenyGroup()
 				self.writeLog("- Disable access control by group: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
@@ -172,7 +172,7 @@ class N4dManager:
 
 		if enableControl:
 			try:
-				self.writeLog("- Try to enable access control by group")
+				self.writeLog("- Action: enable access control by group")
 				ret=self.client.AccessControlManager.setGroupsInfo(groupsInfo)		
 				self.writeLog("- Enable access control by group: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
@@ -211,12 +211,12 @@ class N4dManager:
 
 		if updateUsersInfo:
 			try:
-				self.writeLog("- Try to change user list")
+				self.writeLog("- Action: change user list")
 				ret=self.client.AccessControlManager.setUsersInfo(usersInfo)
 				self.writeLog("- New users with locked access: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 				if disableControl:
-					self.writeLog("- Try to disable access control by user")
+					self.writeLog("- Action: disable access control by user")
 					ret=self.client.AccessControlManager.disableAccessDenyUser()
 					self.writeLog("- Disable access control by user: Change apply successful")
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
@@ -226,7 +226,7 @@ class N4dManager:
 
 		if disableControl and not updateUsersInfo:
 			try:
-				self.writeLog("- Try to disable access control by user")
+				self.writeLog("- Action: disable access control by user")
 				ret=self.client.AccessControlManager.disableAccessDenyUser()
 				self.writeLog("- Disable access control by user: Change apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
@@ -236,7 +236,7 @@ class N4dManager:
 
 		if enableControl:
 			try:
-				self.writeLog("- Try to enable access control by user")
+				self.writeLog("- Action: enable access control by user")
 				ret=self.client.AccessControlManager.setUsersInfo(usersInfo)
 				self.writeLog("- Enable access control by user: Change apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
