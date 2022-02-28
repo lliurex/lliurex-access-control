@@ -327,13 +327,13 @@ class AccessControlCliManager(object):
 	def _getGroupInfo(self,step="Initial"):
 
 		self.writeLog("Access Control by Group. %s configuration:"%step)
-		self.isAccessDenyGroupEnabled=self.n4dClient.isAccessDenyGroupEnabled(self.credentials,"AccessControlManager")["status"]
+		self.isAccessDenyGroupEnabled=self.n4dClient.isAccessDenyGroupEnabled(self.credential,"AccessControlManager")["status"]
 		self.writeLog("- Access control by group activated: %s"%(str(self.isAccessDenyGroupEnabled)))
 		if step=="Initial":
 			initLoad=True 
 		else:
 			initLoad=False
-		self.groupsInfo=self.n4dClient.getGroupsInfo(self.credentials,"AccessControlManager",initLoad)["data"]
+		self.groupsInfo=self.n4dClient.getGroupsInfo(self.credential,"AccessControlManager",initLoad)["data"]
 		self.writeLog("- Groups with restricted access: ")
 		for item in self.groupsInfo:
 			self.writeLog("  - %s: locked access %s"%(item,str(self.groupsInfo[item]["isLocked"])))
@@ -343,9 +343,9 @@ class AccessControlCliManager(object):
 	def _getUserInfo(self,step="Initial"):
 
 		self.writeLog("Access Control by User. %s configuration:"%step)
-		self.isAccessDenyUserEnabled=self.n4dClient.isAccessDenyUserEnabled(self.credentials,"AccessControlManager")["status"]
+		self.isAccessDenyUserEnabled=self.n4dClient.isAccessDenyUserEnabled(self.credential,"AccessControlManager")["status"]
 		self.writeLog("- Access Control by User activated: %s"%(str(self.isAccessDenyUserEnabled)))
-		self.usersInfo=self.n4dClient.getUsersInfo(self.credentials,"AccessControlManager")["data"]
+		self.usersInfo=self.n4dClient.getUsersInfo(self.credential,"AccessControlManager")["data"]
 		self.writeLog("- Users with restricted access: ")
 		if len(self.usersInfo)>0:
 				for item in self.usersInfo:
