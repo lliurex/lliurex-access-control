@@ -17,6 +17,11 @@ _lliurex-access-control-cli()
             COMPREPLY=( $(compgen -W "${running}" -- ${cur}) )
             return 0
             ;;
+        lockgroup | unlockgroup)
+            local groups="students teachers"
+            COMPREPLY=( $(compgen -W "${groups}" -- ${cur}) )
+            return 0
+            ;;
         *)
            COMPREPLY=($(compgen -W "${opts}" -- ${cur}))  
            return 0
