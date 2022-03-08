@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-15 17:53+0100\n"
+"POT-Creation-Date: 2022-03-08 17:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,20 +104,20 @@ msgid "There are no groups selected to lock their access"
 msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:187
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:444
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:451
 msgid "Apply changes. Wait a moment..."
 msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:198
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:455
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:462
 msgid "Restoring previous values. Wait a moment..."
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:43
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:42
 msgid "Check to unlock access to this group"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:45
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:44
 msgid "Check to lock access to this group"
 msgstr ""
 
@@ -188,15 +188,21 @@ msgstr ""
 msgid "The user already exists in the list"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:42
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:423
+msgid ""
+"It is not possible to lock the user with which you are configuring the "
+"access control"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:41
 msgid "Check to unlock access to this user"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:44
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:43
 msgid "Check to lock access to this user"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:72
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:70
 msgid "Clic to remove this user from the list"
 msgstr ""
 
