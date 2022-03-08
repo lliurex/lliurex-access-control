@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-15 17:53+0100\n"
-"PO-Revision-Date: 2022-02-15 18:02+0100\n"
+"POT-Creation-Date: 2022-03-08 17:28+0100\n"
+"PO-Revision-Date: 2022-03-08 17:29+0100\n"
 "Last-Translator: lliurex <lliurex@gva.es>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -108,20 +108,20 @@ msgid "There are no groups selected to lock their access"
 msgstr "No hay ningún grupo seleccionado para bloquear su acceso"
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:187
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:444
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:451
 msgid "Apply changes. Wait a moment..."
 msgstr "Aplicando cambios. Espere un momento..."
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:198
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:455
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:462
 msgid "Restoring previous values. Wait a moment..."
 msgstr "Restaurando valores previos. Espere un momento..."
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:43
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:42
 msgid "Check to unlock access to this group"
 msgstr "Marque para desbloquear el acceso a este grupo"
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:45
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateGroupItem.qml:44
 msgid "Check to lock access to this group"
 msgstr "Marque para bloquear el acceso a este grupo"
 
@@ -194,15 +194,23 @@ msgstr "No hay ningún usuario seleccionado para bloquear su acceso"
 msgid "The user already exists in the list"
 msgstr "El usuario ya existe en la lista"
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:42
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:423
+msgid ""
+"It is not possible to lock the user with which you are configuring the "
+"access control"
+msgstr ""
+"No es posible bloquear el usuario con el que se está configurando el "
+"control de acceso"
+
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:41
 msgid "Check to unlock access to this user"
 msgstr "Marque para desbloquear el acceso a este usuario"
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:44
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:43
 msgid "Check to lock access to this user"
 msgstr "Marque para bloquear el acceso a este usuario"
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:72
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:70
 msgid "Clic to remove this user from the list"
 msgstr "Haga clic para eliminar este usuario de la lista"
 
