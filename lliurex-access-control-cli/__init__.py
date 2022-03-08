@@ -22,6 +22,8 @@ class AccessControlCliManager(object):
 		self.usersFilter=['root']
 		self.currentUser=""
 		self.unattendedMode=mode
+		self.groupsUnLockedCount=0
+		self.usersUnLockedCount=0
 		self.n4dClient=n4d.client.Client()
 		self._getCurrentUser()
 		self._getInfo()
@@ -242,6 +244,8 @@ class AccessControlCliManager(object):
 		correctUsers=self._checkCorrectUsers(usersSelected)
 
 		if correctUsers:
+			if (len(usersSelected)==len(self.usersInfo)) and self.isAccessDenyUserEnabled:
+				print('   [Access-Control]: This action will be disable access control by user')
 			if not self.unattendedMode:
 				response=input('   [Access-Control]: Do you want to delete indicated users from users list? (yes/no)): ').lower()
 			else:
@@ -273,6 +277,8 @@ class AccessControlCliManager(object):
 	def removeUserList(self):
 
 		if len(self.usersInfo)>0:
+			if self.isAccessDenyUserEnabled:
+				print('   [Access-Control]: This action will be disable access control by user')
 			if not self.unattendedMode:
 				response=input('   [Access-Control]: Do you want to delete users list? (yes/no)): ').lower()
 			else:
@@ -345,6 +351,11 @@ class AccessControlCliManager(object):
 		if correctGroups:
 			currentStatusChanged=self._checkCurrentConfiguration('groups',groupsSelected,action)
 			if currentStatusChanged:
+				if action=="lock" and not self.isAccessDenyGroupEnabled:
+					print('   [Access-Control]: This action will be activate access control by group')
+				elif action=="unlock" and (self.groupsUnLockedCount==len(self.groupsInfo)) and self.isAccessDenyGroupEnabled:
+					print('   [Access-Control]: This action will be disable access control by group')
+				
 				if not self.unattendedMode:
 					response=input('   [Access-Control]: Do you want to %s access to the indicated groups? (yes/no)): '%action).lower()
 				else:
@@ -429,6 +440,11 @@ class AccessControlCliManager(object):
 		currentStatusChanged=self._checkCurrentConfiguration('users',usersSelected,action)
 		
 		if currentStatusChanged:
+			if action=="lock" and not self.isAccessDenyUserEnabled:
+				print('   [Access-Control]: This action will be activate access control by user')
+			elif action=="unlock" and (self.usersUnLockedCount==len(self.usersInfo)) and self.isAccessDenyUserEnabled:
+				print('   [Access-Control]: This action will be disable access control by user')
+				
 			if not self.unattendedMode:
 				response=input('   [Access-Control]: Do you want to %s access to the indicated users? (yes/no)): '%action).lower()
 			else:
@@ -470,6 +486,8 @@ class AccessControlCliManager(object):
 	def _checkCurrentConfiguration(self,option,newValues,action):
 
 		match=0
+		self.groupsUnLockedCount=0
+		self.usersUnLockedCount=0
 
 		if action=="lock":
 			newStatus=True
@@ -480,13 +498,30 @@ class AccessControlCliManager(object):
 			if option=="groups":
 				if self.groupsInfo[item]["isLocked"]!=newStatus:
 					match+=1
+					if not newStatus:
+						self.groupsUnLockedCount+=1
+
 			elif option=="users":
 				try:
 					if self.usersInfo[item]["isLocked"]!=newStatus:
 						match+=1
+						if not newStatus:
+							self.usersUnLockedCount+=1
 				except:
 					match+=1
 					pass
+		
+
+		if not newStatus:
+			if option=="groups":
+				for item in self.groupsInfo:
+					if self.groupsInfo[item]["isLocked"]==newStatus:
+						self.groupsUnLockedCount+=1
+			elif option=="users":
+				for item in self.usersInfo:
+					if self.usersInfo[item]["isLocked"]==newStatus:
+						self.usersUnLockedCount+=1
+
 		if match>0:
 			return True
 		else:
