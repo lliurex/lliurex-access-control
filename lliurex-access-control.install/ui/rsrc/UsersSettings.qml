@@ -26,8 +26,8 @@ Rectangle{
             visible:accessControlBridge.showSettingsUserMessage[0]
             text:getMessageText(accessControlBridge.showSettingsUserMessage[1])
             type:getMessageType(accessControlBridge.showSettingsUserMessage[2])
-            Layout.minimumWidth:470
-            Layout.maximumWidth:470
+            Layout.minimumWidth:490
+            Layout.maximumWidth:490
             Layout.topMargin: 40
         }
 
@@ -71,7 +71,7 @@ Rectangle{
                 TextField{
                     id:userEntry
                     placeholderText:i18nd("lliurex-access-control","Username")
-                    implicitWidth:265
+                    implicitWidth:263
                     font.pointSize:10
                     focus:true
 
@@ -139,7 +139,7 @@ Rectangle{
                         display:AbstractButton.TextBesideIcon
                         icon.name:"contact-new.svg"
                         text:i18nd("lliurex-access-control","Add user")
-                        implicitWidth:120
+                        implicitWidth:140
                         enabled:userControlCb.checked && userEntry.text==""
                         Keys.onReturnPressed: addUserBtn.clicked()
                         Keys.onEnterPressed: addUserBtn.clicked()
@@ -153,7 +153,7 @@ Rectangle{
                         display:AbstractButton.TextBesideIcon
                         icon.name:"delete.svg"
                         text:i18nd("lliurex-access-control","Remove List")
-                        implicitWidth:120
+                        implicitWidth:140
                         focus:true
                         enabled:{
                             if ((userList.listCount>0)&&(userEntry.text=="")){
