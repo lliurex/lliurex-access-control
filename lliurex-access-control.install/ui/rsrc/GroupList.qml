@@ -12,7 +12,7 @@ Rectangle {
 
     id:groupTable
     visible: true
-    width: 470; height: 125
+    width: 490; height: 125
     color:"white"
     border.color: "#d3d3d3"
 

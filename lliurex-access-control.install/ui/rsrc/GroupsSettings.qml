@@ -26,8 +26,8 @@ Rectangle{
             visible:accessControlBridge.showSettingsGroupMessage[0]
             text:getMessageText(accessControlBridge.showSettingsGroupMessage[1])
             type:getMessageType(accessControlBridge.showSettingsGroupMessage[2])
-            Layout.minimumWidth:470
-            Layout.maximumWidth:470
+            Layout.minimumWidth:490
+            Layout.maximumWidth:490
             Layout.topMargin: 40
         }
 
