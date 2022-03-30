@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-03-08 14:50+0100\n"
-"PO-Revision-Date: 2022-03-08 15:27+0100\n"
+"PO-Revision-Date: 2022-03-30 15:32+0200\n"
 "Last-Translator: d33475574v <gimenez_angcam@gva.es>\n"
 "Language-Team: Spanish <https://weblate.gva.es/projects/lliurex/lliurex-"
 "access-control/es/>\n"
@@ -108,23 +108,23 @@ msgstr "Marqueu per a bloquejar l'accés a aquest grup"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:11
 msgid "Restrict access by user"
-msgstr "Restringir accés per persona usuària"
+msgstr "Restringir accés per usuari"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:43
 msgid "Activated access control by user on this computer"
-msgstr "Activar el control d’accés per persones usuàries en aquest equip"
+msgstr "Activar el control d’accés per usuari en aquest equip"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:60
 msgid "Users with restricted access:"
-msgstr "Usuaris/àries amb l'accés restringit:"
+msgstr "Usuaris amb l'accés restringit:"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:73
 msgid "Username"
-msgstr "Nom d’usuari/ària"
+msgstr "Nom d’usuari"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:88
 msgid "Click to add the user to list"
-msgstr "Feu clic per a afegir l’usuari/ària a la llista"
+msgstr "Feu clic per a afegir l’usuari a la llista"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:93
 msgid "Validating data. Wait a moment..."
@@ -136,7 +136,7 @@ msgstr "Feu clic per a tancar"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:141
 msgid "Add user"
-msgstr "Afegir usuari/ària"
+msgstr "Afegir usuari"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:155
 msgid "Remove List"
@@ -147,7 +147,7 @@ msgid ""
 "The user you want to add is a local administrator of the computer.\n"
 "Do you wish to continue?"
 msgstr ""
-"L’usuari/ària que voleu afegir és administrador/a local de l’equip.\n"
+"L’usuari que voleu afegir és administrador/a local de l’equip.\n"
 "Voleu continuar?"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:256
@@ -157,31 +157,30 @@ msgstr "Accepta"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:330
 msgid "The user list is going to be delete.Do you wish to continue?"
-msgstr "La llista de persones usuàries s’eliminarà. Voleu continuar?"
+msgstr "La llista de usuaris s’eliminarà. Voleu continuar?"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:411
 msgid "It is not possible to deactive access control by user"
-msgstr "No es pot desactivar el control d’accés per persona usuària"
+msgstr "No es pot desactivar el control d’accés per usuari"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:414
 msgid "Unable to update the user list"
-msgstr ""
-"No es pot actualitzar la llista de persones usuàries amb accés restringit"
+msgstr "No es pot actualitzar la llista de usuaris amb accés restringit"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:417
 msgid "There are no users selected to lock their access"
-msgstr "No hi ha cap persona usuària seleccionada per a bloquejar el seu accés"
+msgstr "No hi ha cap usuari seleccionat per a bloquejar el seu accés"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:420
 msgid "The user already exists in the list"
-msgstr "L’usuari/ària ja existeix en la llista"
+msgstr "L’usuari ja existeix en la llista"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:423
 msgid ""
 "It is not possible to lock the user with which you are configuring the "
 "access control"
 msgstr ""
-".No és pot bloquejar l'usuari/ària amb el qual s'està configurant el control "
+".No és pot bloquejar l'usuari amb el qual s'està configurant el control "
 "d'accés"
 
 #: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:41
@@ -190,11 +189,11 @@ msgstr "Marqueu per a desbloquejar l’accés a aquest usuari/ària"
 
 #: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:43
 msgid "Check to lock access to this user"
-msgstr "Marqueu per a bloquejar l’accés a aquesta persona usuària"
+msgstr "Marqueu per a bloquejar l’accés a aquest usuari"
 
 #: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:70
 msgid "Clic to remove this user from the list"
-msgstr "Feu clic per a eliminar aquesta persona usuària de la llista"
+msgstr "Feu clic per a eliminar aquest usuari de la llista"
 
 #: ../lliurex-access-control.install/ui/rsrc/Loading.qml:39
 msgid "Loading. Wait a moment..."
