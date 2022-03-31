@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 import sys
+import os
 
 from clint import arguments
 from clint.textui import puts, indent, colored
@@ -33,6 +34,11 @@ def usage():
 #def usage	
 		
 if __name__ == '__main__':
+
+	if os.geteuid() != 0:
+		print("   [Access-Control]: You need be root!")
+		sys.exit(1)
+
 	args = arguments.Args().copy
 	mode=False
 	nocheck=False
