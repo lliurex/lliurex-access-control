@@ -100,14 +100,20 @@ class LliurexAccessControl(QObject):
 		self._settingsUserChanged=False
 		self._showSettingsUserMessage=[False,"","Success"]
 		self._showLocalAdminDialog=False
+		self._settingsCDCChanged=False
+		self._showSettingsCDCMessage=[False,"","Success"]
 		self._closeGui=False
 		self._closePopUp=True
 		self._showGroupChangesDialog=False
 		self._showUserChangesDialog=False
+		self._showCDCChangesDialog=False
 		self._currentStack=0
 		self._currentOptionsStack=0
 		self._isAccessDenyGroupEnabled=False
 		self._isAccessDenyUserEnabled=False
+		self._isCDCAccessControlAllowed=False
+		self._isAccessDenyCDCEnabled=False
+		self._cdcCode=""
 		self.tmpNewUser=""
 		self.moveToStack=""
 		LliurexAccessControl.n4dMan.setServer(ticket)
@@ -123,6 +129,11 @@ class LliurexAccessControl(QObject):
 		self.groupsInfo=copy.deepcopy(LliurexAccessControl.n4dMan.groupsInfo)
 		self.isAccessDenyUserEnabled=copy.deepcopy(LliurexAccessControl.n4dMan.isAccessDenyUserEnabled)
 		self.usersInfo=copy.deepcopy(LliurexAccessControl.n4dMan.usersInfo)
+		self.isCDCAccessControlAllowed=copy.deepcopy(LliurexAccessControl.n4dMan.isCDCAccessControlAllowed)
+		self.isAccessDenyCDCEnabled=copy.deepcopy(LliurexAccessControl.n4dMan.isAccessDenyCDCEnabled)
+		self.cdcInfo=copy.deepcopy(LliurexAccessControl.n4dMan.cdcInfo)
+		if len(self.cdcInfo)>0:
+			self.cdcCode=self.cdcInfo["code"]
 		self._updateGroupModel()
 		self._updateUserModel()
 		self.currentStack=1
@@ -255,11 +266,82 @@ class LliurexAccessControl(QObject):
 
 	#def _setShowLocalAdminDialog
 
+	def _getIsCDCAccessControlAllowed(self):
+
+		return self._isCDCAccessControlAllowed
+
+	#def _getIsCDCAccessControlAllowed
+
+	def _setIsCDCAccessControlAllowed(self,isCDCAccessControlAllowed):
+
+		if self._isCDCAccessControlAllowed==isCDCAccessControlAllowed:
+			self._isCDCAccessControlAllowed=isCDCAccessControlAllowed
+			self.on_isCDCAccessControlAllowed.emit()
+
+	#def _setIsCDCAccessControlAllowed):
+
+	def _getIsAccessDenyCDCEnabled(self):
+
+		return self._isAccessDenyCDCEnabled
+
+	#def _getIsAccessDenyCDCEnabled
+
+	def _setIsAccessDenyCDCEnabled(self,isAccessDenyCDCEnabled):
+
+		if self._isAccessDenyCDCEnabled!=isAccessDenyCDCEnabled:
+			self._isAccessDenyCDCEnabled=isAccessDenyCDCEnabled
+			self.on_isAccessDenyCDCEnabled.emit()
+
+	#def _setIsAccessDenyCDCEnabled:
+
+	def _getCdcCode(self):
+
+		return self._cdcCode
+
+	#def _getCdcCode
+
+	def _setCdcCode(self,cdcCode):
+
+		if self._cdcCode!=cdcCode:
+			self._cdcCode=cdcCode
+			print(self._cdcCode)
+			self.on_cdcCode.emit()
+
+	#def _setCdcCode
+
 	def _getClosePopUp(self):
 
 		return self._closePopUp
 
 	#def _getClosePopUp	
+
+	def _getSettingsCDCChanged(self):
+
+		return self._settingsCDCChanged
+
+	#def _getSettingsCDCChanged
+
+	def _setSettingsCDCChanged(self,settingsCDCChanged):
+
+		if self._settingsCDCChanged!=settingsCDCChanged:
+			self._settingsCDCChanged=settingsCDCChanged
+			self.on_settingsCDCChanged.emit()
+
+	#def _setSettingsCDCChanged
+
+	def _getShowSettingsCDCMessage(self):
+
+		return self._showSettingsCDCMessage
+
+	#def _getShowSettingsCDCMessage
+
+	def _setShowSettingsCDCMessage(self,showSettingsCDCMessage):
+
+		if self._showSettingsCDCMessage!=showSettingsCDCMessage:
+			self._showSettingsCDCMessage=showSettingsCDCMessage
+			self.on_showSettingsCDCMessage.emit()
+
+	#def _setShowSettingsCDCMessage
 
 	def _setClosePopUp(self,closePopUp):
 		
@@ -310,6 +392,20 @@ class LliurexAccessControl(QObject):
 			self.on_showUserChangesDialog.emit()
 
 	#def _setShowUserChangesDialog
+	
+	def _getShowCDCChangesDialog(self):
+
+		return self._showCDCChangesDialog
+
+	#def _getShowCDCChangesDialog	
+
+	def _setShowCDCChangesDialog(self,showCDCChangesDialog):
+		
+		if self._showCDCChangesDialog!=showCDCChangesDialog:
+			self._showCDCChangesDialog=showCDCChangesDialog		
+			self.on_showCDCChangesDialog.emit()
+
+	#def _setShowCDCChangesDialog
 
 	def _getGroupsModel(self):
 		
@@ -517,6 +613,21 @@ class LliurexAccessControl(QObject):
 			self.isAccessDenyUserEnabled=False
 		
 	#def _updateUserList
+
+	@Slot(bool)
+	def manageCDCAccessControl(self,value):
+
+		self.showSettingsCDCMessage=[False,"","Success"]
+		
+		if value!=self.isAccessDenyCDCEnabled:
+			self.isAccessDenyCDCEnabled=value
+			if self.isAccessDenyCDCEnabled!=LliurexAccessControl.n4dMan.isAccessDenyCDCEnabled:
+				self.settingsCDCChanged=True
+			else:
+				self.settingsCDCChanged=False
+					
+	#def manageCDCAccessControl
+
 
 	@Slot()
 	def applyGroupChanges(self):
@@ -748,6 +859,21 @@ class LliurexAccessControl(QObject):
 	on_showLocalAdminDialog=Signal()
 	showLocalAdminDialog=Property(bool,_getShowLocalAdminDialog,_setShowLocalAdminDialog,notify=on_showLocalAdminDialog)
 
+	on_isCDCAccessControlAllowed=Signal()
+	isCDCAccessControlAllowed=Property(bool,_getIsCDCAccessControlAllowed,_setIsCDCAccessControlAllowed,notify=on_isCDCAccessControlAllowed)
+
+	on_isAccessDenyCDCEnabled=Signal()
+	isAccessDenyCDCEnabled=Property(bool,_getIsAccessDenyCDCEnabled,_setIsAccessDenyCDCEnabled,notify=on_isAccessDenyCDCEnabled)
+	
+	on_cdcCode=Signal()
+	cdcCode=Property(str,_getCdcCode,_setCdcCode,notify=on_cdcCode)
+	
+	on_settingsCDCChanged=Signal()
+	settingsCDCChanged=Property(bool,_getSettingsCDCChanged,_setSettingsCDCChanged, notify=on_settingsCDCChanged)
+
+	on_showSettingsCDCMessage=Signal()
+	showSettingsCDCMessage=Property('QVariantList',_getShowSettingsCDCMessage,_setShowSettingsUserMessage,notify=on_showSettingsCDCMessage)
+	
 	on_closePopUp=Signal()
 	closePopUp=Property(bool,_getClosePopUp,_setClosePopUp, notify=on_closePopUp)
 
@@ -759,6 +885,9 @@ class LliurexAccessControl(QObject):
 
 	on_showUserChangesDialog=Signal()
 	showUserChangesDialog=Property(bool,_getShowUserChangesDialog,_setShowUserChangesDialog, notify=on_showUserChangesDialog)
+
+	on_showCDCChangesDialog=Signal()
+	showCDCChangesDialog=Property(bool,_getShowCDCChangesDialog,_setShowCDCChangesDialog, notify=on_showCDCChangesDialog)
 
 	groupsModel=Property(QObject,_getGroupsModel,constant=True)
 	usersModel=Property(QObject,_getUsersModel,constant=True)
