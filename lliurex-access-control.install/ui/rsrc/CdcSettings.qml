@@ -75,6 +75,7 @@ Rectangle{
                     onEditingFinished:{
                         console.log("Terminado")
                         console.log(cdcEntry.text)
+                        accessControlBridge.manageCDCCodeChange(cdcEntry.text)
                     }
 
                 }
@@ -97,12 +98,12 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
-            enabled:accessControlBridge.settingsGroupChanged
+            enabled:accessControlBridge.settingsCDCChanged
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
                 applyChanges()
-                accessControlBridge.applyGroupChanges()
+                accessControlBridge.applyCDCChanges()
             }
         }
         Button {
@@ -113,12 +114,12 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
-            enabled:accessControlBridge.settingsGroupChanged
+            enabled:accessControlBridge.settingsCDCChanged
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
                 discardChanges()
-                accessControlBridge.cancelGroupChanges()
+                accessControlBridge.cancelCDCChanges()
             }
         }
     } 

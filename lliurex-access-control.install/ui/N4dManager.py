@@ -330,14 +330,14 @@ class N4dManager:
 
 	#def checkIfUserIsCurrrentUser 
 
-	def applyCDCChanges(sel,cdcAccessControl,cdcInfo):
+	def applyCDCChanges(self,cdcAccessControl,cdcInfo):
 
 		disableControl=False
 		enableControl=False
 		updateCDCInfo=False
 		result=[]
 
-		if (cdcInfo["code"]!=self.cdcInfo["code"])&&(cdcInfo["code"]!=""):
+		if (cdcInfo["code"]!=self.cdcInfo["code"]) and (cdcInfo["code"]!=""):
 			updateCDCInfo=True
 
 		if not cdcAccessControl:
@@ -372,7 +372,7 @@ class N4dManager:
 		if disableControl and not updateCDCInfo:
 			try:
 				self.writeLog("- Action: disable access control by CDC")
-				ret=self.client.AccessControlManager.disableAccessDenyCDC()
+				ret=self.client.AccessControlManager.disableAccessDenyCDC(True)
 				self.writeLog("- Disable access control by CDC: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			except n4d.client.CallFailedError as e:
