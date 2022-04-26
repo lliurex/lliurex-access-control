@@ -72,10 +72,10 @@ Rectangle{
                     horizontalAlignment:TextInput.AlignLeft
                     focus:true
                     implicitWidth:70
-                    onEditingFinished:{
-                        console.log("Terminado")
-                        console.log(cdcEntry.text)
-                        accessControlBridge.manageCDCCodeChange(cdcEntry.text)
+                    onTextEdited:{
+                        if ((cdcEntry.text=="")||(cdcEntry.text.length==8)){
+                            accessControlBridge.manageCDCCodeChange(cdcEntry.text)
+                        }
                     }
 
                 }

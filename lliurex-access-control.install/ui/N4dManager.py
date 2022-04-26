@@ -343,6 +343,10 @@ class N4dManager:
 		if not cdcAccessControl:
 			if cdcAccessControl != self.isAccessDenyCDCEnabled:
 				disableControl=True
+			else:
+				if cdcInfo["code"]=="":
+					cdcInfo={}
+					updateCDCInfo=True
 		else:
 			if cdcInfo["code"]=="":
 				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_CODE]

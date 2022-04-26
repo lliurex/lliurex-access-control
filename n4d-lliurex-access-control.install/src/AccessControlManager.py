@@ -29,11 +29,10 @@ class AccessControlManager:
 		self.userDenyListPath=os.path.join(self.configPath,"login.user.deny")
 		self.usersList=os.path.join(self.configPath+"/users-lists","usersList.json")
 		self.sssdConfigPath="/etc/sssd/sssd.conf"
-		self.cdcInfo=os.path.join(self.configPath,"/cdc-info/cdc.json")
+		self.cdcInfo=os.path.join(self.configPath+"/cdc-info","cdc.json")
 		self.sectionRefDesa="domain/DESEDU.GVA.ES"
 		self.sectionRefPro="domain/EDU.GVA.ES"
 		self.optionRef="simple_allow_groups"
-		self.updateCDCInfo=True
 	
 	#def __init__
 
@@ -314,7 +313,10 @@ class AccessControlManager:
 			if currentCode!="":
 				cdcInfo["accessControlEnabled"]=True
 				cdcInfo["code"]=currentCode
-
+			else:
+				cdcInfo["accessControlEnabled"]=False
+				cdcInfo["code"]=""
+				
 		return n4d.responses.build_successful_call_response(cdcInfo)
 
 	#def getCdcInfo
@@ -322,7 +324,6 @@ class AccessControlManager:
 	def setCDCInfo(self,cdcInfo):
 
 		currentCode=""
-		self.updateCDCInfo=False
 
 		try:
 			if len(cdcInfo)>0:
@@ -330,7 +331,7 @@ class AccessControlManager:
 					json.dump(cdcInfo,fd)
 
 				if cdcInfo["accessControlEnabled"]:
-					currentCode=cdcInfo["code"]
+					currentCode='GRP_%s'%cdcInfo["code"]
 					return self._writeSSSDConfFile(currentCode)
 				else:
 					return self.disableAccessDenyCDC()
@@ -343,9 +344,9 @@ class AccessControlManager:
 	
 	#def setCdcInfo
 
-	def disableAccessDenyCDC(self):
+	def disableAccessDenyCDC(self,updateCDCInfo=False):
 
-		if self.updateCDCInfo:
+		if updateCDCInfo:
 			try:
 				cdcInfo=self._readCDCInfo()
 				if len(cdcInfo)>0:
@@ -416,7 +417,7 @@ class AccessControlManager:
 					with open(self.sssdConfigPath,'w') as fd:
 						configFile.write(fd)
 
-			return n4d.responses.build_successful_call_response(cdcInfo)
+			return n4d.responses.build_successful_call_response()
 
 		except Exception as e:
 			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_CDC_ACCESS_CONTROL_ERROR)

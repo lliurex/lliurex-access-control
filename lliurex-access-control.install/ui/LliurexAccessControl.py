@@ -306,7 +306,6 @@ class LliurexAccessControl(QObject):
 
 		if self._cdcCode!=cdcCode:
 			self._cdcCode=cdcCode
-			print(self._cdcCode)
 			self.on_cdcCode.emit()
 
 	#def _setCdcCode
@@ -635,15 +634,15 @@ class LliurexAccessControl(QObject):
 	def manageCDCCodeChange(self,newCode):
 
 		self.showSettingsCDCMessage=[False,"","Success"]
-
-		if self.cdcInfo["code"]!=newCode:
+		if self.cdcCode!=newCode:
+			self.cdcCode=newCode
 			self.cdcInfo["code"]=newCode
-			if self.cdcInfo["code"]!=LliurexAccessControl.n4dMan.cdcInfo["code"]:
+			if self.cdcCode!=LliurexAccessControl.n4dMan.cdcInfo["code"]:
 				self.settingsCDCChanged=True
 			else:
 				self.settingsCDCChanged=False
 
-		if self.cdcInfo["code"]=="" :
+		if self.cdcCode=="" :
 			self.isAccessDenyCDCEnabled=False
 
 	#def manageCDCCodeChange
