@@ -15,6 +15,7 @@ class N4dManager:
 	APPLY_CHANGES_WITHOUT_GROUP=-70
 	APPLY_CHANGES_WITHOUT_USER=-80
 	APPLY_CHANGES_WITHOUT_CODE=-90
+	CDC_CODE_NOT_VALID=-101
 
 	def __init__(self):
 
@@ -337,67 +338,84 @@ class N4dManager:
 		updateCDCInfo=False
 		result=[]
 
-		if (cdcInfo["code"]!=self.cdcInfo["code"]) and (cdcInfo["code"]!=""):
-			updateCDCInfo=True
-
-		if not cdcAccessControl:
-			if cdcInfo["code"]=="":
-				cdcInfo={}
+		if self.isCorrectCode(cdcInfo["code"]):
+			if (cdcInfo["code"]!=self.cdcInfo["code"]) and (cdcInfo["code"]!=""):
 				updateCDCInfo=True
-			else:
-				if cdcAccessControl != self.isAccessDenyCDCEnabled:
-					disableControl=True
-		else:
-			if cdcInfo["code"]=="":
-				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_CODE]
-				return result
-			else:
-				if not updateCDCInfo:
-					enableControl=True
 
-		self.writeLog("Changes in configuration of access control by CDC:")		
-		if updateCDCInfo:
-			try:
-				self.writeLog("- Action: change center code")
-				ret=self.client.AccessControlManager.setCDCInfo(cdcInfo)		
-				self.writeLog("- New center code: Changes apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-				if disableControl:
-					self.writeLog("- Action: disable access control by CDC")
-					ret=self.client.AccessControlManager.disableAccessDenyCDC()
-					self.writeLog("- Disable access control by CDC: Change apply successful")
+			if not cdcAccessControl:
+				if cdcInfo["code"]=="":
+					cdcInfo={}
+					updateCDCInfo=True
+				else:
+					if cdcAccessControl != self.isAccessDenyCDCEnabled:
+						disableControl=True
+			else:
+				if cdcInfo["code"]=="":
+					result=[False,N4dManager.APPLY_CHANGES_WITHOUT_CODE]
+					return result
+				else:
+					if not updateCDCInfo:
+						enableControl=True
+
+			self.writeLog("Changes in configuration of access control by CDC:")		
+			if updateCDCInfo:
+				try:
+					self.writeLog("- Action: change center code")
+					ret=self.client.AccessControlManager.setCDCInfo(cdcInfo)		
+					self.writeLog("- New center code: Changes apply successful")
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+					if disableControl:
+						self.writeLog("- Action: disable access control by CDC")
+						ret=self.client.AccessControlManager.disableAccessDenyCDC()
+						self.writeLog("- Disable access control by CDC: Change apply successful")
+						result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
+				except n4d.client.CallFailedError as e:
+					self.writeLog("- Error applying changes: %s"%e.code)
+					result=[False,e.code]
 
-		if disableControl and not updateCDCInfo:
-			try:
-				self.writeLog("- Action: disable access control by CDC")
-				ret=self.client.AccessControlManager.disableAccessDenyCDC(True)
-				self.writeLog("- Disable access control by CDC: Changes apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
+			if disableControl and not updateCDCInfo:
+				try:
+					self.writeLog("- Action: disable access control by CDC")
+					ret=self.client.AccessControlManager.disableAccessDenyCDC(True)
+					self.writeLog("- Disable access control by CDC: Changes apply successful")
+					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+				except n4d.client.CallFailedError as e:
+					self.writeLog("- Error applying changes: %s"%e.code)
+					result=[False,e.code]
 
-		if enableControl:
-			try:
-				self.writeLog("- Action: enable access control by CDC")
-				ret=self.client.AccessControlManager.setCDCInfo(cdcInfo)		
-				self.writeLog("- Enable access control by CDC: Changes apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
+			if enableControl:
+				try:
+					self.writeLog("- Action: enable access control by CDC")
+					ret=self.client.AccessControlManager.setCDCInfo(cdcInfo)		
+					self.writeLog("- Enable access control by CDC: Changes apply successful")
+					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+				except n4d.client.CallFailedError as e:
+					self.writeLog("- Error applying changes: %s"%e.code)
+					result=[False,e.code]
 
-		if result[0]:
-			self.loadCDCConfig("End")
+			if result[0]:
+				self.loadCDCConfig("End")
+		else:
+			result=[False,N4dManager.CDC_CODE_NOT_VALID]
 		
 		return result
 
 	#def applyCDCChanges
+
+	def isCorrectCode(self,cdcCode):
+
+		if cdcCode!="":
+			if len(cdcCode)==8:
+				if cdcCode.isdecimal():
+					head=cdcCode[0:2]
+					if head in ['03','12','46']:
+						return True
+			return False
+		else:
+			return True
+
+	#def isCorrectCode
 	
 	def writeLog(self,msg):
 

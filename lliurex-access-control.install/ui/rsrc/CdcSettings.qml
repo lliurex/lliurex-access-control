@@ -20,7 +20,7 @@ Rectangle{
         rowSpacing:10
         Layout.fillWidth: true
         anchors.left:parent.left
-        enabled:true
+
         Kirigami.InlineMessage {
             id: messageLabel
             visible:accessControlBridge.showSettingsCDCMessage[0]
@@ -59,15 +59,16 @@ Rectangle{
 
                 Text{
                     id:cdcLabel
-                    text:i18nd("lliurex-access-control","Allow access to users belonging to center:")
+                    text:i18nd("lliurex-access-control","Lock access to users who do not belong to the center:")
                     font.pointSize:10
 
                 }
                 TextField{
                     id:cdcEntry
                     text:accessControlBridge.cdcCode
-                    inputMask:"99999999"
+                    /*inputMask:"99999999"*/
                     enabled:cdcControlCb.checked
+                    maximumLength:8
                     font.pointSize:10
                     horizontalAlignment:TextInput.AlignLeft
                     focus:true
@@ -173,6 +174,10 @@ Rectangle{
             case -90:
                 msg=i18nd("lliurex-access-control","No center code has been indicated");
                 break;
+            case -101:
+                 msg=i18nd("lliurex-access-control","Center code is not valid");
+                break;
+           
             default:
                 break;
         }

@@ -276,7 +276,7 @@ class LliurexAccessControl(QObject):
 
 	def _setIsCDCAccessControlAllowed(self,isCDCAccessControlAllowed):
 
-		if self._isCDCAccessControlAllowed==isCDCAccessControlAllowed:
+		if self._isCDCAccessControlAllowed!=isCDCAccessControlAllowed:
 			self._isCDCAccessControlAllowed=isCDCAccessControlAllowed
 			self.on_isCDCAccessControlAllowed.emit()
 
@@ -634,16 +634,20 @@ class LliurexAccessControl(QObject):
 	def manageCDCCodeChange(self,newCode):
 
 		self.showSettingsCDCMessage=[False,"","Success"]
-		if self.cdcCode!=newCode:
-			self.cdcCode=newCode
-			self.cdcInfo["code"]=newCode
-			if self.cdcCode!=LliurexAccessControl.n4dMan.cdcInfo["code"]:
-				self.settingsCDCChanged=True
-			else:
-				self.settingsCDCChanged=False
+		if LliurexAccessControl.n4dMan.isCorrectCode(newCode):
+			if self.cdcCode!=newCode:
+				print("actualizando")
+				self.cdcCode=newCode
+				self.cdcInfo["code"]=newCode
+				if self.cdcCode!=LliurexAccessControl.n4dMan.cdcInfo["code"]:
+					self.settingsCDCChanged=True
+				else:
+					self.settingsCDCChanged=False
 
-		if self.cdcCode=="" :
-			self.isAccessDenyCDCEnabled=False
+			if self.cdcCode=="" :
+				self.isAccessDenyCDCEnabled=False
+		else:
+			self.showSettingsCDCMessage=[True,LliurexAccessControl.n4dMan.CDC_CODE_NOT_VALID,"Error"]
 
 	#def manageCDCCodeChange
 
