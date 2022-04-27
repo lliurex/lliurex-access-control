@@ -63,8 +63,7 @@
 		},
 		"getCDCInfo":{
 			"allowed_groups":[
-				"sudo",
-				"admins"
+				"anonymous"
 			]
 		},
 		"setCDCInfo":{

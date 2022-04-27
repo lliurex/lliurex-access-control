@@ -13,7 +13,7 @@ def usage():
 		puts("lliurex-access-control-cli [FLAGS...] ACTION")
 		puts("Actions")
 		with indent(4):	
-			puts("currentconfig [groups|users|all] : Shows information about access control for groups, users or all  ")
+			puts("currentconfig [groups|users|center|all] : Shows information about access control for groups, users, center code or all  ")
 			puts("lockgroup <GROUP> <GROUP>...: Lock access to computer for the indicated groups")
 			puts("unlockgroup <GROUP> <GROUP>...: Unlock access to computer for the indicated groups")
 			puts("disablecontrolgroup: Disable access control by group")
@@ -24,7 +24,10 @@ def usage():
 			puts("enablecontroluser: Activate access control by users if there is a previous configuration with locked users")
 			puts("removeuserfromlist <USERNAME> <USERNAME>...: Removed the indicated usernames from the user list")
 			puts("removeuserlist: Remove the user list")
-
+			puts("setcenter <CENTER CODE>: Configure center code to lock access to computer for users who do not belong to it")
+			puts("removecenter: Remove center code to unlock access to compurter for users who do not belong to it")
+			puts("disablecontrolcenter: Disable access control by center")
+			puts("enablecontrolcenter: Enable access control by center if there is a previous configuration with center code")
 		puts("Flags")
 		with indent(4):
 			puts("-h --help : Show help")
@@ -46,6 +49,7 @@ if __name__ == '__main__':
 	infoOption=None
 	groupsSelected=[]
 	usersSelected=[]
+	cdcCode=""
 
 	if args.contains(["-h","--help"]) or len(args.all) == 0 :
 		usage()		
@@ -63,6 +67,8 @@ if __name__ == '__main__':
 			infoOption="groups"
 		elif args.get(0)=="users":
 			infoOption="users"
+		elif args.get(0)=="center":
+			infoOption="center"
 		else:
 			usage()
 	elif action=="lockgroup" or action=="unlockgroup":
@@ -83,7 +89,10 @@ if __name__ == '__main__':
 				usersSelected.append(item.lower())
 		else:
 			usage()
-
+	elif action=="setcenter":
+		if len(args)>0:
+			cdcCode=args.all[0]
+	
 	ac=AccessControlCliManager(mode)
 	
 	if action == "currentconfig":
@@ -108,5 +117,13 @@ if __name__ == '__main__':
 		sys.exit(ac.removeUserFromList(usersSelected))
 	elif action=="removeuserlist":
 		sys.exit(ac.removeUserList())
+	elif action=="setcenter":
+		sys.exit(ac.setCenter(cdcCode))
+	elif action=="removecenter":
+		sys.exit(ac.removeCenter())
+	elif action=="disablecontrolcenter":
+		sys.exit(ac.disableControlCenter())
+	elif action=="enablecontrolcenter":
+		sys.exit(ac.enableControlCenter())
 	else:
 		usage()		
