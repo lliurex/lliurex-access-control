@@ -17,7 +17,6 @@ class AccessControlManager:
 	DISABLE_CDC_ACCESS_CONTROL_ERROR=-50
 	SET_CDC_ERROR=-60
 
-
 	def __init__(self):
 
 		self.core=n4dcore.Core.get_core()
@@ -32,6 +31,7 @@ class AccessControlManager:
 		self.cdcInfo=os.path.join(self.configPath+"/cdc-info","cdc.json")
 		self.sectionRefDesa="domain/DESEDU.GVA.ES"
 		self.sectionRefPro="domain/EDU.GVA.ES"
+		self.sectionRefAlu="domain/ALU.EDU.GVA.ES"
 		self.optionRef="simple_allow_groups"
 	
 	#def __init__
@@ -52,7 +52,6 @@ class AccessControlManager:
 		denyGroups=self._readDenyGroupsFile()
 		groupsInfo=self._readGroupsList(initLoad)
 
-		
 		if len(denyGroups)>0:
 			for item in groupsInfo:
 				if item in denyGroups:
@@ -309,6 +308,7 @@ class AccessControlManager:
 			else:
 				if cdcInfo["accessControlEnabled"]:
 					cdcInfo["accessControlEnabled"]=False
+
 		else:
 			if currentCode!="":
 				cdcInfo["accessControlEnabled"]=True
@@ -398,21 +398,25 @@ class AccessControlManager:
 
 	def _writeSSSDConfFile(self,code=""):
 		
+		sectionRef=[]
 		try:
 			if os.path.exists(self.sssdConfigPath):
 				configFile=configparser.ConfigParser()
 				configFile.optionxform=str
 				configFile.read(self.sssdConfigPath)
 				if configFile.has_section(self.sectionRefDesa):
-					sectionRef=self.sectionRefDesa
+					sectionRef.append(self.sectionRefDesa)
 				elif configFile.has_section(self.sectionRefPro):
-					sectionRef=self.sectionRefPro
+					sectionRef.append(self.sectionRefPro)
+					if configFile.has_section(self.sectionRefAlu):
+						sectionRef.append(self.sectionRefAlu)
 
-				if sectionRef!="":
-					if code!="":
-						configFile.set(sectionRef,self.optionRef,code)
-					else:
-						configFile.remove_option(sectionRef,self.optionRef)
+				if len(sectionRef)>0:
+					for item in sectionRef:
+						if code!="":
+							configFile.set(item,self.optionRef,code)
+						else:
+							configFile.remove_option(item,self.optionRef)
 
 					with open(self.sssdConfigPath,'w') as fd:
 						configFile.write(fd)
