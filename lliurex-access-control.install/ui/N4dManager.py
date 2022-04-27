@@ -341,12 +341,12 @@ class N4dManager:
 			updateCDCInfo=True
 
 		if not cdcAccessControl:
-			if cdcAccessControl != self.isAccessDenyCDCEnabled:
-				disableControl=True
+			if cdcInfo["code"]=="":
+				cdcInfo={}
+				updateCDCInfo=True
 			else:
-				if cdcInfo["code"]=="":
-					cdcInfo={}
-					updateCDCInfo=True
+				if cdcAccessControl != self.isAccessDenyCDCEnabled:
+					disableControl=True
 		else:
 			if cdcInfo["code"]=="":
 				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_CODE]
@@ -372,7 +372,6 @@ class N4dManager:
 				self.writeLog("- Error applying changes: %s"%e.code)
 				result=[False,e.code]
 
-
 		if disableControl and not updateCDCInfo:
 			try:
 				self.writeLog("- Action: disable access control by CDC")
@@ -395,6 +394,7 @@ class N4dManager:
 
 		if result[0]:
 			self.loadCDCConfig("End")
+		
 		return result
 
 	#def applyCDCChanges
