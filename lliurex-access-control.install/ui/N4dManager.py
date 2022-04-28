@@ -95,7 +95,7 @@ class N4dManager:
 		self.isAccessDenyCDCEnabled=self.client.AccessControlManager.isAccessDenyCDCEnabled()
 		self.writeLog("- Access Control by CDC enabled: %s"%(str(self.isAccessDenyCDCEnabled)))
 		self.cdcInfo=self.client.AccessControlManager.getCDCInfo()
-		if len(self.cdcInfo)>0:
+		if self.cdcInfo["code"]!="":
 			currentCode=self.cdcInfo["code"]
 		else:
 			currentCode="None"
