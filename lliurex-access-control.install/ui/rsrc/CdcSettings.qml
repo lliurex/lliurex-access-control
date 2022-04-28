@@ -66,13 +66,12 @@ Rectangle{
                 TextField{
                     id:cdcEntry
                     text:accessControlBridge.cdcCode
-                    /*inputMask:"99999999"*/
                     enabled:cdcControlCb.checked
                     maximumLength:8
                     font.pointSize:10
                     horizontalAlignment:TextInput.AlignLeft
                     focus:true
-                    implicitWidth:70
+                    implicitWidth:75
                     onTextEdited:{
                         if ((cdcEntry.text=="")||(cdcEntry.text.length==8)){
                             wait(1000, function() {
