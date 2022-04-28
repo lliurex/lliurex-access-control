@@ -75,7 +75,10 @@ Rectangle{
                     implicitWidth:70
                     onTextEdited:{
                         if ((cdcEntry.text=="")||(cdcEntry.text.length==8)){
-                            accessControlBridge.manageCDCCodeChange(cdcEntry.text)
+                            wait(1000, function() {
+                                waitTimer.stop()
+                                accessControlBridge.manageCDCCodeChange(cdcEntry.text)
+                            })
                         }
                     }
 
@@ -147,14 +150,25 @@ Rectangle{
      }
 
     Timer{
-        id:timer
+        id:delayTimer
     }
 
     function delay(delayTime,cb){
-        timer.interval=delayTime;
-        timer.repeat=true;
-        timer.triggered.connect(cb);
-        timer.start()
+        delayTimer.interval=delayTime;
+        delayTimer.repeat=true;
+        delayTimer.triggered.connect(cb);
+        delayTimer.start()
+    }
+
+    Timer{
+        id:waitTimer
+    }
+
+    function wait(delayTime,cb){
+        waitTimer.interval=delayTime;
+        waitTimer.repeat=true;
+        waitTimer.triggered.connect(cb);
+        waitTimer.start()
     }
 
 
@@ -201,23 +215,25 @@ Rectangle{
     function applyChanges(){
         synchronizePopup.open()
         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
+        delayTimer.stop()
         delay(500, function() {
             if (accessControlBridge.closePopUp){
                 synchronizePopup.close(),
-                timer.stop()
+                delayTimer.stop()
             }
-          })
+        })
     } 
 
     function discardChanges(){
         synchronizePopup.open()
         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
+        delayTimer.stop()
         delay(1000, function() {
             if (accessControlBridge.closePopUp){
                 synchronizePopup.close(),
-                timer.stop()
+                delayTimer.stop()
 
             }
-          })
+        })
     }  
 } 

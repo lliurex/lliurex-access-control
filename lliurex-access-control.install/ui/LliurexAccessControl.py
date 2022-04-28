@@ -118,6 +118,7 @@ class LliurexAccessControl(QObject):
 		self._cdcCode=""
 		self.tmpNewUser=""
 		self.moveToStack=""
+		self.correctCode=True
 		LliurexAccessControl.n4dMan.setServer(ticket)
 		self.gatherInfo=GatherInfo()
 		self.gatherInfo.start()
@@ -634,7 +635,8 @@ class LliurexAccessControl(QObject):
 	def manageCDCCodeChange(self,newCode):
 
 		self.showSettingsCDCMessage=[False,"","Success"]
-		if LliurexAccessControl.n4dMan.isCorrectCode(newCode):
+		self.correctCode=LliurexAccessControl.n4dMan.isCorrectCode(newCode)
+		if self.correctCode:
 			if self.cdcCode!=newCode:
 				print("actualizando")
 				self.cdcCode=newCode
@@ -787,12 +789,16 @@ class LliurexAccessControl(QObject):
 	def applyCDCChanges(self):
 
 		self.showSettingsCDCMessage=[False,"","Success"]
-		self.closePopUp=False
-		self.showCDCChangesDialog=False
-		self.updateCDCInfo=UpdateInfo("CDC",self.isAccessDenyCDCEnabled,self.cdcInfo)
-		self.updateCDCInfo.start()
-		self.updateCDCInfo.finished.connect(self._applyCDCChanges)
-
+		if self.correctCode or not self.isAccessDenyCDCEnabled:
+			self.correctCode=True
+			self.closePopUp=False
+			self.showCDCChangesDialog=False
+			self.updateCDCInfo=UpdateInfo("CDC",self.isAccessDenyCDCEnabled,self.cdcInfo)
+			self.updateCDCInfo.start()
+			self.updateCDCInfo.finished.connect(self._applyCDCChanges)
+		else:
+			self.showSettingsCDCMessage=[True,LliurexAccessControl.n4dMan.CDC_CODE_NOT_VALID,"Error"]
+	
 	#def applyCdcChanges
 
 	def _applyCDCChanges(self):
@@ -820,7 +826,8 @@ class LliurexAccessControl(QObject):
 	@Slot()
 	def cancelCDCChanges(self):
 
-		self.showSettingsCdcMessage=[False,"","Success"]
+		self.showSettingsCDCMessage=[False,"","Success"]
+		self.correctCode=True
 		self.closePopUp=False
 		self.showCDCChangesDialog=False
 		self._cancelCDCChanges()
@@ -844,8 +851,9 @@ class LliurexAccessControl(QObject):
 
 		self.isAccessDenyCDCEnabled=copy.deepcopy(LliurexAccessControl.n4dMan.isAccessDenyCDCEnabled)
 		self.cdcInfo=copy.deepcopy(LliurexAccessControl.n4dMan.cdcInfo)
+		self.cdcCode=""
 		self.cdcCode=self.cdcInfo["code"]
-
+		print(self.cdcCode)
 	#def _updateUsersConfig
 
 	@Slot(int)
