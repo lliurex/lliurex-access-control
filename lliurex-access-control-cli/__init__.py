@@ -261,6 +261,10 @@ class AccessControlCliManager(object):
 		if correctUsers:
 			if (len(usersSelected)==len(self.usersInfo)) and self.isAccessDenyUserEnabled:
 				print('   [Access-Control]: This action will be disable access control by user')
+			else:
+				if (len(usersSelected)<len(self.usersInfo)) and not self.isAccessDenyUserEnabled:
+					print('   [Access-Control]: This action will be enable access control by user')
+
 			if not self.unattendedMode:
 				response=input('   [Access-Control]: Do you want to delete indicated users from users list? (yes/no)): ').lower()
 			else:
@@ -473,6 +477,8 @@ class AccessControlCliManager(object):
 			if currentStatusChanged:
 				if action=="lock" and not self.isAccessDenyGroupEnabled:
 					print('   [Access-Control]: This action will be activate access control by group')
+				elif action=="unlock" and (self.groupsUnLockedCount<len(self.groupsInfo)) and not self.isAccessDenyGroupEnabled:
+					print('   [Access-Control]: This action will be activate access control by group')
 				elif action=="unlock" and (self.groupsUnLockedCount==len(self.groupsInfo)) and self.isAccessDenyGroupEnabled:
 					print('   [Access-Control]: This action will be disable access control by group')
 				
@@ -561,6 +567,8 @@ class AccessControlCliManager(object):
 		
 		if currentStatusChanged:
 			if action=="lock" and not self.isAccessDenyUserEnabled:
+				print('   [Access-Control]: This action will be activate access control by user')
+			elif action=="unlock" and (self.usersUnLockedCount<len(self.usersInfo)) and not self.isAccessDenyUserEnabled:
 				print('   [Access-Control]: This action will be activate access control by user')
 			elif action=="unlock" and (self.usersUnLockedCount==len(self.usersInfo)) and self.isAccessDenyUserEnabled:
 				print('   [Access-Control]: This action will be disable access control by user')
