@@ -16,7 +16,7 @@ GridLayout{
 
         GridLayout{
             id: menuGrid
-            rows:3 
+            rows:4 
             flow: GridLayout.TopToBottom
             rowSpacing:0
 
@@ -24,9 +24,9 @@ GridLayout{
                 id:groupItem
                 optionText:i18nd("lliurex-access-control","Control by groups")
                 optionIcon:"/usr/share/icons/breeze/actions/16/group.svg"
+                optionEnabled:true
                 Connections{
                     function onMenuOptionClicked(){
-                        /*optionsLayout.currentIndex=0;*/
                         accessControlBridge.manageTransitions(0)
                     }
                 }
@@ -36,10 +36,23 @@ GridLayout{
                 id:userItem
                 optionText:i18nd("lliurex-access-control","Control by users")
                 optionIcon:"/usr/share/icons/breeze/actions/16/user.svg"
+                optionEnabled:true
                 Connections{
                     function onMenuOptionClicked(){
-                        /*optionsLayout.currentIndex=1;*/
                         accessControlBridge.manageTransitions(1)
+                   
+                    }
+                }
+            }
+
+            MenuOptionBtn {
+                id:cdcItem
+                optionText:i18nd("lliurex-access-control","Control by center")
+                optionIcon:"/usr/share/icons/breeze/actions/16/view-institution.svg"
+                optionEnabled:accessControlBridge.isCDCAccessControlAllowed
+                Connections{
+                    function onMenuOptionClicked(){
+                        accessControlBridge.manageTransitions(2)
                    
                     }
                 }
@@ -70,6 +83,10 @@ GridLayout{
 
         UsersSettings{
             id:userSettings
+        }
+
+        CdcSettings{
+            id:cdcSettings
         }
 
     }

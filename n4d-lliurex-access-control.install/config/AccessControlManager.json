@@ -50,6 +50,35 @@
 				"admins"
 			]
 
+		},
+		"isCDCAccessControlAllowed":{
+			"allowed_groups":[
+				"anonymous"
+			]
+		},
+		"isAccessDenyCDCEnabled":{
+			"allowed_groups":[
+				"anonymous"
+			]
+		},
+		"getCDCInfo":{
+			"allowed_groups":[
+				"anonymous"
+			]
+		},
+		"setCDCInfo":{
+			"allowed_groups":[
+				"sudo",
+				"admins"
+			]
+		},
+		"disableAccessDenyCDC": {
+			"allowed_groups": [
+				"sudo",
+				"admins"
+			]
+
 		}
+
 	}
 }
