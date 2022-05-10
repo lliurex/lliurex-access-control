@@ -331,7 +331,7 @@ class AccessControlManager:
 					json.dump(cdcInfo,fd)
 
 				if cdcInfo["accessControlEnabled"]:
-					currentCode='GRP_%s'%cdcInfo["code"]
+					currentCode='GRP_%s,AdminSai'%cdcInfo["code"]
 					return self._writeSSSDConfFile(currentCode)
 				else:
 					return self.disableAccessDenyCDC()
@@ -355,7 +355,7 @@ class AccessControlManager:
 						with open(self.cdcInfo,'w') as fd:
 							json.dump(cdcInfo,fd)
 			except:
-				return n4d.responses.build_failed_call_response(AccessControlManager.SET_CDC_ERROR)
+				return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_CDC_ACCESS_CONTROL_ERROR)
 
 		return self._writeSSSDConfFile()
 
@@ -390,7 +390,7 @@ class AccessControlManager:
 			if sectionRef!="":
 				if configFile.has_option(sectionRef,self.optionRef):
 					tmpCode=configFile.get(sectionRef,self.optionRef)
-					currentCode=tmpCode.split("GRP_")[1]
+					currentCode=tmpCode.split("GRP_")[1].split(",")[0]
 
 		return currentCode
 
@@ -424,7 +424,7 @@ class AccessControlManager:
 			return n4d.responses.build_successful_call_response()
 
 		except Exception as e:
-			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_CDC_ACCESS_CONTROL_ERROR)
+			return n4d.responses.build_failed_call_response(AccessControlManager.SET_CDC_ERROR)
 		
 	#def _writeSSSDConfFile 
 	
