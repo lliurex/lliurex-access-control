@@ -421,12 +421,13 @@ class AccessControlManager:
 					with open(self.sssdConfigPath,'w') as fd:
 						configFile.write(fd)
 
+			os.system('systemctl restart sssd')
 			return n4d.responses.build_successful_call_response()
 
 		except Exception as e:
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_CDC_ERROR)
 		
 	#def _writeSSSDConfFile 
-	
+
 #class AccessControlManager 
 
