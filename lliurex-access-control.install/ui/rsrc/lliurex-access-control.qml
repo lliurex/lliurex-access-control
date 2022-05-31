@@ -62,21 +62,49 @@ ApplicationWindow {
             }
         }
 
-        StackLayout {
-            id: stackLayout
-            currentIndex:accessControlBridge.currentStack
+        StackView {
+            id: mainView
+            property int currentIndex:accessControlBridge.currentStack
             implicitWidth: 670
             Layout.alignment:Qt.AlignHCenter
             Layout.leftMargin:0
             Layout.fillWidth:true
             Layout.fillHeight: true
+            initialItem:loadingView
 
-            Login{
-                id:login
+            onCurrentIndexChanged:{
+                switch(currentIndex){
+                    case 0:
+                        mainView.replace(loadingView)
+                        break;
+                    case 1:
+                        mainView.replace(loginView)
+                        break;
+                    case 2:
+                        mainView.replace(applicationOptionsView)
+                        break;
+                }
+
             }
 
-            ApplicationOptions{
-                id:applicationOptions
+            Component{
+                id:loadingView
+                Loading{
+                    id:loading
+                }
+            }
+
+            Component{
+                id:loginView
+                Login{
+                    id:login
+                }
+            }
+            Component{
+                id:applicationOptionsView
+                ApplicationOptions{
+                    id:applicationOptions
+                }
             }
 
         }

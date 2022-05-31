@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-08 17:28+0100\n"
+"POT-Creation-Date: 2022-05-31 14:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:28
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:35
 msgid "User"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:45
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:52
 msgid "Password"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:60
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:67
 msgid "Login"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:66
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:73
 msgid "Validating user..."
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:84
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:91
 msgid "Invalid user"
 msgstr ""
 
@@ -42,14 +42,14 @@ msgstr ""
 msgid "Control by groups"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:37
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:36
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:221
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:294
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:312
 msgid "Control by users"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:50
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:48
 msgid "Help"
 msgstr ""
 
@@ -192,6 +192,10 @@ msgstr ""
 msgid ""
 "It is not possible to lock the user with which you are configuring the "
 "access control"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/UserList.qml:52
+msgid "The user list is empty"
 msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:41

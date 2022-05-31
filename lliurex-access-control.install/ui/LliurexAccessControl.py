@@ -132,8 +132,15 @@ class LliurexAccessControl(QObject):
 		self._isAccessDenyUserEnabled=False
 		self.tmpNewUser=""
 		self.moveToStack=""	
+		QTimer.singleShot(200,self.loadLoginPanel)
 
 	#def initBridge
+
+	def loadLoginPanel(self):
+
+		self.currentStack=1
+
+	#def loadLoginPanel
 
 	@Slot('QVariantList')
 	def validate(self,value):
@@ -171,11 +178,11 @@ class LliurexAccessControl(QObject):
 			else:
 				self.runningLogin=False
 				self.showLoginMessage=[True,LOGIN_FAILED]
-				self.currentStack=0
+				self.currentStack=1
 		else:
 			self.runningLogin=False
 			self.showLoginMessage=[True,LOGIN_FAILED]
-			self.currentStack=0
+			self.currentStack=1
 
 	#def _validate	
 	
@@ -188,7 +195,7 @@ class LliurexAccessControl(QObject):
 		self._updateGroupModel()
 		self._updateUserModel()
 		self.runningLogin=False
-		self.currentStack=1
+		self.currentStack=2
 
 	#def _loadConfig
 

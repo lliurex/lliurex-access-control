@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-08 17:28+0100\n"
-"PO-Revision-Date: 2022-03-08 17:29+0100\n"
+"POT-Creation-Date: 2022-05-31 14:28+0200\n"
+"PO-Revision-Date: 2022-05-31 14:29+0200\n"
 "Last-Translator: lliurex <lliurex@gva.es>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -19,23 +19,23 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:28
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:35
 msgid "User"
 msgstr "Usuario"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:45
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:52
 msgid "Password"
 msgstr "Contraseña"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:60
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:67
 msgid "Login"
 msgstr "Acceder"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:66
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:73
 msgid "Validating user..."
 msgstr "Validando usuario..."
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:84
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:91
 msgid "Invalid user"
 msgstr "Usuario no válido"
 
@@ -44,14 +44,14 @@ msgstr "Usuario no válido"
 msgid "Control by groups"
 msgstr "Control por grupos"
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:37
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:36
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:221
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:294
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:312
 msgid "Control by users"
 msgstr "Control por usuarios"
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:50
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:48
 msgid "Help"
 msgstr "Ayuda"
 
@@ -199,8 +199,12 @@ msgid ""
 "It is not possible to lock the user with which you are configuring the "
 "access control"
 msgstr ""
-"No es posible bloquear el usuario con el que se está configurando el "
-"control de acceso"
+"No es posible bloquear el usuario con el que se está configurando el control "
+"de acceso"
+
+#: ../lliurex-access-control.install/ui/rsrc/UserList.qml:52
+msgid "The user list is empty"
+msgstr "La lista de usurios está vacía"
 
 #: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:41
 msgid "Check to unlock access to this user"

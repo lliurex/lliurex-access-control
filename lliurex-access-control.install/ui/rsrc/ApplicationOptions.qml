@@ -26,7 +26,6 @@ GridLayout{
                 optionIcon:"/usr/share/icons/breeze/actions/16/group.svg"
                 Connections{
                     function onMenuOptionClicked(){
-                        /*optionsLayout.currentIndex=0;*/
                         accessControlBridge.manageTransitions(0)
                     }
                 }
@@ -38,7 +37,6 @@ GridLayout{
                 optionIcon:"/usr/share/icons/breeze/actions/16/user.svg"
                 Connections{
                     function onMenuOptionClicked(){
-                        /*optionsLayout.currentIndex=1;*/
                         accessControlBridge.manageTransitions(1)
                    
                     }
@@ -58,20 +56,55 @@ GridLayout{
         }
     }
 
-    StackLayout {
-        id: optionsLayout
-        currentIndex:accessControlBridge.currentOptionsStack
+    StackView{
+        id: optionsView
+        property int currentIndex:accessControlBridge.currentOptionsStack
         implicitHeight: 380
-        Layout.alignment:Qt.AlignHCenter
+        Layout.fillWidth:true
+        Layout.fillHeight: true
+        
+        initialItem:groupsView
 
-        GroupsSettings{
-            id:groupsSettings
+        onCurrentIndexChanged:{
+            switch (currentIndex){
+                case 0:
+                    optionsView.replace(groupsView)
+                    break;
+                case 1:
+                    optionsView.replace(usersView)
+                    break;
+            }
         }
 
-        UsersSettings{
-            id:userSettings
+        replaceEnter: Transition {
+            PropertyAnimation {
+                property: "opacity"
+                from: 0
+                to:1
+                duration: 600
+            }
+        }
+        replaceExit: Transition {
+            PropertyAnimation {
+                property: "opacity"
+                from: 1
+                to:0
+                duration: 600
+            }
         }
 
-    }
+        Component{
+            id:groupsView
+            GroupsSettings{
+                id:groupsSettings
+            }
+        }
+        Component{
+            id:usersView
+            UsersSettings{
+                id:userSettings
+            }
+        }
+  }
 }
 
