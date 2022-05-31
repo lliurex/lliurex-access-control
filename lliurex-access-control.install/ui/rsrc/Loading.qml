@@ -4,9 +4,9 @@ import QtQuick.Layouts 1.15
 
 
 Rectangle{
-    width: 600
-    height: 380
     visible: true
+    Layout.fillWidth:true
+    Layout.fillHeight: true
 
     GridLayout{
         id: loadGrid
