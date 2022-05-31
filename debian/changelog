@@ -1,3 +1,9 @@
+lliurex-access-control (1.1.4) lliurex22; urgency=medium
+
+  * Reduced ram consumption
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 31 May 2022 12:04:56 +0200
+
 lliurex-access-control (1.1.3) lliurex22; urgency=medium
 
   * Added restart sssd command when access control by code center change
