@@ -62,21 +62,54 @@ ApplicationWindow {
             }
         }
 
-        StackLayout {
-            id: stackLayout
-            currentIndex:accessControlBridge.currentStack
+        StackView {
+            id: mainView
+            property int currentIndex:accessControlBridge.currentStack
             implicitWidth: 670
             Layout.alignment:Qt.AlignHCenter
             Layout.leftMargin:0
             Layout.fillWidth:true
             Layout.fillHeight: true
+            initialItem:loadingView
 
-            Loading{
-                id:loading
+            onCurrentIndexChanged:{
+                switch (currentIndex){
+                    case 0:
+                        mainView.replace(loadingView)
+                        break;
+                    case 1:
+                        mainView.replace(applicationOptionsView)
+                }
             }
 
-            ApplicationOptions{
-                id:applicationOptions
+            replaceEnter: Transition {
+                PropertyAnimation {
+                    property: "opacity"
+                    from: 0
+                    to:1
+                    duration: 600
+                }
+            }
+            replaceExit: Transition {
+                PropertyAnimation {
+                    property: "opacity"
+                    from: 1
+                    to:0
+                    duration: 600
+                }
+            }
+
+            Component{
+                id:loadingView
+                Loading{
+                    id:loading
+                }
+            }
+            Component{
+                id:applicationOptionsView
+                ApplicationOptions{
+                    id:applicationOptions
+                }
             }
 
         }
