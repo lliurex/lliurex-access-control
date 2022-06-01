@@ -1,3 +1,10 @@
+lliurex-access-control (0.2) bionic-updates; urgency=medium
+
+  * Added option to manage access control by center code.
+  * Changed some qml files to reduce ram consumption
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 01 Jun 2022 17:43:04 +0200
+
 lliurex-access-control (0.1) bionic; urgency=medium
 
   * Initial release.
