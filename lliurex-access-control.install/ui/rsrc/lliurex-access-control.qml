@@ -86,7 +86,23 @@ ApplicationWindow {
                 }
 
             }
-
+            replaceEnter: Transition {
+                PropertyAnimation {
+                    property: "opacity"
+                    from: 0
+                    to:1
+                    duration: 600
+                }
+            }
+            replaceExit: Transition {
+                PropertyAnimation {
+                    property: "opacity"
+                    from: 1
+                    to:0
+                    duration: 600
+                }
+            }
+            
             Component{
                 id:loadingView
                 Loading{

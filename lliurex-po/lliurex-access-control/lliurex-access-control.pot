@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-31 14:28+0200\n"
+"POT-Creation-Date: 2022-06-01 17:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,14 +42,19 @@ msgstr ""
 msgid "Control by groups"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:36
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:37
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:221
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:294
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:312
 msgid "Control by users"
 msgstr ""
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:48
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:50
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:132
+msgid "Control by center"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:63
 msgid "Help"
 msgstr ""
 
@@ -68,6 +73,7 @@ msgstr ""
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:88
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:190
 #: ../lliurex-access-control.install/ui/rsrc/ChangesDialog.qml:53
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:102
 msgid "Apply"
 msgstr ""
 
@@ -76,11 +82,13 @@ msgstr ""
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:270
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:362
 #: ../lliurex-access-control.install/ui/rsrc/ChangesDialog.qml:82
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:118
 msgid "Cancel"
 msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:120
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:296
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:134
 msgid ""
 "The are pending changes to apply.\n"
 "Do you want apply the changes or discard them?"
@@ -88,6 +96,7 @@ msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:154
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:408
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:179
 msgid "Changes applied successfully"
 msgstr ""
 
@@ -105,11 +114,13 @@ msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:187
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:451
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:216
 msgid "Apply changes. Wait a moment..."
 msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:198
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:462
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:228
 msgid "Restoring previous values. Wait a moment..."
 msgstr ""
 
@@ -210,6 +221,38 @@ msgstr ""
 msgid "Clic to remove this user from the list"
 msgstr ""
 
+#: ../lliurex-access-control.install/ui/rsrc/Loading.qml:39
+msgid "Loading. Wait a moment..."
+msgstr ""
+
 #: ../lliurex-access-control.install/ui/rsrc/ChangesDialog.qml:67
 msgid "Discard"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:11
+msgid "Restrict access by center"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:43
+msgid "Activated access control by center on this computer"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:62
+msgid "Lock access to users who do not belong to the center:"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:182
+msgid "It is not possible to deactive access control by center"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:185
+msgid "Unable to update the center code"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:188
+msgid "No center code has been indicated"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:191
+msgid "Center code is not valid"
 msgstr ""
