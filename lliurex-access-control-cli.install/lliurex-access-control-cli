@@ -9,11 +9,11 @@ _lliurex-access-control-cli()
     #
     #  The basic options we'll complete.
     #
-    opts="currentconfig lockgroup unlockgroup disablecontrolgroup enablecontrolgroup lockuser unlockuser disablecontroluser enablecontroluser removeuserfromlist removeuserlist help"
+    opts="currentconfig lockgroup unlockgroup disablecontrolgroup enablecontrolgroup lockuser unlockuser disablecontroluser enablecontroluser removeuserfromlist removeuserlist setcenter removecenter disablecontrolcenter enablecontrolcenter help"
 
     case "${prev}" in 
         currentconfig)
-            local running="groups users all"
+            local running="groups users center all"
             COMPREPLY=( $(compgen -W "${running}" -- ${cur}) )
             return 0
             ;;
