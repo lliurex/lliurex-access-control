@@ -10,6 +10,7 @@ Item {
 
 	property alias optionIcon:menuOptionIcon.source
 	property alias optionText:menuOptionText.text
+  property alias optionEnabled:menuOption.enabled
 	signal menuOptionClicked()
 
 	Rectangle{

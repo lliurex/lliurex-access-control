@@ -1,6 +1,7 @@
 import os
 import json
 import codecs
+import ConfigParser
 
 class AccessControlManager:
 
@@ -8,7 +9,8 @@ class AccessControlManager:
 	SET_GROUP_ERROR=-20
 	DISABLE_USER_ACCESS_CONTROL_ERROR=-30
 	SET_USER_ERROR=-40
-
+	DISABLE_CDC_ACCESS_CONTROL_ERROR=-50
+	SET_CDC_ERROR=-60
 
 	def __init__(self):
 
@@ -19,7 +21,13 @@ class AccessControlManager:
 		self.defaultGroupsFile=os.path.join(self.configPath+"/groups-lists","defaultGroups.json")
 		self.userDenyListPath=os.path.join(self.configPath,"login.user.deny")
 		self.usersList=os.path.join(self.configPath+"/users-lists","usersList.json")
-	
+		self.sssdConfigPath="/etc/sssd/sssd.conf"
+		self.cdcInfo=os.path.join(self.configPath+"/cdc-info","cdc.json")
+		self.sectionRefDesa="domain/DESEDU.GVA.ES"
+		self.sectionRefPro="domain/EDU.GVA.ES"
+		self.sectionRefAlu="domain/ALU.EDU.GVA.ES"
+		self.optionRef="simple_allow_groups"
+
 	#def __init__
 
 	def isAccessDenyGroupEnabled(self):
@@ -258,6 +266,163 @@ class AccessControlManager:
 	
 	#def _writeDefaultGroupFile
 
+	def isCDCAccessControlAllowed(self):
+
+		isAllowed=False
+		
+		if os.path.exists(self.sssdConfigPath):
+			isAllowed=True
+
+		return {'status':isAllowed,'msg':'','data':''}
+
+	#def isCdcAccessControlAllowed
+
+	def isAccessDenyCDCEnabled(self):
+
+		isEnabled=False
+		currentCode=self._readSSSDConfFile()
+		
+		if currentCode!="":
+			isEnabled=True
+		
+		return {'status':isEnabled,'msg':'','data':''}
+
+	#def isAccessDenyCdcEnabled
+
+	def getCDCInfo(self):
+
+		currentCode=self._readSSSDConfFile()
+		cdcInfo=self._readCDCInfo()
+
+		if len(cdcInfo)>0:
+			if currentCode!="":
+				if not cdcInfo["accessControlEnabled"]:
+					cdcInfo["accessControlEnabled"]=True
+				if cdcInfo["code"]!=currentCode:
+					cdcInfo["code"]=currentCode
+			else:
+				if cdcInfo["accessControlEnabled"]:
+					cdcInfo["accessControlEnabled"]=False
+
+		else:
+			if currentCode!="":
+				cdcInfo["accessControlEnabled"]=True
+				cdcInfo["code"]=currentCode
+			else:
+				cdcInfo["accessControlEnabled"]=False
+				cdcInfo["code"]=""
+				
+		return {'status':True,'msg':'','data':cdcInfo}
+
+	#def getCdcInfo
+
+	def setCDCInfo(self,cdcInfo):
+
+		currentCode=""
+
+		try:
+			if len(cdcInfo)>0:
+				with open(self.cdcInfo,'w') as fd:
+					json.dump(cdcInfo,fd)
+
+				if cdcInfo["accessControlEnabled"]:
+					currentCode='GRP_%s,AdminSai'%cdcInfo["code"]
+					return self._writeSSSDConfFile(currentCode)
+				else:
+					return self.disableAccessDenyCDC()
+			else:
+				if os.path.exists(self.cdcInfo):
+					os.remove(self.cdcInfo)
+					return self.disableAccessDenyCDC()
+		except:
+			return {'status':False,'msg':AccessControlManager.SET_CDC_ERROR,'data':''}
+	
+	#def setCdcInfo
+
+	def disableAccessDenyCDC(self,updateCDCInfo=False):
+
+		if updateCDCInfo:
+			try:
+				cdcInfo=self._readCDCInfo()
+				if len(cdcInfo)>0:
+					if cdcInfo["accessControlEnabled"]:
+						cdcInfo["accessControlEnabled"]=False
+						with open(self.cdcInfo,'w') as fd:
+							json.dump(cdcInfo,fd)
+			except:
+				return {'status':False,'msg':AccessControlManager.DISABLE_CDC_ACCESS_CONTROL_ERROR,'data':''}
+
+		return self._writeSSSDConfFile()
+
+	#def disableAccessDenyCdc
+	
+	def _readCDCInfo(self):
+
+		cdcInfo={}
+
+		if os.path.exists(self.cdcInfo):
+			with open(self.cdcInfo,'r') as fd:
+				cdcInfo=json.load(fd)
+
+		return cdcInfo
+
+	#def _readCDCInfo
+
+	def _readSSSDConfFile(self):
+
+		currentCode=""
+		sectionRef=""
+
+		if os.path.exists(self.sssdConfigPath):
+			configFile=ConfigParser.ConfigParser()
+			configFile.optionxform=str
+			configFile.read(self.sssdConfigPath)
+			if configFile.has_section(self.sectionRefDesa):
+				sectionRef=self.sectionRefDesa
+			elif configFile.has_section(self.sectionRefPro):
+				sectionRef=self.sectionRefPro
+
+			if sectionRef!="":
+				if configFile.has_option(sectionRef,self.optionRef):
+					tmpCode=configFile.get(sectionRef,self.optionRef)
+					currentCode=tmpCode.split("GRP_")[1].split(",")[0]
+
+		return currentCode
+
+	#def _readSSSDConfFile
+
+	def _writeSSSDConfFile(self,code=""):
+		
+		sectionRef=[]
+		try:
+			if os.path.exists(self.sssdConfigPath):
+				configFile=ConfigParser.ConfigParser()
+				configFile.optionxform=str
+				configFile.read(self.sssdConfigPath)
+				if configFile.has_section(self.sectionRefDesa):
+					sectionRef.append(self.sectionRefDesa)
+				elif configFile.has_section(self.sectionRefPro):
+					sectionRef.append(self.sectionRefPro)
+					if configFile.has_section(self.sectionRefAlu):
+						sectionRef.append(self.sectionRefAlu)
+
+				if len(sectionRef)>0:
+					for item in sectionRef:
+						if code!="":
+							configFile.set(item,self.optionRef,code)
+						else:
+							configFile.remove_option(item,self.optionRef)
+
+					with open(self.sssdConfigPath,'w') as fd:
+						configFile.write(fd)
+
+			os.system('systemctl restart sssd')
+			return {'status':True,'msg':'','data':''}
+
+		except Exception as e:
+			return {'status':False,'msg':AccessControlManager.SET_CDC_ERROR,'data':''}
+	
+	#def _writeSSSDConfFile 
 	
 #class AccessControlManager 
 

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.6
 import QtQml.Models 2.6
 import org.kde.plasma.components 2.0 as Components
 import org.kde.plasma.extras 2.0 as PlasmaExtras
+import org.kde.kirigami 2.12 as Kirigami
 
 
 
@@ -43,7 +44,13 @@ Rectangle {
                 userId:model.userId
                 isLocked:model.isLocked
             }
-
+            Kirigami.PlaceholderMessage { 
+                id: emptyUserHint
+                anchors.centerIn: parent
+                width: parent.width - (units.largeSpacing * 4)
+                visible:listUser.count>0?false:true
+                text: i18nd("lliurex-access-control","The user list is empty")
+            }
       } 
     }
 }
