@@ -160,7 +160,7 @@ class AccessControlCliManager(object):
 						return 0
 					except n4d.client.CallFailedError as e:
 						self.writeLog("- Error applying changes: %s"%e.code)
-						print('   [Acess-Control]: Error. Unable to activate group access control')
+						print('   [Access-Control]: Error. Unable to activate group access control')
 						return 1
 				else:
 					print('   [Access-Control]: Action canceled')
@@ -329,13 +329,13 @@ class AccessControlCliManager(object):
 
 		return self._changeCDCCode('set',cdcCode)
 	
-	#def lockCenter
+	#def setCenter
 
 	def removeCenter(self):
 
 		return self._changeCDCCode('remove')
 	
-	#def unlockCenter
+	#def removeCenter
 
 	def disableControlCenter(self):
 
@@ -664,7 +664,7 @@ class AccessControlCliManager(object):
 			print('      - Access control by center is currently not allowed')
 			return 1
 
-	#def _changeGroupStatus
+	#def _changeCDCCode
 	
 	def _checkCorrectCode(self,action,cdcCode=""):
 
