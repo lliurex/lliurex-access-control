@@ -21,7 +21,7 @@ ApplicationWindow {
     maximumHeight: mainLayout.Layout.maximumHeight + 2 * margin
     Component.onCompleted: {
         x = Screen.width / 2 - width / 2
-        y = Screen.height / 2 - height / 2
+        y = Screen.height / 2 - height / 0.5
     }
 
     
