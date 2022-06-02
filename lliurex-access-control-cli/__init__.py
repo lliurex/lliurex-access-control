@@ -24,10 +24,13 @@ class AccessControlCliManager(object):
 		self.unattendedMode=mode
 		self.groupsUnLockedCount=0
 		self.usersUnLockedCount=0
+		self.cdcInfo={}
+		self.cdcCode=""
+		self.isCDCAccessControlAllowed=False
+		self.isAccessDenyCDCEnabled=False
 		self.n4dClient=n4d.client.Client()
 		self._getCurrentUser()
 		self._getInfo()
-
 
 	#def __init__
 
@@ -77,6 +80,18 @@ class AccessControlCliManager(object):
 					print('         - %s: locked access %s'%(item,str(self.usersInfo[item]["isLocked"])))
 			else:
 				print('         - There is no user in users list')
+		
+		if optionInfo=="all" or optionInfo=="center":
+			print('   [Access-Control]: Current access control by center configuration')
+			if not self.isCDCAccessControlAllowed:
+				print('      - Access control by center is currently not allowed')
+			else:
+				print('      - Access control by center activated: %s'%(str(self.isAccessDenyCDCEnabled)))
+				if self.cdcCode!="":
+					print('      - Current center code configured: %s'%(str(self.cdcCode)))
+				else:
+					print('      - Current center code configured: None')
+
 		return 0
 	
 	#def showCurrentConfig
@@ -145,7 +160,7 @@ class AccessControlCliManager(object):
 						return 0
 					except n4d.client.CallFailedError as e:
 						self.writeLog("- Error applying changes: %s"%e.code)
-						print('   [Acess-Control]: Error. Unable to activate group access control')
+						print('   [Access-Control]: Error. Unable to activate group access control')
 						return 1
 				else:
 					print('   [Access-Control]: Action canceled')
@@ -246,6 +261,10 @@ class AccessControlCliManager(object):
 		if correctUsers:
 			if (len(usersSelected)==len(self.usersInfo)) and self.isAccessDenyUserEnabled:
 				print('   [Access-Control]: This action will be disable access control by user')
+			else:
+				if (len(usersSelected)<len(self.usersInfo)) and not self.isAccessDenyUserEnabled:
+					print('   [Access-Control]: This action will be enable access control by user')
+
 			if not self.unattendedMode:
 				response=input('   [Access-Control]: Do you want to delete indicated users from users list? (yes/no)): ').lower()
 			else:
@@ -306,10 +325,98 @@ class AccessControlCliManager(object):
 
 	#def removeUserList
 
+	def setCenter(self,cdcCode):
+
+		return self._changeCDCCode('set',cdcCode)
+	
+	#def setCenter
+
+	def removeCenter(self):
+
+		return self._changeCDCCode('remove')
+	
+	#def removeCenter
+
+	def disableControlCenter(self):
+
+		if self.isCDCAccessControlAllowed:
+			if self.isAccessDenyCDCEnabled:
+				if not self.unattendedMode:
+					response=input('   [Access-Control]: Do you want to disable center access control? (yes/no)): ').lower()
+				else:
+					response='yes'
+
+				if response.startswith('y'):
+					self.writeLog("Changes in configuration of access control by CDC:")		
+					try:
+						self.writeLog("- Action: disable access control by CDC")
+						self.createClient()
+						ret=self.n4dClient.AccessControlManager.disableAccessDenyCDC(True)
+						self.writeLog("- Disable access control by CDC: Change apply successful")
+						print('   [Access-Control]: Action completed successfull')
+						self._getCDCInfo("End")
+						return 0
+					except n4d.client.CallFailedError as e:
+						self.writeLog("- Error applying changes: %s"%e.code)
+						print('   [Acess-Control]: Error. Unable to disable CDC access control')
+						return 1			
+				else:
+					print('   [Access-Control]: Action canceled')
+					return 0
+			else:
+				print('   [Access-Control]: Access control by center already disable. Nothing to do')
+				return 0
+		else:
+			print('      - Access control by center is currently not allowed')
+			return 1
+
+	#def disableControlCenter
+
+	def enableControlCenter(self):
+
+		if self.isCDCAccessControlAllowed:
+			if not self.isAccessDenyCDCEnabled:
+				if self.cdcCode!="":
+					if not self.unattendedMode:
+						response=input('   [Access-Control]: Do you want to enable center access control? (yes/no)): ').lower()
+					else:
+						response='yes'
+
+					if response.startswith('y'):
+						self.writeLog("Changes in configuration of access control by CDC:")		
+						try:
+							self.writeLog("- Action: enable access control by CDC")
+							self.createClient()
+							self.cdcInfo["accessControlEnabled"]=True
+							ret=self.n4dClient.AccessControlManager.setCDCInfo(self.cdcInfo)
+							self.writeLog("- Enable access control by CDC: Change apply successful")
+							print('   [Access-Control]: Action completed successfull')
+							self._getCDCInfo("End")
+							return 0
+						except n4d.client.CallFailedError as e:
+							self.writeLog("- Error applying changes: %s"%e.code)
+							print('   [Access-Control]: Error. Unable to activate center access control')
+							return 1
+					else:
+						print('   [Access-Control]: Action canceled')
+						return 0
+				else:
+					print('   [Access-Control]: There is no center code in previous configuration. Is not possible to activate access control by center')
+					return 0
+			else:
+				print('   [Access-Control]: Access control by center already enable. Nothing to do ')
+				return 0
+		else:
+			print('      - Access control by center is currently not allowed')
+			return 1
+
+	#def enableControlCenter
+
 	def _getInfo(self):
 
 		self._getGroupInfo()
 		self._getUserInfo()
+		self._getCDCInfo()
 
 	#def _getInfo
 
@@ -344,6 +451,23 @@ class AccessControlCliManager(object):
 	
 	#def _getUserInfo
 
+	def _getCDCInfo(self,step="initial"):
+
+		self.writeLog("Access Control by Center. %s configuration:"%step)
+		self.isCDCAccessControlAllowed=self.n4dClient.AccessControlManager.isCDCAccessControlAllowed()
+		self.writeLog("- Access Control by CDC allowed: %s"%(str(self.isCDCAccessControlAllowed)))
+		self.isAccessDenyCDCEnabled=self.n4dClient.AccessControlManager.isAccessDenyCDCEnabled()
+		self.writeLog("- Access Control by CDC enabled: %s"%(str(self.isAccessDenyCDCEnabled)))
+		self.cdcInfo=self.n4dClient.AccessControlManager.getCDCInfo()
+		if self.cdcInfo["code"]!="":
+			self.cdcCode=self.cdcInfo["code"]
+			currentCode=self.cdcCode
+		else:
+			currentCode=None
+		self.writeLog("- Center code to control access: %s"%(str(currentCode)))
+
+	#def _getCDCInfo
+
 	def _changeGroupStatus(self,groupsSelected,action):
 
 		correctGroups=self._checkCorrectGroups(groupsSelected)
@@ -352,6 +476,8 @@ class AccessControlCliManager(object):
 			currentStatusChanged=self._checkCurrentConfiguration('groups',groupsSelected,action)
 			if currentStatusChanged:
 				if action=="lock" and not self.isAccessDenyGroupEnabled:
+					print('   [Access-Control]: This action will be activate access control by group')
+				elif action=="unlock" and (self.groupsUnLockedCount<len(self.groupsInfo)) and not self.isAccessDenyGroupEnabled:
 					print('   [Access-Control]: This action will be activate access control by group')
 				elif action=="unlock" and (self.groupsUnLockedCount==len(self.groupsInfo)) and self.isAccessDenyGroupEnabled:
 					print('   [Access-Control]: This action will be disable access control by group')
@@ -442,6 +568,8 @@ class AccessControlCliManager(object):
 		if currentStatusChanged:
 			if action=="lock" and not self.isAccessDenyUserEnabled:
 				print('   [Access-Control]: This action will be activate access control by user')
+			elif action=="unlock" and (self.usersUnLockedCount<len(self.usersInfo)) and not self.isAccessDenyUserEnabled:
+				print('   [Access-Control]: This action will be activate access control by user')
 			elif action=="unlock" and (self.usersUnLockedCount==len(self.usersInfo)) and self.isAccessDenyUserEnabled:
 				print('   [Access-Control]: This action will be disable access control by user')
 				
@@ -483,6 +611,76 @@ class AccessControlCliManager(object):
 
 	#def _checkCorrectUsers
 
+	def _changeCDCCode(self,action,cdcCode=""):
+
+		if self.isCDCAccessControlAllowed:
+			correctCode=self._checkCorrectCode(action,cdcCode)
+
+			if correctCode:
+				currentStatusChanged=self._checkCurrentCDCConfiguration(action,cdcCode)
+				if currentStatusChanged:
+					if action=="set" and not self.isAccessDenyCDCEnabled:
+						print('   [Access-Control]: This action will be activate access control by center')
+					elif action=="set" and self.isAccessDenyCDCEnabled:
+						print('   [Access-Control]: This action will be update the currently center code')
+					elif action=="remove" and self.isAccessDenyCDCEnabled:
+						print('   [Access-Control]: This action will be disable access control by center')
+					
+					if not self.unattendedMode:
+						response=input('   [Access-Control]: Do you want to %s center code to control access by center? (yes/no)): '%action).lower()
+					else:
+						response='yes'	
+					
+					if response.startswith('y'):
+						self.writeLog("Changes in configuration of access control by Center:")		
+						try:
+							self.writeLog("- Action: change center code %s"%action)
+							self.createClient()
+							ret=self._applyCDCChanges(action,cdcCode)
+							self.writeLog("- New center code: Changes apply successful")
+							print('   [Access-Control]: Action completed successfull')
+							self._getCDCInfo("End")
+							return 0
+						except n4d.client.CallFailedError as e:
+							self.writeLog("- Error applying changes: %s"%e.code)
+							print('   [Access-Control]: Unable to %s center code'%action)
+							return 1			
+					else:
+						print('   [Access-Control]: Action canceled')
+						return 0
+				else:
+					if action=="set":
+						print('   [Access-Control]: The indicated center code are already %sted. Nothing to do'%action)
+					else:
+						print('   [Access-Control]: There is no center code configured. Nothing to do')
+					return 0
+			else:
+				if action=="set":
+					print('   [Access-Control]: The center code indicates to %s is not correct.'%action)
+				else:
+					print('   [Access-Control]: The center code indicates to %s is not correct.See currentconfig center to get correct center code'%action)
+				return 1
+		else:
+			print('      - Access control by center is currently not allowed')
+			return 1
+
+	#def _changeCDCCode
+	
+	def _checkCorrectCode(self,action,cdcCode=""):
+
+		if action=="set":
+			if cdcCode!="":
+				if len(cdcCode)==8:
+					if cdcCode.isdecimal():
+						head=cdcCode[0:2]
+						if head in ['03','12','46']:
+							return True
+			return False
+		else:
+			return True
+
+	#def _checkCorrectCode
+
 	def _checkCurrentConfiguration(self,option,newValues,action):
 
 		match=0
@@ -510,7 +708,6 @@ class AccessControlCliManager(object):
 				except:
 					match+=1
 					pass
-		
 
 		if not newStatus:
 			if option=="groups":
@@ -529,6 +726,20 @@ class AccessControlCliManager(object):
 
 	#def _checkCurrentConfiguration
 
+	def _checkCurrentCDCConfiguration(self,action,newValue=""):
+
+		if action=="set":
+			if newValue!=self.cdcCode:
+				return True
+			return False
+		elif action=="remove":
+			if self.cdcCode!="":
+				return True
+			else:
+				return False
+	
+	#def _checkCurrentCDCConfiguration
+		
 	def _applyGroupChanges(self,groupsSelected,action):
 
 		for item in self.groupsInfo:
@@ -594,6 +805,19 @@ class AccessControlCliManager(object):
 	
 	#def _checkIfUserIsLocalAdmin
 
+	def _applyCDCChanges(self,action,cdcCode=""):
+
+		if action=="set":
+			if not self.cdcInfo["accessControlEnabled"]:
+				self.cdcInfo["accessControlEnabled"]=True
+			self.cdcInfo["code"]=cdcCode
+		elif action=="remove":
+			self.cdcInfo={}
+
+		return self.n4dClient.AccessControlManager.setCDCInfo(self.cdcInfo)
+
+	#def _applyCDCChanges
+
 	def _getCurrentUser(self):
 
 		sudoUser=""
@@ -653,7 +877,6 @@ class AccessControlCliManager(object):
 	#def _checkIfUserIsCurrentUser
 
 	def _checkIfExistsLock(self,option):
-
 
 		if option=="groups":
 			data=self.groupsInfo
