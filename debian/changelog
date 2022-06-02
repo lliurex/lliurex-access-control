@@ -1,3 +1,9 @@
+lliurex-access-control (0.2.1) bionic-updates; urgency=medium
+
+  * Fixed windows position.
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 02 Jun 2022 09:44:49 +0200
+
 lliurex-access-control (0.2) bionic-updates; urgency=medium
 
   * Added option to manage access control by center code.
