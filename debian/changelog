@@ -1,3 +1,10 @@
+lliurex-access-control (1.2) focal-updates; urgency=medium
+
+  * Added option to access control by center
+  * Changed some qml to reduce ram consumption
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 02 Jun 2022 10:22:15 +0200
+
 lliurex-access-control (1.1) focal; urgency=medium
 
   * Check if cli it's exec with root user
