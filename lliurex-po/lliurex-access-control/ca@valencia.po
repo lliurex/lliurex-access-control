@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-06-01 17:05+0200\n"
-"PO-Revision-Date: 2022-06-01 17:15+0200\n"
+"PO-Revision-Date: 2022-06-03 11:30+0200\n"
 "Last-Translator: lliurex <lliurex@gva.es>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -215,7 +215,7 @@ msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/UserList.qml:52
 msgid "The user list is empty"
-msgstr "La llista d'usuaris és buida"
+msgstr "La llista d'usuaris està buida"
 
 #: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:41
 msgid "Check to unlock access to this user"
