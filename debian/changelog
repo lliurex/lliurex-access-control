@@ -1,3 +1,9 @@
+lliurex-access-control (0.2.2) bionic-updates; urgency=medium
+
+  * Fixed translations
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 03 Jun 2022 11:32:36 +0200
+
 lliurex-access-control (0.2.1) bionic-updates; urgency=medium
 
   * Fixed windows position.
