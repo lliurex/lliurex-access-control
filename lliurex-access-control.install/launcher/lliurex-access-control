@@ -12,7 +12,7 @@ class Tunnel(QObject):
 	def __init__(self):
 
 		QObject.__init__(self)
-		#self.clearCache()
+		self.clearCache()
 
 	#def __init	
 
