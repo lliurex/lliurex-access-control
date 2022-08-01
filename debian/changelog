@@ -1,3 +1,9 @@
+lliurex-access-control (1.2.4) focal; urgency=medium
+
+  * Changed spinner to reduce ram consumption
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 01 Aug 2022 13:40:18 +0200
+
 lliurex-access-control (1.2.3) focal-updates; urgency=medium
 
   * Enable function to clear cache
