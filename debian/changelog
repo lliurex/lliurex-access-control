@@ -1,3 +1,9 @@
+lliurex-access-control (0.2.4) bionic; urgency=medium
+
+  * Changed spinner to reduce ram consumption
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 02 Aug 2022 08:54:57 +0200
+
 lliurex-access-control (0.2.3) bionic-updates; urgency=medium
 
   * Fixed translations
