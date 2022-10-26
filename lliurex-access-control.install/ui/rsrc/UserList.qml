@@ -23,7 +23,7 @@ Rectangle {
     } 
     PC3.ScrollView{
         implicitWidth:parent.width
-        implicitHeight:130
+        implicitHeight:parent.height
         anchors.leftMargin:10
    
         ListView{

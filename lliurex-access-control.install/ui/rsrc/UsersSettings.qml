@@ -18,7 +18,8 @@ Rectangle{
         rows:2
         flow: GridLayout.TopToBottom
         rowSpacing:10
-        Layout.fillWidth: true
+        width:parent.width
+        height:parent.height-90
         anchors.left:parent.left
 
         Kirigami.InlineMessage {
@@ -27,8 +28,9 @@ Rectangle{
             text:getMessageText(accessControlBridge.showSettingsUserMessage[1])
             type:getMessageType(accessControlBridge.showSettingsUserMessage[2])
             Layout.minimumWidth:490
-            Layout.maximumWidth:490
+            Layout.fillWidth:true
             Layout.topMargin: 40
+            Layout.rightMargin:10
         }
 
         GridLayout{
@@ -53,26 +55,28 @@ Rectangle{
             }
             RowLayout {
                 Layout.fillWidth: true
-                Layout.alignment:Qt.AlignLeft
+                Layout.alignment:Qt.AlignCenter
+                Layout.rightMargin:addUserBtn.width+25
 
                 Text{
                     id:usersList
                     text:i18nd("lliurex-access-control","Users with restricted access:")
                     font.pointSize:10
-                    Layout.leftMargin:60
+                    width:userEntry.width
                 }
             }
             RowLayout {
                 id:entryRow
-                Layout.fillWidth: true
                 Layout.alignment:Qt.AlignLeft
                 visible:false
-
+                Layout.rightMargin:addUserBtn.width+25
+                
                 TextField{
                     id:userEntry
                     placeholderText:i18nd("lliurex-access-control","Username")
-                    implicitWidth:263
                     font.pointSize:10
+                    width:263
+                    Layout.fillWidth:true
                     focus:true
 
                 }
@@ -123,17 +127,20 @@ Rectangle{
 
             }
             RowLayout{
-                Layout.fillWidth: true
                 Layout.alignment:Qt.AlignHCenter
+                Layout.rightMargin:10
 
                 UserList{
                     id:userList
                     structModel:accessControlBridge.usersModel
                     structEnabled:userControlCb.checked
+                    Layout.fillHeight:true
+                    Layout.fillWidth:true
+
                 }
                 ColumnLayout{
+                    id:userBtnLayout
                     Layout.leftMargin:10
-                    Layout.alignment:Qt.AlignHCenter
                     Button{
                         id:addUserBtn
                         display:AbstractButton.TextBesideIcon

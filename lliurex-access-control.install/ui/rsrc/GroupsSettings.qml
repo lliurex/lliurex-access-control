@@ -18,8 +18,9 @@ Rectangle{
         rows:2
         flow: GridLayout.TopToBottom
         rowSpacing:10
-        Layout.fillWidth: true
         anchors.left:parent.left
+        width:parent.width-10
+        height:parent.height-90
         enabled:true
         Kirigami.InlineMessage {
             id: messageLabel
@@ -27,7 +28,7 @@ Rectangle{
             text:getMessageText(accessControlBridge.showSettingsGroupMessage[1])
             type:getMessageType(accessControlBridge.showSettingsGroupMessage[2])
             Layout.minimumWidth:490
-            Layout.maximumWidth:490
+            Layout.fillWidth:true
             Layout.topMargin: 40
         }
 
@@ -68,6 +69,9 @@ Rectangle{
                 id:groupList
                 structModel:accessControlBridge.groupsModel
                 structEnabled:groupControlCb.checked
+                Layout.fillHeight:true
+                Layout.fillWidth:true
+ 
             }
         }
     }
