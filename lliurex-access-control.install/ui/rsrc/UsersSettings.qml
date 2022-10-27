@@ -73,7 +73,7 @@ Rectangle{
                 
                 TextField{
                     id:userEntry
-                    placeholderText:i18nd("lliurex-access-control","Username")
+                    placeholderText:i18nd("lliurex-access-control","User names separated by space")
                     font.pointSize:10
                     width:263
                     Layout.fillWidth:true
@@ -89,7 +89,7 @@ Rectangle{
                    ToolTip.delay: 1000
                    ToolTip.timeout: 3000
                    ToolTip.visible: hovered
-                   ToolTip.text:i18nd("lliurex-access-control","Click to add the user to list")
+                   ToolTip.text:i18nd("lliurex-access-control","Click to add the users to list")
                    Keys.onReturnPressed: applyUserBtn.clicked()
                    Keys.onEnterPressed: applyUserBtn.clicked()
                    onClicked:{
@@ -145,7 +145,7 @@ Rectangle{
                         id:addUserBtn
                         display:AbstractButton.TextBesideIcon
                         icon.name:"contact-new.svg"
-                        text:i18nd("lliurex-access-control","Add user")
+                        text:i18nd("lliurex-access-control","Add users")
                         implicitWidth:140
                         enabled:userControlCb.checked && userEntry.text==""
                         Keys.onReturnPressed: addUserBtn.clicked()
@@ -230,7 +230,7 @@ Rectangle{
 
         contentItem: Rectangle {
             color: "#ebeced"
-            implicitWidth: 480
+            implicitWidth: 550
             implicitHeight: 105
             anchors.topMargin:5
             anchors.leftMargin:5
@@ -242,7 +242,7 @@ Rectangle{
             }
             Text {
                 id:adminDialogText
-                text:i18nd("lliurex-access-control","The user you want to add is a local administrator of the computer.\nDo you wish to continue?")
+                text:i18nd("lliurex-access-control","Local administrators have been detected in the list of users to add.\nDo you want to include them in the list of users?")
                 font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
                 anchors.left:adminDialogIcon.right
@@ -260,7 +260,7 @@ Rectangle{
                     id:adminDialogApplyBtn
                     display:AbstractButton.TextBesideIcon
                     icon.name:"dialog-ok.svg"
-                    text: i18nd("lliurex-access-control","Accept")
+                    text: i18nd("lliurex-access-control","Yes")
                     focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
@@ -274,7 +274,7 @@ Rectangle{
                     id:adminDialogCancelBtn
                     display:AbstractButton.TextBesideIcon
                     icon.name:"dialog-cancel.svg"
-                    text: i18nd("lliurex-access-control","Cancel")
+                    text: i18nd("lliurex-access-control","No")
                     focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
@@ -424,7 +424,7 @@ Rectangle{
                 msg=i18nd("lliurex-access-control","There are no users selected to lock their access");
                 break;
             case -90:
-                msg=i18nd("lliurex-access-control","The user already exists in the list");
+                msg=i18nd("lliurex-access-control","The indicated users already exist in the list");
                 break;
             case -100:
                 msg=i18nd("lliurex-access-control","It is not possible to lock the user with which you are configuring the access control");

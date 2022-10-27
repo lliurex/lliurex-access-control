@@ -533,7 +533,16 @@ class AccessControlCliManager(object):
 				print('   [Access-Control]: The users indicates to %s their acces are not correct. See currentconfig users to get correct users'%action)
 				return 1
 			else:
-				if self._checkIfUserIsCurrentUser(usersSelected) and action=="lock":
+				ret=self._checkIfUserIsCurrentUser(usersSelected)
+				if ret[0]:
+					for item in range(len(usersSelected)-1,-1,-1):
+						try:
+							if usersSelected[item] in ret[1]:
+								usersSelected.pop(item)
+						except:
+							pass
+
+				if len(usersSelected)==0 and action=="lock":
 					print('   [Access-Control]: It is not possible to lock the user with which you are configuring the access control')
 					return 0
 
@@ -550,18 +559,26 @@ class AccessControlCliManager(object):
 									else:
 										adminUsers=adminUsers+item
 									count+=1
-								response=input('   [Access-Control]: The user(s) %s are local computer administrator. Do you want to continue? (yes/no)): '%adminUsers).lower()
+								response=input('   [Access-Control]: The user(s) %s are local computer administrator. Do you want to lock them? (yes/no)): '%adminUsers).lower()
 							else:
-								response='yes'
+								response='no'
 
 							if not response.startswith('y'):
-								print('   [Access-Control]: Action canceled')
-								return 0
-					else:
-						print('   [Access-Control]: The indicated users that are not in the list will be added')
+								for item in range(len(usersSelected)-1,-1,-1):
+									try:
+										if usersSelected[item] in adminInUsers[1]:
+											usersSelected.pop(item)
+									except:
+										pass
 
-		if adminUsers!="":
-			self.writeLog("Action: Added admin user to user list: %s"%adminUsers)	
+								if len(usersSelected)==0:
+									print('   [Access-Control]: Action canceled')
+									return 0
+
+		if action=="lock":
+			print('   [Access-Control]: The indicated users that are not in the list will be added')
+			if adminUsers!="" and response.startswith('y'):
+				self.writeLog("Action: Added admin user to user list: %s"%adminUsers)	
 
 		currentStatusChanged=self._checkCurrentConfiguration('users',usersSelected,action)
 		
@@ -868,11 +885,15 @@ class AccessControlCliManager(object):
 
 	def _checkIfUserIsCurrentUser(self,usersSelected):
 
+		currentUserList=[]
 		for item in usersSelected:
 			if item in self.usersFilter:
-				return True
+				currentUserList.append(item)
 
-		return False
+		if len(currentUserList)>0:
+				return [True,currentUserList]
+		else:
+			return [False,currentUserList]
 
 	#def _checkIfUserIsCurrentUser
 
