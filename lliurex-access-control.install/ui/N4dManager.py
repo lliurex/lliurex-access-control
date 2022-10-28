@@ -306,16 +306,17 @@ class N4dManager:
 		localAdminList=[]
 
 		for item in userList:
-			try:
-				gid = pwd.getpwnam(item).pw_gid
-				groups_gid=os.getgrouplist(item,gid)
-				user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
-				for element in user_groups:
-					if element in adminGroups:
-						localAdminList.append(item) 
+			if item != self.currentUser:
+				try:
+					gid = pwd.getpwnam(item).pw_gid
+					groups_gid=os.getgrouplist(item,gid)
+					user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
+					for element in user_groups:
+						if element in adminGroups:
+							localAdminList.append(item) 
 
-			except Exception as e:
-				pass
+				except Exception as e:
+					pass
 
 		if len(localAdminList)>0:
 			isLocalAdmin=True

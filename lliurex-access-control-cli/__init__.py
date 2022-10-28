@@ -572,10 +572,14 @@ class AccessControlCliManager(object):
 										pass
 
 								if len(usersSelected)==0:
+									if ret[0]:
+										print('   [Access-Control]: It is not possible to lock the user with which you are configuring the access control')
 									print('   [Access-Control]: Action canceled')
 									return 0
 
 		if action=="lock":
+			if ret[0]:
+				print('   [Access-Control]: The user with which you are configuring the access control will not be locked')
 			print('   [Access-Control]: The indicated users that are not in the list will be added')
 			if adminUsers!="" and response.startswith('y'):
 				self.writeLog("Action: Added admin user to user list: %s"%adminUsers)	

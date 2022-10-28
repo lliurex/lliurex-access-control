@@ -63,8 +63,8 @@ class AddNewUser(QThread):
 		QThread.__init__(self)
 
 		self.newUser=args[0]
-		self.retCurrentUser=[]
-		self.retAdminUser=[]
+		self.retCurrentUser=[False,[]]
+		self.retAdminUser=[False,[]]
 
 	#def __init__
 
@@ -568,6 +568,9 @@ class LliurexAccessControl(QObject):
 						self._usersModel.appendRow(item,True)
 						self._updateUserList(item,False)
 					
+					if self.addNewUser.retCurrentUser[0]:
+						self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
+				
 					if not LliurexAccessControl.n4dMan.thereAreUsersLocked(self.usersInfo):
 						self.isAccessDenyUserEnabled=False
 
@@ -600,6 +603,8 @@ class LliurexAccessControl(QObject):
 			if not LliurexAccessControl.n4dMan.thereAreUsersLocked(self.usersInfo):
 				self.isAccessDenyUserEnabled=False
 
+		if self.addNewUser.retCurrentUser[0]:
+			self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
 
 	#def manageLocalAdminDialog
 
