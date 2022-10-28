@@ -451,7 +451,7 @@ class AccessControlCliManager(object):
 	
 	#def _getUserInfo
 
-	def _getCDCInfo(self,step="initial"):
+	def _getCDCInfo(self,step="Initial"):
 
 		self.writeLog("Access Control by Center. %s configuration:"%step)
 		self.isCDCAccessControlAllowed=self.n4dClient.AccessControlManager.isCDCAccessControlAllowed()
