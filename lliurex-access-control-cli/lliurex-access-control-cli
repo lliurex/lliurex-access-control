@@ -32,6 +32,7 @@ def usage():
 		with indent(4):
 			puts("-h --help : Show help")
 			puts("-u --unattended: Run the actions without prompting for user confirmation")
+			puts("-sa --skip-admin: Prevent local admin lockout. Only valid in combination with unattended option")
 	sys.exit(1)
 
 #def usage	
@@ -44,7 +45,7 @@ if __name__ == '__main__':
 
 	args = arguments.Args().copy
 	mode=False
-	nocheck=False
+	skipAdmin=False
 	debug=False
 	infoOption=None
 	groupsSelected=[]
@@ -56,6 +57,11 @@ if __name__ == '__main__':
 	if args.contains(["-u","--unattended"]):
 		mode=True
 		index = args.first(["-u","--unattended"])
+		args.pop(index)
+
+	if args.contains(["-sa","--skip-admin"]):
+		skipAdmin=True
+		index= args.first(["-sa","--skip-admin"])
 		args.pop(index)
 
 	action = args.pop(0)
@@ -93,7 +99,8 @@ if __name__ == '__main__':
 		if len(args)>0:
 			cdcCode=args.all[0]
 	
-	ac=AccessControlCliManager(mode)
+	print(skipAdmin)
+	ac=AccessControlCliManager(mode,skipAdmin)
 	
 	if action == "currentconfig":
 		sys.exit(ac.showCurrentConfig(infoOption))

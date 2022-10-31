@@ -13,7 +13,7 @@ signal.signal(signal.SIGINT,signal.SIG_IGN)
 
 class AccessControlCliManager(object):
 
-	def __init__(self,mode):
+	def __init__(self,mode,skipAdmin):
 		
 		self.groupsInfo={}
 		self.isAccessDenyGroupEnabled=False
@@ -22,6 +22,7 @@ class AccessControlCliManager(object):
 		self.usersFilter=['root']
 		self.currentUser=""
 		self.unattendedMode=mode
+		self.skipAdmin=skipAdmin
 		self.groupsUnLockedCount=0
 		self.usersUnLockedCount=0
 		self.cdcInfo={}
@@ -561,7 +562,10 @@ class AccessControlCliManager(object):
 									count+=1
 								response=input('   [Access-Control]: The user(s) %s are local computer administrator. Do you want to lock them? (yes/no)): '%adminUsers).lower()
 							else:
-								response='no'
+								if self.skipAdmin:
+									response='no'
+								else:
+									response='yes'
 
 							if not response.startswith('y'):
 								for item in range(len(usersSelected)-1,-1,-1):
@@ -578,8 +582,9 @@ class AccessControlCliManager(object):
 									return 0
 
 		if action=="lock":
-			if ret[0]:
-				print('   [Access-Control]: The user with which you are configuring the access control will not be locked')
+			if not correctUsers:
+				if ret[0]: 
+					print('   [Access-Control]: The user with which you are configuring the access control will not be locked')
 			print('   [Access-Control]: The indicated users that are not in the list will be added')
 			if adminUsers!="" and response.startswith('y'):
 				self.writeLog("Action: Added admin user to user list: %s"%adminUsers)	
@@ -883,6 +888,7 @@ class AccessControlCliManager(object):
 			self.writeLog("User login in CLI: No current user detected. A script may have been executed at login")
 
 		self.writeLog("Unattended Mode:%s"%(str(self.unattendedMode)))
+		self.writeLog("Skip Admin: %s"%(str(self.skipAdmin)))
 
 	#def _getCurrentUser
 
