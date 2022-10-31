@@ -1,3 +1,9 @@
+lliurex-access-control (1.2.6) focal; urgency=medium
+
+  * Clean code
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 31 Oct 2022 10:57:10 +0100
+
 lliurex-access-control (1.2.5) focal; urgency=medium
 
   * Added to the GUI some improvements in user access control
