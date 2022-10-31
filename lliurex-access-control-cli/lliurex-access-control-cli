@@ -99,7 +99,6 @@ if __name__ == '__main__':
 		if len(args)>0:
 			cdcCode=args.all[0]
 	
-	print(skipAdmin)
 	ac=AccessControlCliManager(mode,skipAdmin)
 	
 	if action == "currentconfig":
