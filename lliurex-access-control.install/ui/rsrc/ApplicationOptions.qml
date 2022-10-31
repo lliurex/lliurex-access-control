@@ -11,7 +11,9 @@ GridLayout{
 
     Rectangle{
         width:160
-        height:380
+        Layout.minimumHeight:370
+        Layout.preferredHeight:370
+        Layout.fillHeight:true
         border.color: "#d3d3d3"
 
         GridLayout{
@@ -74,10 +76,10 @@ GridLayout{
     StackView{
         id: optionsView
         property int currentIndex:accessControlBridge.currentOptionsStack
-        implicitHeight: 380
         Layout.fillWidth:true
         Layout.fillHeight: true
-        
+        Layout.alignment:Qt.AlignHCenter
+       
         initialItem:groupsView
 
         onCurrentIndexChanged:{

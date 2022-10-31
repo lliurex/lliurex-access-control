@@ -299,35 +299,46 @@ class N4dManager:
 
 	#def thereAreUsersLocked
 	
-	def checkIfUserIsLocalAdmin(self,user):
+	def checkIfUserIsLocalAdmin(self,userList):
 
 		adminGroups=["sudo","admins","adm"]
 		isLocalAdmin=False
+		localAdminList=[]
 
-		try:
-			gid = pwd.getpwnam(user).pw_gid
-			groups_gid=os.getgrouplist(user,gid)
-			user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
-			for element in user_groups:
-				if element in adminGroups:
-					isLocalAdmin=True 
-					break
-		except:
-			isLocalAdmin=False
+		for item in userList:
+			if item != self.currentUser:
+				try:
+					gid = pwd.getpwnam(item).pw_gid
+					groups_gid=os.getgrouplist(item,gid)
+					user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
+					for element in user_groups:
+						if element in adminGroups:
+							localAdminList.append(item) 
 
-		return isLocalAdmin
+				except Exception as e:
+					pass
+
+		if len(localAdminList)>0:
+			isLocalAdmin=True
+
+		return [isLocalAdmin,localAdminList]
 
 	#def checkIfUserIsLocalAdmin
 
-	def checkIfUserIsCurrrentUser(self,user):
+	def checkIfUserIsCurrrentUser(self,userList):
 
 		userListFilter=[self.currentUser,'root']
 		isCurrentUser=False
-		
-		if user in userListFilter:
-			isCurrentUser=True 
+		currentUserList=[]
 
-		return isCurrentUser
+		for user in userList:
+			if user in userListFilter:
+				currentUserList.append(user)
+
+		if len(currentUserList)>0:
+			isCurrentUser=True
+
+		return [isCurrentUser,currentUserList]
 
 	#def checkIfUserIsCurrrentUser 
 

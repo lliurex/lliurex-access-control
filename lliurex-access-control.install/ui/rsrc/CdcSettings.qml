@@ -18,7 +18,7 @@ Rectangle{
         rows:2
         flow: GridLayout.TopToBottom
         rowSpacing:10
-        Layout.fillWidth: true
+        width:parent.width-10
         anchors.left:parent.left
 
         Kirigami.InlineMessage {
@@ -27,7 +27,7 @@ Rectangle{
             text:getMessageText(accessControlBridge.showSettingsCDCMessage[1])
             type:getMessageType(accessControlBridge.showSettingsCDCMessage[2])
             Layout.minimumWidth:490
-            Layout.maximumWidth:490
+            Layout.fillWidth:true
             Layout.topMargin: 40
         }
 
