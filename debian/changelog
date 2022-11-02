@@ -1,3 +1,11 @@
+lliurex-access-control (0.2.5) bionic; urgency=medium
+
+  * Added in GUI some improvements in user access-control
+  * Added new param in CLI
+  * Maked window resizable 
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 02 Nov 2022 10:10:30 +0100
+
 lliurex-access-control (0.2.4) bionic; urgency=medium
 
   * Changed spinner to reduce ram consumption
