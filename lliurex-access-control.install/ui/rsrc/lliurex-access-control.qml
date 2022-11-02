@@ -17,11 +17,9 @@ ApplicationWindow {
     height: mainLayout.implicitHeight + 2 * margin
     minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
     minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
-    maximumWidth: mainLayout.Layout.maximumWidth + 2 * margin
-    maximumHeight: mainLayout.Layout.maximumHeight + 2 * margin
     Component.onCompleted: {
         x = Screen.width / 2 - width / 2
-        y = Screen.height / 2 - height / 0.5
+        y = Screen.height / 2 - height /2
     }
 
     
@@ -46,27 +44,35 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.margins: margin
         Layout.minimumWidth:670
-        Layout.maximumWidth:670
+        Layout.preferredWidth:670
         Layout.minimumHeight:500
-        Layout.maximumHeight:500
 
         RowLayout {
             id: bannerBox
             Layout.alignment:Qt.AlignTop
-            Layout.minimumHeight:120
-            Layout.maximumHeight:120
-
-            Image{
-                id:banner
-                source: "/usr/share/lliurex-access-control/rsrc/banner.png"
+            Rectangle{
+                color: "#0049ac"
+                Layout.minimumWidth:mainLayout.width
+                Layout.preferredWidth:mainLayout.width
+                Layout.fillWidth:true
+                Layout.minimumHeight:120
+                Layout.maximumHeight:120
+                Image{
+                    id:banner
+                    source: "/usr/share/lliurex-access-control/rsrc/banner.png"
+                    anchors.centerIn:parent
+                }
             }
         }
 
         StackView {
             id: mainView
             property int currentIndex:accessControlBridge.currentStack
-            implicitWidth: 670
-            Layout.alignment:Qt.AlignHCenter
+            Layout.minimumWidth:670
+            Layout.preferredWidth:670
+            Layout.minimumHeight:370
+            Layout.preferredHeight:370
+            Layout.alignment:Qt.AlignHCenter|Qt.AlignVCenter
             Layout.leftMargin:0
             Layout.fillWidth:true
             Layout.fillHeight: true

@@ -24,6 +24,7 @@ Components.ListItem{
     Item{
         id: menuItem
         height:visible?30:0
+        width:parent.width-removeUserBtn.width
         CheckBox {
             id:userCheck
             checked:isLocked
@@ -48,7 +49,7 @@ Components.ListItem{
         Text{
             id: userName
             text: userId
-            width:240
+            width: parent.width-removeUserBtn.width-20
             clip: true
             anchors.left:userCheck.right
             anchors.leftMargin:5

@@ -14,9 +14,8 @@ Rectangle{
         id: loginGrid
         rows: 6
         flow: GridLayout.TopToBottom
-        Layout.topMargin: 10
-        Layout.bottomMargin: 10
         anchors.centerIn:parent
+        width:parent.width-10
         rowSpacing:10
 
         Item {

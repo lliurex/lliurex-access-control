@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-01 17:05+0200\n"
-"PO-Revision-Date: 2022-06-28 11:18+0200\n"
+"POT-Creation-Date: 2022-11-02 08:54+0100\n"
+"PO-Revision-Date: 2022-11-02 08:57+0100\n"
 "Last-Translator: lliurex <lliurex@gva.es>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -19,44 +19,44 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.0.6\n"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:35
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:34
 msgid "User"
 msgstr "Usuario"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:52
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:51
 msgid "Password"
 msgstr "Contraseña"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:67
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:66
 msgid "Login"
 msgstr "Acceder"
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:73
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:72
 msgid "Validating user..."
 msgstr "Validando usuario..."
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:91
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:90
 msgid "Invalid user"
 msgstr "Usuario no válido"
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:25
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:118
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:27
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:122
 msgid "Control by groups"
 msgstr "Control por grupos"
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:37
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:221
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:294
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:312
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:39
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:228
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:301
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:319
 msgid "Control by users"
 msgstr "Control por usuarios"
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:50
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:52
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:132
 msgid "Control by center"
 msgstr "Control por centro"
 
-#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:63
+#: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:65
 msgid "Help"
 msgstr "Ayuda"
 
@@ -64,32 +64,31 @@ msgstr "Ayuda"
 msgid "Restrict access by group"
 msgstr "Restringir acceso por grupo"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:43
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:44
 msgid "Activated access control by group on this computer"
 msgstr "Activar el control de acceso por grupos en este equipo"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:62
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:63
 msgid "Groups with restricted access:"
 msgstr "Grupos con el acceso restringido:"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:88
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:190
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:92
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:197
 #: ../lliurex-access-control.install/ui/rsrc/ChangesDialog.qml:53
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:102
 msgid "Apply"
 msgstr "Aplicar"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:104
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:206
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:270
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:362
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:108
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:213
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:369
 #: ../lliurex-access-control.install/ui/rsrc/ChangesDialog.qml:82
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:118
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:120
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:296
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:124
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:303
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:134
 msgid ""
 "The are pending changes to apply.\n"
@@ -98,32 +97,32 @@ msgstr ""
 "Hay cambios pendientes de aplicar.\n"
 "¿Desea aplicar los cambios o descartarlos?"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:154
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:408
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:158
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:415
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:179
 msgid "Changes applied successfully"
 msgstr "Cambios aplicados correctamente"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:157
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:161
 msgid "It is not possible to deactive access control by group"
 msgstr "No es posible desactivar el control de acceso por grupo"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:160
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:164
 msgid "Unable to update the list of groups with restricted access"
 msgstr "No es posible actualizar la lista de grupos con acceso restringido"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:163
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:167
 msgid "There are no groups selected to lock their access"
 msgstr "No hay ningún grupo seleccionado para bloquear su acceso"
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:187
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:451
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:191
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:458
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:216
 msgid "Apply changes. Wait a moment..."
 msgstr "Aplicando cambios. Espere un momento..."
 
-#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:198
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:462
+#: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:202
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:469
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:228
 msgid "Restoring previous values. Wait a moment..."
 msgstr "Restaurando valores previos. Espere un momento..."
@@ -140,72 +139,80 @@ msgstr "Marque para bloquear el acceso a este grupo"
 msgid "Restrict access by user"
 msgstr "Restringir acceso por usuario"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:43
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:45
 msgid "Activated access control by user on this computer"
 msgstr "Activar el control de acceso por usuarios en este equipo"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:60
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:63
 msgid "Users with restricted access:"
 msgstr "Usuarios con el acceso restringido:"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:73
-msgid "Username"
-msgstr "Nombre de usuario"
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:76
+msgid "User names separated by space"
+msgstr "Usuarios separados por espacio"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:88
-msgid "Click to add the user to list"
-msgstr "Haga clic para añadir el usuario a la lista"
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:92
+msgid "Click to add the users to list"
+msgstr "Haga clic para añadir los usuarios a la lista"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:93
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:97
 msgid "Validating data. Wait a moment..."
 msgstr "Validando datos. Espere un momento..."
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:115
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:119
 msgid "Click to close"
 msgstr "Haga clic para cerrar"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:141
-msgid "Add user"
-msgstr "Añadir usuario"
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:148
+msgid "Add users"
+msgstr "Añadir usuarios"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:155
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:162
 msgid "Remove List"
 msgstr "Borrar la lista"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:238
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:245
 msgid ""
-"The user you want to add is a local administrator of the computer.\n"
-"Do you wish to continue?"
+"Local administrators have been detected in the list of users to add.\n"
+"Do you want to include them in the list of users?"
 msgstr ""
-"El usuario que quiere añadir es administrador local del equipo.\n"
-"¿Desea continuar?"
+"Se han detectado administradores locales en la relación de usuarios a "
+"añadir.\n"
+"¿Desea incluirlos en la lista de usuarios?"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:256
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:348
-msgid "Accept"
-msgstr "Aceptar"
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:263
+msgid "Yes"
+msgstr "Si"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:330
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:277
+msgid "No"
+msgstr "No"
+
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:337
 msgid "The user list is going to be delete.Do you wish to continue?"
 msgstr "La lista de usuarios va a ser eliminada. ¿Desea continuar?"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:411
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:355
+msgid "Accept"
+msgstr "Aceptar"
+
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:418
 msgid "It is not possible to deactive access control by user"
 msgstr "No es posible desactivar el control de acceso por usuario"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:414
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:421
 msgid "Unable to update the user list"
 msgstr "No es posible actualizar la lista de usuarios con acceso restringido"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:417
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:424
 msgid "There are no users selected to lock their access"
 msgstr "No hay ningún usuario seleccionado para bloquear su acceso"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:420
-msgid "The user already exists in the list"
-msgstr "El usuario ya existe en la lista"
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:427
+msgid "The indicated users already exist in the list"
+msgstr "Los usuarios indicados ya existen en la lista"
 
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:423
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:430
 msgid ""
 "It is not possible to lock the user with which you are configuring the "
 "access control"
@@ -217,15 +224,15 @@ msgstr ""
 msgid "The user list is empty"
 msgstr "La lista de usurios está vacía"
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:41
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:42
 msgid "Check to unlock access to this user"
 msgstr "Marque para desbloquear el acceso a este usuario"
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:43
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:44
 msgid "Check to lock access to this user"
 msgstr "Marque para bloquear el acceso a este usuario"
 
-#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:70
+#: ../lliurex-access-control.install/ui/rsrc/ListDelegateUserItem.qml:71
 msgid "Clic to remove this user from the list"
 msgstr "Haga clic para eliminar este usuario de la lista"
 
