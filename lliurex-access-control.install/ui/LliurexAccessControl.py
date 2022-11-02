@@ -83,8 +83,8 @@ class AddNewUser(QThread):
 		QThread.__init__(self)
 
 		self.newUser=args[0]
-		self.retCurrentUser=False
-		self.retAdminUser=False
+		self.retCurrentUser=[False,[]]
+		self.retAdminUser=[False,[]]
 
 	#def __init__
 
@@ -93,9 +93,12 @@ class AddNewUser(QThread):
 		time.sleep(1)
 		self.retCurrentUser=LliurexAccessControl.n4dMan.checkIfUserIsCurrrentUser(self.newUser)
 
-		if not self.retCurrentUser:
+		if not self.retCurrentUser[0]:
 			self.retAdminUser=LliurexAccessControl.n4dMan.checkIfUserIsLocalAdmin(self.newUser)
-
+		else:
+			if len(self.newUser)>1:
+				self.retAdminUser=LliurexAccessControl.n4dMan.checkIfUserIsLocalAdmin(self.newUser)
+		
 	#def run
 
 #class AddUser
@@ -138,8 +141,9 @@ class LliurexAccessControl(QObject):
 		self._isCDCAccessControlAllowed=False
 		self._isAccessDenyCDCEnabled=False
 		self._cdcCode=""
-		self.tmpNewUser=""
-		self.moveToStack=""	
+		self.tmpNewUser=[]
+		self.tmpAdminUser=[]
+		self.moveToStack=""
 		self.correctCode=True
 		QTimer.singleShot(200,self.loadLoginPanel)
 
@@ -613,7 +617,13 @@ class LliurexAccessControl(QObject):
 
 		self.showSettingsUserMessage=[False,"","Success"]
 		self.closePopUp=False
-		self.userId=userId.lower()
+		tmpUserList=userId.split(" ")
+		self.userId=[]
+
+		for item in tmpUserList:
+			if item !="":
+				self.userId.append(item.lower())
+		
 		self.addNewUser=AddNewUser(self.userId)
 		self.addNewUser.start()
 		self.addNewUser.finished.connect(self._checkNewUser)
@@ -622,23 +632,52 @@ class LliurexAccessControl(QObject):
 
 	def _checkNewUser(self):
 
-		self.tmpNewUser=""
+		self.tmpNewUser=[]
+		self.tmpAdminUser=[]
+		matchDuplicateList=[]
+		nextStep=True
 
-		if self.userId not in self.usersInfo.keys():
+		for item in range(len(self.userId)-1,-1,-1):
+			if self.userId[item] in self.usersInfo.keys():
+				matchDuplicateList.append(self.userId[item])
+				self.userId.pop(item)
 
-			if not self.addNewUser.retCurrentUser:
-				isLocalAdmin=self.addNewUser.retAdminUser
+		if len(self.userId)>0:
+			if self.addNewUser.retCurrentUser[0]:
+				for item in range(len(self.userId)-1,-1,-1):
+					try:
+						if self.userId[item] in self.addNewUser.retCurrentUser[1]:
+							self.userId.pop(item)
+					except:
+						pass
+				if len(self.userId)==0:
+					nextStep=False
+			else:
+				nextStep=True
+
+			if nextStep:
+				isLocalAdmin=self.addNewUser.retAdminUser[0]
 				if isLocalAdmin:
 					self.showLocalAdminDialog=True 
 					self.tmpNewUser=self.userId
+					self.tmpAdminUser=self.addNewUser.retAdminUser[1]
 				else:
-					self._usersModel.appendRow(self.userId,True)
-					self._updateUserList(self.userId,False)
+					for item in self.userId:
+						self._usersModel.appendRow(item,True)
+						self._updateUserList(item,False)
+					
+					if self.addNewUser.retCurrentUser[0]:
+						self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
+				
+					if not LliurexAccessControl.n4dMan.thereAreUsersLocked(self.usersInfo):
+						self.isAccessDenyUserEnabled=False
+
 			else:
 				self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
 
 		else:
-			self.showSettingsUserMessage=[True,LliurexAccessControl.USER_DUPLICATE_ERROR,"Error"]
+			self.showSettingsUserMessage=[True,LliurexAccessControl.USER_DUPLICATE_ERROR,"Warning"]
+		
 		self.closePopUp=True
 
 	#def _checkNewUser
@@ -649,9 +688,22 @@ class LliurexAccessControl(QObject):
 		self.showLocalAdminDialog=False
 
 		if action=="Accept":
-			LliurexAccessControl.n4dMan.writeLog("Action: Added admin user to user list: %s"%self.tmpNewUser)
-			self._usersModel.appendRow(self.tmpNewUser,True)
-			self._updateUserList(self.tmpNewUser,False)
+			LliurexAccessControl.n4dMan.writeLog("Action: Added admin user to user list: %s"%self.tmpAdminUser)
+			nextStep=True
+		else:
+			for item in range(len(self.tmpNewUser)-1,-1,-1):
+				if self.tmpNewUser[item] in self.tmpAdminUser:
+					self.tmpNewUser.pop(item)
+
+		if len(self.tmpNewUser)>0:
+			for item in self.tmpNewUser:
+				self._usersModel.appendRow(item,True)
+				self._updateUserList(item,False)
+			if not LliurexAccessControl.n4dMan.thereAreUsersLocked(self.usersInfo):
+				self.isAccessDenyUserEnabled=False
+
+		if self.addNewUser.retCurrentUser[0]:
+			self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
 
 	#def manageLocalAdminDialog
 
@@ -662,6 +714,8 @@ class LliurexAccessControl(QObject):
 		tmpUser=self._usersModel._entries[index]
 		self._usersModel.removeRow(index)
 		self._updateUserList(tmpUser["userId"],True)
+		if not LliurexAccessControl.n4dMan.thereAreUsersLocked(self.usersInfo):
+			self.isAccessDenyUserEnabled=False
 
 	#def removeUser
 
@@ -709,9 +763,6 @@ class LliurexAccessControl(QObject):
 
 			self.usersInfo=tmpList
 
-		if not LliurexAccessControl.n4dMan.thereAreUsersLocked(self.usersInfo):
-			self.isAccessDenyUserEnabled=False
-		
 	#def _updateUserList
 
 	@Slot(bool)
@@ -736,7 +787,6 @@ class LliurexAccessControl(QObject):
 		self.correctCode=LliurexAccessControl.n4dMan.isCorrectCode(newCode)
 		if self.correctCode:
 			if self.cdcCode!=newCode:
-				print("actualizando")
 				self.cdcCode=newCode
 				self.cdcInfo["code"]=newCode
 				if self.cdcCode!=LliurexAccessControl.n4dMan.cdcInfo["code"]:
@@ -951,7 +1001,7 @@ class LliurexAccessControl(QObject):
 		self.cdcInfo=copy.deepcopy(LliurexAccessControl.n4dMan.cdcInfo)
 		self.cdcCode=""
 		self.cdcCode=self.cdcInfo["code"]
-		print(self.cdcCode)
+	
 	#def _updateUsersConfig
 
 	@Slot(int)
