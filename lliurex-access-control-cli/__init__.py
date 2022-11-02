@@ -551,16 +551,16 @@ class AccessControlCliManager(object):
 					adminInUsers=self._checkIfUserIsLocalAdmin(usersSelected)
 					if adminInUsers[0]:
 						if action=="lock":
+							countAdminUsers=len(adminInUsers[1])
+							count=1
+							for item in adminInUsers[1]:
+								if count<countAdminUsers:
+									adminUsers=adminUsers+item+', '
+								else:
+									adminUsers=adminUsers+item
+								count+=1
 							if not self.unattendedMode:
-								countAdminUsers=len(adminInUsers[1])
-								count=1
-								for item in adminInUsers[1]:
-									if count<countAdminUsers:
-										adminUsers=adminUsers+item+', '
-									else:
-										adminUsers=adminUsers+item
-									count+=1
-								response=input('   [Access-Control]: The user(s) %s are local computer administrator. Do you want to lock them? (yes/no)): '%adminUsers).lower()
+								response=input('   [Access-Control]: The user(s) %s are local computer administrator. Do you want to add them to the list? (yes/no)): '%adminUsers).lower()
 							else:
 								if self.skipAdmin:
 									response='no'
