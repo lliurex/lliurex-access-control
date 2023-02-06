@@ -18,13 +18,15 @@
 		"setGroupsInfo": {
 			"allowed_groups": [
 				"sudo",
-				"admins"
+				"admins",
+				"teachers"
 			]
 		},
 		"disableAccessDenyGroup": {
 			"allowed_groups": [
 				"sudo",
-				"admins"
+				"admins",
+				"teachers"
 			]
 		},
 		"isAccessDenyUserEnabled": {
@@ -40,14 +42,16 @@
 		"setUsersInfo": {
 			"allowed_groups": [
 				"sudo",
-				"admins"
+				"admins",
+				"teachers"
 			]
 
 		},
 		"disableAccessDenyUser": {
 			"allowed_groups": [
 				"sudo",
-				"admins"
+				"admins",
+				"teachers"
 			]
 
 		},
@@ -69,13 +73,15 @@
 		"setCDCInfo":{
 			"allowed_groups":[
 				"sudo",
-				"admins"
+				"admins",
+				"teachers"
 			]
 		},
 		"disableAccessDenyCDC": {
 			"allowed_groups": [
 				"sudo",
-				"admins"
+				"admins",
+				"teachers"
 			]
 
 		}

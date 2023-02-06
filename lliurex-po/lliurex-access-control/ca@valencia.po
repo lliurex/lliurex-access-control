@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-27 13:21+0200\n"
-"PO-Revision-Date: 2022-10-27 14:17+0200\n"
+"POT-Creation-Date: 2023-02-06 09:23+0100\n"
+"PO-Revision-Date: 2023-02-06 09:30+0100\n"
 "Last-Translator: d33475574v <gimenez_angcam@gva.es>\n"
 "Language-Team: Spanish <https://weblate.gva.es/projects/lliurex/lliurex-"
 "access-control/es/>\n"
@@ -97,13 +97,13 @@ msgid "There are no groups selected to lock their access"
 msgstr "No hi ha cap grup seleccionat per a bloquejar-ne l’accés"
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:191
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:458
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:460
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:216
 msgid "Apply changes. Wait a moment..."
 msgstr "S’estan aplicant els canvis. Espereu un moment..."
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:202
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:469
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:471
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:228
 msgid "Restoring previous values. Wait a moment..."
 msgstr "S’estan restaurant els valors previs. Espereu un moment..."
@@ -200,6 +200,11 @@ msgstr ""
 ".No és pot bloquejar l'usuari amb el qual s'està configurant el control "
 "d'accés"
 
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:433
+msgid "It is not possible to lock users from teacher or admins groups"
+msgstr ""
+"No és possible bloquejar usuaris dels grups Professors o Administradors"
+
 #: ../lliurex-access-control.install/ui/rsrc/UserList.qml:52
 msgid "The user list is empty"
 msgstr "La llista d'usuaris està buida"
@@ -251,3 +256,10 @@ msgstr "No s'ha introduït cap codi de centre"
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:191
 msgid "Center code is not valid"
 msgstr "El codi de centre no és vàlid"
+
+#: ../lliurex-access-control.install/launcher/lliurex-access-control:126
+msgid ""
+"You need administration privileges to run this application in this computer."
+msgstr ""
+"Necessiteu permisos d'administrador per a executar l'aplicació en aquest "
+"equip."

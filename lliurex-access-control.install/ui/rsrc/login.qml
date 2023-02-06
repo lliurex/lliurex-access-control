@@ -14,7 +14,7 @@ Rectangle {
         showAddress:false
         address:'localhost'
         showCancel: false
-        inGroups:["sudo","admins"]
+        inGroups:["sudo","admins","teachers"]
         
         /*anchors.centerIn: parent*/
         
