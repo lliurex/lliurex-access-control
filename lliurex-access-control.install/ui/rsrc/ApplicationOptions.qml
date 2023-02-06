@@ -38,7 +38,7 @@ GridLayout{
                 id:userItem
                 optionText:i18nd("lliurex-access-control","Control by users")
                 optionIcon:"/usr/share/icons/breeze/actions/16/user.svg"
-                optionEnabled:true
+                optionEnabled:accessControlBridge.enableUserConfig
                 Connections{
                     function onMenuOptionClicked(){
                         accessControlBridge.manageTransitions(1)

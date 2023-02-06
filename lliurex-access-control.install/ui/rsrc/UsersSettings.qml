@@ -429,7 +429,9 @@ Rectangle{
             case -100:
                 msg=i18nd("lliurex-access-control","It is not possible to lock the user with which you are configuring the access control");
                 break;
-		break;
+            case -200:
+				msg=i18nd("lliurex-access-control", "It is not possible to lock users from teacher or admins groups")
+				break;
             default:
                 break;
         }

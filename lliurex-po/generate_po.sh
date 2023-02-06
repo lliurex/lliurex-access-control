@@ -9,4 +9,4 @@ xgettext --join-existing -kde -ki18nd:2 ../lliurex-access-control.install/ui/rsr
 xgettext --join-existing -kde -ki18nd:2 ../lliurex-access-control.install/ui/rsrc/Loading.qml -o ../lliurex-po/lliurex-access-control/lliurex-access-control.pot
 xgettext --join-existing -kde -ki18nd:2 ../lliurex-access-control.install/ui/rsrc/ChangesDialog.qml -o ../lliurex-po/lliurex-access-control/lliurex-access-control.pot
 xgettext --join-existing -kde -ki18nd:2 ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml -o ../lliurex-po/lliurex-access-control/lliurex-access-control.pot
-
+xgettext --join-existing -L python ../lliurex-access-control.install/launcher/lliurex-access-control -o ../lliurex-po/lliurex-access-control/lliurex-access-control.pot

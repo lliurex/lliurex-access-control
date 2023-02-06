@@ -6,6 +6,11 @@ import os
 import sys
 import subprocess
 import shutil
+import pwd
+import grp
+import gettext
+gettext.textdomain('lliurex-access-control')
+_= gettext.gettext
 
 class Tunnel(QObject):
 
@@ -67,11 +72,62 @@ class Tunnel(QObject):
 
 	#def getPackageVersion
 
+	def checkFlavour(self):
+
+		cmd='lliurex-version -v'
+		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+		result=p.communicate()[0]
+		lockFlavour=False
+
+		if type(result) is bytes:
+			result=result.decode()
+		flavours = [ x.strip() for x in result.split(',') ]	
+		
+		
+		for item in flavours:
+			if 'server' in item or 'client' in item:
+				lockFlavour=True
+				break
+							
+		return lockFlavour
+
+	#def checkFlavour
+
+	def checkUser(self,user):
+
+		isAdmin=False
+		GROUPS=["admins","sudo"]
+		gid = pwd.getpwnam(user).pw_gid
+		groupsGids = os.getgrouplist(user, gid)
+		userGroups = [ grp.getgrgid(x).gr_name for x in groupsGids ]
+
+		for item in userGroups:
+			if item in GROUPS:
+				isAdmin=True
+				break
+
+		if not isAdmin:
+			if self.checkFlavour():
+				return False
+
+		return True
+
+	#def checkUser
+
 	@Slot(str)
 	def onTicket(self,ticket):
 
-		ticket=ticket.replace(' ','##U+0020##')
-		os.system("python3 /usr/share/lliurex-access-control/lliurex-access-control-gui.py %s &"%ticket)
+		user=ticket.split(' ')[2]
+
+		if self.checkUser(user):
+			ticket=ticket.replace(' ','##U+0020##')
+			os.system("python3 /usr/share/lliurex-access-control/lliurex-access-control-gui.py %s &"%ticket)
+		else:
+			text=_("You need administration privileges to run this application in this computer.")
+			cmd='kdialog --icon lliurex-access-control --title "Lliurex-Access-Control" --passivepopup \
+			"%s" 5'%text
+			os.system(cmd)
+		
 		app.quit()
 	#def on_ticket
 	
