@@ -1,3 +1,9 @@
+lliurex-access-control (1.2.8) focal; urgency=medium
+
+  * Enabled use for teachers.
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 06 Feb 2023 11:00:38 +0100
+
 lliurex-access-control (1.2.7) focal; urgency=medium
 
   * Fixed log when cli is used
