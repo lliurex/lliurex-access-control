@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-02 08:54+0100\n"
-"PO-Revision-Date: 2022-11-02 08:57+0100\n"
+"POT-Creation-Date: 2023-02-06 13:48+0100\n"
+"PO-Revision-Date: 2023-02-06 13:50+0100\n"
 "Last-Translator: lliurex <lliurex@gva.es>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -35,9 +35,16 @@ msgstr "Acceder"
 msgid "Validating user..."
 msgstr "Validando usuario..."
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:90
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:92
 msgid "Invalid user"
 msgstr "Usuario no válido"
+
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:94
+msgid ""
+"You need administration privileges to run this application in this computer."
+msgstr ""
+"Necesita permisos de administrador para ejecutar la aplicación en este "
+"equipo."
 
 #: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:27
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:122
@@ -116,13 +123,13 @@ msgid "There are no groups selected to lock their access"
 msgstr "No hay ningún grupo seleccionado para bloquear su acceso"
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:191
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:458
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:461
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:216
 msgid "Apply changes. Wait a moment..."
 msgstr "Aplicando cambios. Espere un momento..."
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:202
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:469
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:472
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:228
 msgid "Restoring previous values. Wait a moment..."
 msgstr "Restaurando valores previos. Espere un momento..."
@@ -219,6 +226,11 @@ msgid ""
 msgstr ""
 "No es posible bloquear el usuario con el que se está configurando el control "
 "de acceso"
+
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:433
+msgid "It is not possible to lock users from teacher or admins groups"
+msgstr ""
+"No es posible bloquear usuarios de los grupos Profesores o Administradores"
 
 #: ../lliurex-access-control.install/ui/rsrc/UserList.qml:52
 msgid "The user list is empty"

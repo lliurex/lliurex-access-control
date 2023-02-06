@@ -84,7 +84,7 @@ class AddNewUser(QThread):
 
 		self.newUser=args[0]
 		self.retCurrentUser=[False,[]]
-		self.retAdminUser=[False,[]]
+		self.retAdminUser=[False,[],[]]
 
 	#def __init__
 
@@ -94,10 +94,10 @@ class AddNewUser(QThread):
 		self.retCurrentUser=LliurexAccessControl.n4dMan.checkIfUserIsCurrrentUser(self.newUser)
 
 		if not self.retCurrentUser[0]:
-			self.retAdminUser=LliurexAccessControl.n4dMan.checkIfUserIsLocalAdmin(self.newUser)
+			self.retAdminUser=LliurexAccessControl.n4dMan.checkIfUserIsValidGroup(self.newUser)
 		else:
 			if len(self.newUser)>1:
-				self.retAdminUser=LliurexAccessControl.n4dMan.checkIfUserIsLocalAdmin(self.newUser)
+				self.retAdminUser=LliurexAccessControl.n4dMan.checkIfUserIsValidGroup(self.newUser)
 		
 	#def run
 
@@ -107,6 +107,8 @@ class LliurexAccessControl(QObject):
 
 	USER_DUPLICATE_ERROR=-90
 	CURRENT_USER_ERROR=-100
+	USERS_NOT_ALLOWED_ERROR=-200
+
 	n4dMan=N4dManager.N4dManager()
 
 	def __init__(self):
@@ -141,6 +143,7 @@ class LliurexAccessControl(QObject):
 		self._isCDCAccessControlAllowed=False
 		self._isAccessDenyCDCEnabled=False
 		self._cdcCode=""
+		self._enableUserConfig=True
 		self.tmpNewUser=[]
 		self.tmpAdminUser=[]
 		self.moveToStack=""
@@ -176,18 +179,32 @@ class LliurexAccessControl(QObject):
 	def _validate(self):
 
 		LOGIN_FAILED=-40
+		FLAVOUR_LOCKED_ERROR=-50
+
+		nextStep=False
 
 		if self.userValidation.ret:
 			group_found=False
-			for g in ["sudo","admins"]:
+			for g in ["sudo","admins","teachers"]:
 				if g in LliurexAccessControl.n4dMan.user_groups:
 					group_found=True
 					break
 					
 			if group_found:
-				self.gatherInfo=GatherInfo()
-				self.gatherInfo.start()
-				self.gatherInfo.finished.connect(self._loadConfig)
+				if not LliurexAccessControl.n4dMan.isCurrentUserAdmin:
+					if LliurexAccessControl.n4dMan.checkFlavour():
+						self.runningLogin=False
+						self.showLoginMessage=[True,FLAVOUR_LOCKED_ERROR]
+						self.currentStack=1
+					else:
+						nextStep=True
+				else:
+					nextStep=True
+
+				if nextStep:
+					self.gatherInfo=GatherInfo()
+					self.gatherInfo.start()
+					self.gatherInfo.finished.connect(self._loadConfig)
 			else:
 				self.runningLogin=False
 				self.showLoginMessage=[True,LOGIN_FAILED]
@@ -511,6 +528,20 @@ class LliurexAccessControl(QObject):
 
 	#def _setShowCDCChangesDialog
 
+	def _getEnableUserConfig(self):
+
+		return self._enableUserConfig
+
+	#def _getEnableUserConfig
+
+	def _setEnableUserConfig(self,enableUserConfig):
+
+		if self._enableUserConfig!=enableUserConfig:
+			self._enableUserConfig=enableUserConfig
+			self.on_enableUserConfig.emit()
+
+	#def _setEnableUserConfig
+
 	def _getGroupsModel(self):
 		
 		return self._groupsModel
@@ -635,7 +666,8 @@ class LliurexAccessControl(QObject):
 		self.tmpNewUser=[]
 		self.tmpAdminUser=[]
 		matchDuplicateList=[]
-		nextStep=True
+		nextStep=False
+		invalidUsers=False
 
 		for item in range(len(self.userId)-1,-1,-1):
 			if self.userId[item] in self.usersInfo.keys():
@@ -650,10 +682,25 @@ class LliurexAccessControl(QObject):
 							self.userId.pop(item)
 					except:
 						pass
-				if len(self.userId)==0:
-					nextStep=False
-			else:
+			
+			if len(self.userId)>00:
 				nextStep=True
+				if not LliurexAccessControl.n4dMan.isCurrentUserAdmin:
+					for item in range(len(self.userId)-1,-1,-1):
+						try:
+							if self.userId[item] in self.addNewUser.retAdminUser[1]:
+								self.userId.pop(item)
+								invalidUsers=True
+							if self.userId[item] in self.addNewUser.retAdminUser[2]:
+								self.userId.pop(item)
+								invalidUsers=True
+						except:
+							pass
+
+					if len(self.userId)==0:
+						nextStep=False	
+			else:
+				nextStep=False
 
 			if nextStep:
 				isLocalAdmin=self.addNewUser.retAdminUser[0]
@@ -668,12 +715,19 @@ class LliurexAccessControl(QObject):
 					
 					if self.addNewUser.retCurrentUser[0]:
 						self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
-				
+					
+					else:
+						if invalidUsers:
+							self.showSettingsUserMessage=[True,LliurexAccessControl.USERS_NOT_ALLOWED_ERROR,"Warning"]
+						
 					if not LliurexAccessControl.n4dMan.thereAreUsersLocked(self.usersInfo):
 						self.isAccessDenyUserEnabled=False
 
 			else:
-				self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
+				if not invalidUsers:
+					self.showSettingsUserMessage=[True,LliurexAccessControl.CURRENT_USER_ERROR,"Warning"]
+				else:
+					self.showSettingsUserMessage=[True,LliurexAccessControl.USERS_NOT_ALLOWED_ERROR,"Warning"]
 
 		else:
 			self.showSettingsUserMessage=[True,LliurexAccessControl.USER_DUPLICATE_ERROR,"Warning"]
@@ -1148,6 +1202,9 @@ class LliurexAccessControl(QObject):
 
 	on_showCDCChangesDialog=Signal()
 	showCDCChangesDialog=Property(bool,_getShowCDCChangesDialog,_setShowCDCChangesDialog, notify=on_showCDCChangesDialog)
+
+	on_enableUserConfig=Signal()
+	enableUserConfig=Property(bool,_getEnableUserConfig,_setEnableUserConfig,notify=on_enableUserConfig)
 
 	groupsModel=Property(QObject,_getGroupsModel,constant=True)
 	usersModel=Property(QObject,_getUsersModel,constant=True)

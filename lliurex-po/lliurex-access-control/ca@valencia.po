@@ -8,11 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-02 08:54+0100\n"
-"PO-Revision-Date: 2022-11-02 09:00+0100\n"
+"POT-Creation-Date: 2023-02-06 13:48+0100\n"
+"PO-Revision-Date: 2023-02-06 13:53+0100\n"
 "Last-Translator: lliurex <lliurex@gva.es>\n"
 "Language-Team: Spanish\n"
-"Language: es\n"
+"Language: ca@valencia\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,9 +35,16 @@ msgstr "Inici de sessió"
 msgid "Validating user..."
 msgstr "S'està validant l'usuari..."
 
-#: ../lliurex-access-control.install/ui/rsrc/Login.qml:90
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:92
 msgid "Invalid user"
 msgstr "L'usuari no és vàlid"
+
+#: ../lliurex-access-control.install/ui/rsrc/Login.qml:94
+msgid ""
+"You need administration privileges to run this application in this computer."
+msgstr ""
+"Necessiteu permisos d'administrador per a executar l'aplicació en aquest "
+"equip."
 
 #: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:27
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:122
@@ -116,13 +123,13 @@ msgid "There are no groups selected to lock their access"
 msgstr "No hi ha cap grup seleccionat per a bloquejar-ne l’accés"
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:191
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:458
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:461
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:216
 msgid "Apply changes. Wait a moment..."
 msgstr "S’estan aplicant els canvis. Espereu un moment..."
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:202
-#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:469
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:472
 #: ../lliurex-access-control.install/ui/rsrc/CdcSettings.qml:228
 msgid "Restoring previous values. Wait a moment..."
 msgstr "S’estan restaurant els valors previs. Espereu un moment..."
@@ -176,8 +183,7 @@ msgid ""
 "Local administrators have been detected in the list of users to add.\n"
 "Do you want to include them in the list of users?"
 msgstr ""
-"S'han detectat administradors locals en la relació d'usuaris a "
-"afegir.\n"
+"S'han detectat administradors locals en la relació d'usuaris a afegir.\n"
 "Desitjeu incloure'ls en la llista d'usuaris?"
 
 #: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:263
@@ -219,6 +225,11 @@ msgid ""
 msgstr ""
 "No és pot bloquejar l'usuari amb el qual s'està configurant el control "
 "d'accés"
+
+#: ../lliurex-access-control.install/ui/rsrc/UsersSettings.qml:433
+msgid "It is not possible to lock users from teacher or admins groups"
+msgstr ""
+"No és possible bloquejar usuaris dels grups Professors o Administradors"
 
 #: ../lliurex-access-control.install/ui/rsrc/UserList.qml:52
 msgid "The user list is empty"
