@@ -1,3 +1,9 @@
+lliurex-access-control (0.2.6) bionic; urgency=medium
+
+  * Enabled use for teachers
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 07 Feb 2023 08:26:05 +0100
+
 lliurex-access-control (0.2.5) bionic; urgency=medium
 
   * Added in GUI some improvements in user access-control
