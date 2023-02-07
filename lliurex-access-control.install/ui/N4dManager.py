@@ -33,6 +33,9 @@ class N4dManager:
 		self.isCDCAccessControlAllowed=False
 		self.isAccessDenyCDCEnabled=False
 		self.cdcInfo={}
+		self.adminGroups=["sudo","admins","adm"]
+		self.enableUserConfig=True
+
 		self.clearCache()
 		self.getSessionLang()
 
@@ -103,13 +106,13 @@ class N4dManager:
 			return userValidated
 			
 		userValidated,self.user_groups=ret
-			
+
 		if userValidated:
+			self.isCurrentUserAdmin=self._checkIfUserIsAdmin(user)
 			self.validation=(user,password)
 			self.currentUser=user
 			self.writeLog("Init session in lliurex-access-control GUI")
 			self.writeLog("User login in GUI: %s"%self.currentUser)
-
 
 		return userValidated
 
@@ -188,11 +191,16 @@ class N4dManager:
 		self.groupsConfigData=[]
 
 		for item in self.groupsInfo:
-			tmp={}
-			tmp["groupId"]=item
-			tmp["isLocked"]=self.groupsInfo[item]["isLocked"]
-			tmp["description"]=self.groupsInfo[item][self.sessionLang]
-			self.groupsConfigData.append(tmp)
+			hide=False
+			if item=="teachers":
+				if not self.isCurrentUserAdmin:
+					hide=True
+			if not hide:
+				tmp={}
+				tmp["groupId"]=item
+				tmp["isLocked"]=self.groupsInfo[item]["isLocked"]
+				tmp["description"]=self.groupsInfo[item][self.sessionLang]
+				self.groupsConfigData.append(tmp)
 
 	#def getGroupsConfig 
 
@@ -201,11 +209,18 @@ class N4dManager:
 		self.usersConfigData=[]
 
 		for item in self.usersInfo:
+			hide=False
 			if item !="":
-				tmp={}
-				tmp["userId"]=item
-				tmp["isLocked"]=self.usersInfo[item]["isLocked"]
-				self.usersConfigData.append(tmp)
+				if self._checkIfUserIsTeacher(item) or self._checkIfUserIsAdmin(item):
+					if not self.isCurrentUserAdmin:
+						hide=True
+						self.enableUserConfig=False
+				
+				if not hide:
+					tmp={}
+					tmp["userId"]=item
+					tmp["isLocked"]=self.usersInfo[item]["isLocked"]
+					self.usersConfigData.append(tmp)
 
 	#def getUsersConfig 			
 			
@@ -375,31 +390,30 @@ class N4dManager:
 
 	#def thereAreUsersLocked
 	
-	def checkIfUserIsLocalAdmin(self,userList):
+	def checkIfUserIsValidGroup(self,userList):
 
-		adminGroups=["sudo","admins","adm"]
+		#adminGroups=["sudo","admins","adm"]
 		isLocalAdmin=False
 		localAdminList=[]
+		teachersList=[]
 
 		for item in userList:
 			if item != self.currentUser:
-				try:
-					gid = pwd.getpwnam(item).pw_gid
-					groups_gid=os.getgrouplist(item,gid)
-					user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
-					for element in user_groups:
-						if element in adminGroups:
-							localAdminList.append(item) 
+				userGroups=self._getUserGroups(item)
+				for element in userGroups:
+					if element in self.adminGroups:
+						localAdminList.append(item)
 
-				except Exception as e:
-					pass
-
+				if not self.isCurrentUserAdmin:
+					if self._checkIfUserIsTeacher(item):
+						teachersList.append(item)
+ 
 		if len(localAdminList)>0:
 			isLocalAdmin=True
 
-		return [isLocalAdmin,localAdminList]
+		return [isLocalAdmin,localAdminList,teachersList]
 
-	#def checkIfUserIsLocalAdmin
+	#def checkIfUserIsValidGroup
 
 	def checkIfUserIsCurrrentUser(self,userList):
 
@@ -416,7 +430,32 @@ class N4dManager:
 
 		return [isCurrentUser,currentUserList]
 
-	#def checkIfUserIsCurrrentUser 
+	#def checkIfUserIsCurrrentUser
+
+	def _checkIfUserIsTeacher(self,user):
+		
+		userGroups=self._getUserGroups(user)
+		
+		if 'teachers' in userGroups:
+			return True
+		
+		return False
+		
+	#def checkIfUserIsTeacher 
+
+	def _checkIfUserIsAdmin(self,user):
+		
+		userGroups=self._getUserGroups(user)
+		ret=False
+		for item in userGroups:
+			if item in self.adminGroups:
+				ret=True
+				break
+		
+		return ret
+		
+	#def _checkIfUserIsAdmin
+
 
 	def applyCDCChanges(self,cdcAccessControl,cdcInfo):
 
@@ -507,6 +546,42 @@ class N4dManager:
 			return True
 
 	#def isCorrectCode
+
+	def checkFlavour(self):
+
+		cmd='lliurex-version -v'
+		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
+		result=p.communicate()[0]
+		lockFlavour=False
+
+		if type(result) is bytes:
+			result=result.decode()
+		flavours = [ x.strip() for x in result.split(',') ]	
+		
+		
+		for item in flavours:
+			if 'server' in item or 'client' in item:
+				lockFlavour=True
+				break
+							
+		return lockFlavour
+
+	#def checkFlavour
+
+	def _getUserGroups(self,user):
+		
+		userGroups=[]
+		try:
+			gid = pwd.getpwnam(user).pw_gid
+			groupsGid=os.getgrouplist(user,gid)
+			userGroups=[grp.getgrgid(x).gr_name for x in groupsGid]			
+		except Exception as e:
+			pass
+			
+		return userGroups		
+	
+	#def _getUserGroups
+
 
 	def writeLog(self,msg):
 

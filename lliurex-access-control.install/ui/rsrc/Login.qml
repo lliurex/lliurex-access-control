@@ -87,7 +87,13 @@ Rectangle{
          Kirigami.InlineMessage {
             id: messageLabel
             visible:accessControlBridge.showLoginMessage[0]
-            text:i18nd("lliurex-access-control","Invalid user")
+            text:{
+                if (accessControlBridge.showLoginMessage[1]==-40){
+                    i18nd("lliurex-access-control","Invalid user")
+                }else{
+                    i18nd("lliurex-access-control","You need administration privileges to run this application in this computer.")
+                } 
+            }
             type:Kirigami.MessageType.Error
             Layout.fillWidth: true
             Layout.minimumHeight:40
