@@ -106,6 +106,7 @@ Rectangle{
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
                 applyChanges()
+                closeTimer.stop()
                 accessControlBridge.applyCDCChanges()
             }
         }
@@ -122,6 +123,7 @@ Rectangle{
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
                 discardChanges()
+                closeTimer.stop()
                 accessControlBridge.cancelCDCChanges()
             }
         }
@@ -140,6 +142,9 @@ Rectangle{
             }
             function onDiscardDialogClicked(){
                 discardChanges()
+            }
+            function onCancelDialogClicked(){
+                closeTimer.stop()
             }
 
         }

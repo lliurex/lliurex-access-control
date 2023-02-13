@@ -64,7 +64,7 @@ class AddNewUser(QThread):
 
 		self.newUser=args[0]
 		self.retCurrentUser=[False,[]]
-		self.retAdminUser=[False,[]]
+		self.retAdminUser=[False,[],[]]
 
 	#def __init__
 
