@@ -201,6 +201,7 @@ Rectangle{
             Keys.onEnterPressed: applyBtn.clicked()                    
             onClicked:{
                 applyChanges(),
+                closeTimer.stop(),
                 accessControlBridge.applyUserChanges()
             }
         }
@@ -217,6 +218,7 @@ Rectangle{
             Keys.onEnterPressed: cancelBtn.clicked()                    
             onClicked:{
                 discardChanges(),
+                closeTimer.stop(),
                 accessControlBridge.cancelUserChanges()
             }
         }
