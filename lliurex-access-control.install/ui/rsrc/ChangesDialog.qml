@@ -11,6 +11,7 @@ Dialog {
     property alias dialogMsg:dialogText.text
     signal dialogApplyClicked
     signal discardDialogClicked
+    signal cancelDialogClicked
 
     visible:dialogVisible
     title:dialogTitle
@@ -102,6 +103,7 @@ Dialog {
             }
 
             onRejected:{
+                cancelDialogClicked(),
                 accessControlBridge.manageSettingsDialog("Cancel")
 
             }
