@@ -3,7 +3,6 @@
 import os
 import json
 import codecs
-import configparser
 
 import n4d.responses
 import n4d.server.core as n4dcore
@@ -29,10 +28,7 @@ class AccessControlManager:
 		self.usersList=os.path.join(self.configPath+"/users-lists","usersList.json")
 		self.sssdConfigPath="/etc/sssd/sssd.conf"
 		self.cdcInfo=os.path.join(self.configPath+"/cdc-info","cdc.json")
-		self.sectionRefDesa="domain/DESEDU.GVA.ES"
-		self.sectionRefPro="domain/EDU.GVA.ES"
-		self.sectionRefAlu="domain/ALU.EDU.GVA.ES"
-		self.optionRef="simple_allow_groups"
+		self.cdcAllowListPath=os.path.join(self.configPath,"login.cdc.allow")
 	
 	#def __init__
 
@@ -285,18 +281,16 @@ class AccessControlManager:
 	def isAccessDenyCDCEnabled(self):
 
 		isEnabled=False
-		currentCode=self._readSSSDConfFile()
-		
-		if currentCode!="":
+		if os.path.exists(self.cdcAllowListPath):
 			isEnabled=True
-		
-		return n4d.responses.build_successful_call_response(isEnabled)
 
+		return n4d.responses.build_successful_call_response(isEnabled)
+		
 	#def isAccessDenyCdcEnabled
 
 	def getCDCInfo(self):
 
-		currentCode=self._readSSSDConfFile()
+		currentCode=self._readAllowCDCFile()
 		cdcInfo=self._readCDCInfo()
 
 		if len(cdcInfo)>0:
@@ -323,7 +317,7 @@ class AccessControlManager:
 
 	def setCDCInfo(self,cdcInfo):
 
-		currentCode=""
+		currentCode=[]
 
 		try:
 			if len(cdcInfo)>0:
@@ -331,8 +325,16 @@ class AccessControlManager:
 					json.dump(cdcInfo,fd)
 
 				if cdcInfo["accessControlEnabled"]:
-					currentCode='GRP_%s,AdminSai'%cdcInfo["code"]
-					return self._writeSSSDConfFile(currentCode)
+					currentCode.append('GRP_%s'%cdcInfo["code"])
+					currentCode.append('AdminSai')
+					currentCode.append('sudo')
+
+					with open(self.cdcAllowListPath,'w') as fd:
+						for item in currentCode:
+							fd.write(item+"\n")
+
+					return n4d.responses.build_successful_call_response()
+
 				else:
 					return self.disableAccessDenyCDC()
 			else:
@@ -343,23 +345,6 @@ class AccessControlManager:
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_CDC_ERROR)
 	
 	#def setCdcInfo
-
-	def disableAccessDenyCDC(self,updateCDCInfo=False):
-
-		if updateCDCInfo:
-			try:
-				cdcInfo=self._readCDCInfo()
-				if len(cdcInfo)>0:
-					if cdcInfo["accessControlEnabled"]:
-						cdcInfo["accessControlEnabled"]=False
-						with open(self.cdcInfo,'w') as fd:
-							json.dump(cdcInfo,fd)
-			except:
-				return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_CDC_ACCESS_CONTROL_ERROR)
-
-		return self._writeSSSDConfFile()
-
-	#def disableAccessDenyCdc
 
 	def _readCDCInfo(self):
 
@@ -373,61 +358,40 @@ class AccessControlManager:
 
 	#def _readCDCInfo
 
-	def _readSSSDConfFile(self):
+	def _readAllowCDCFile(self):
 
-		currentCode=""
-		sectionRef=""
+		allowCDC=""
 
-		if os.path.exists(self.sssdConfigPath):
-			configFile=configparser.ConfigParser()
-			configFile.optionxform=str
-			configFile.read(self.sssdConfigPath)
-			if configFile.has_section(self.sectionRefDesa):
-				sectionRef=self.sectionRefDesa
-			elif configFile.has_section(self.sectionRefPro):
-				sectionRef=self.sectionRefPro
+		if self.isAccessDenyCDCEnabled()['return']:
+			with open(self.cdcAllowListPath,'r') as fd:
+				line=fd.readline()
+				allowCDC=line.split("GRP_")[1].strip()
 
-			if sectionRef!="":
-				if configFile.has_option(sectionRef,self.optionRef):
-					tmpCode=configFile.get(sectionRef,self.optionRef)
-					currentCode=tmpCode.split("GRP_")[1].split(",")[0]
+		return allowCDC
 
-		return currentCode
+	#def _readAllowCDCFile
 
-	#def _readSSSDConfFile
+	def disableAccessDenyCDC(self,updateCDCInfo=False):
 
-	def _writeSSSDConfFile(self,code=""):
-		
-		sectionRef=[]
 		try:
-			if os.path.exists(self.sssdConfigPath):
-				configFile=configparser.ConfigParser()
-				configFile.optionxform=str
-				configFile.read(self.sssdConfigPath)
-				if configFile.has_section(self.sectionRefDesa):
-					sectionRef.append(self.sectionRefDesa)
-				elif configFile.has_section(self.sectionRefPro):
-					sectionRef.append(self.sectionRefPro)
-					if configFile.has_section(self.sectionRefAlu):
-						sectionRef.append(self.sectionRefAlu)
+			if updateCDCInfo:
+				try:
+					cdcInfo=self._readCDCInfo()
+					if len(cdcInfo)>0:
+						if cdcInfo["accessControlEnabled"]:
+							cdcInfo["accessControlEnabled"]=False
+							with open(self.cdcInfo,'w') as fd:
+								json.dump(cdcInfo,fd)
+				except:
+					pass
+			if self.isAccessDenyCDCEnabled()['return']:
+				os.remove(self.cdcAllowListPath)
 
-				if len(sectionRef)>0:
-					for item in sectionRef:
-						if code!="":
-							configFile.set(item,self.optionRef,code)
-						else:
-							configFile.remove_option(item,self.optionRef)
-
-					with open(self.sssdConfigPath,'w') as fd:
-						configFile.write(fd)
-
-			os.system('systemctl restart sssd')
 			return n4d.responses.build_successful_call_response()
-
-		except Exception as e:
-			return n4d.responses.build_failed_call_response(AccessControlManager.SET_CDC_ERROR)
-		
-	#def _writeSSSDConfFile 
+		except:
+			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_CDC_ACCESS_CONTROL_ERROR)
+	
+	#def disableAccessDenyCDC
 
 #class AccessControlManager 
 

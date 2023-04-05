@@ -30,22 +30,25 @@ class Tunnel(QObject):
 		cachePath2="/home/%s/.cache/lliurex-access-control-gui.py"%user
 		installedVersion=self.getPackageVersion()
 
-		if not os.path.exists(versionFile):
-			with open(versionFile,'w') as fd:
-				fd.write(installedVersion)
-
-			clear=True
-
-		else:
-			with open(versionFile,'r') as fd:
-				fileVersion=fd.readline()
-				fd.close()
-
-			if fileVersion!=installedVersion:
+		if installedVersion!="":
+			if not os.path.exists(versionFile):
 				with open(versionFile,'w') as fd:
 					fd.write(installedVersion)
-					fd.close()
+
 				clear=True
+
+			else:
+				with open(versionFile,'r') as fd:
+					fileVersion=fd.readline()
+					fd.close()
+
+				if fileVersion!=installedVersion:
+					with open(versionFile,'w') as fd:
+						fd.write(installedVersion)
+						fd.close()
+					clear=True
+		else:
+			clear=True
 		
 		if clear:
 			if os.path.exists(cachePath1):
@@ -57,18 +60,15 @@ class Tunnel(QObject):
 
 	def getPackageVersion(self):
 
-		command = "LANG=C LANGUAGE=en apt-cache policy lliurex-access-control"
-		p = subprocess.Popen(command,shell=True,stdout=subprocess.PIPE)
-		installed = None
-		for line in iter(p.stdout.readline,b""):
-			if type(line) is bytes:
-				line=line.decode()
+		packageVersionFile="/usr/share/lliurex-access-control/data/currentVersion.token"
+		pkgVersion=""
 
-			stripedline = line.strip()
-			if stripedline.startswith("Installed"):
-				installed = stripedline.replace("Installed: ","")
+		if os.path.exists(packageVersionFile):
+			with open(packageVersionFile,'r') as fd:
+				pkgVersion=fd.readline()
+				fd.close()
 
-		return installed
+		return pkgVersion
 
 	#def getPackageVersion
 

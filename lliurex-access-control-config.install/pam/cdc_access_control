@@ -1,0 +1,6 @@
+Name: Allow access to computer to users CDC groups
+Default: yes
+Priority: -668
+Auth-Type: Additional
+Auth:
+	required pam_listfile.so onerr=succeed item=group sense=allow file=/etc/lliurex-access-control/login.cdc.allow
