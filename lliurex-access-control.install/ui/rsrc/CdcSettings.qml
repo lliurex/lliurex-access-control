@@ -65,7 +65,13 @@ Rectangle{
                 }
                 TextField{
                     id:cdcEntry
-                    text:accessControlBridge.cdcCode
+                    text:{
+                        if (accessControlBridge.cdcCode!=""){
+                            accessControlBridge.cdcCode
+                        }else{
+                            accessControlBridge.defaultCDCCode
+                        }
+                    }
                     enabled:cdcControlCb.checked
                     maximumLength:8
                     font.pointSize:10

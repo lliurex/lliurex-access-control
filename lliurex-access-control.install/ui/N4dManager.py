@@ -30,6 +30,7 @@ class N4dManager:
 		self.isCDCAccessControlAllowed=False
 		self.isAccessDenyCDCEnabled=False
 		self.cdcInfo={}
+		self.defaultCDCCode=""
 		self.getSessionLang()
 		self.adminGroups=["sudo","admins","adm"]
 		self.enableUserConfig=True
@@ -101,6 +102,7 @@ class N4dManager:
 		if self.cdcInfo["code"]!="":
 			currentCode=self.cdcInfo["code"]
 		else:
+			self.defaultCDCCode=self._getCurrentUserCDCCode()
 			currentCode="None"
 		self.writeLog("- Center code to control access: %s"%(str(currentCode)))
 
@@ -479,7 +481,22 @@ class N4dManager:
 		return userGroups		
 	
 	#def _getUserGroups
-	
+
+	def _getCurrentUserCDCCode(self):
+
+		cdcCode=""
+		userGroups=self._getUserGroups(self.currentUser)
+
+		if len(userGroups)>0:
+			for item in userGroups:
+				if item.startswith("GRP_"):
+					cdcCode=item.split("GRP_")[1].strip()
+					if self.isCorrectCode(cdcCode):
+						return cdcCode
+		return cdcCode
+
+	#def _getCurrentUserCDCCode
+
 	def writeLog(self,msg):
 
 		syslog.openlog("ACCESS-CONTROL")

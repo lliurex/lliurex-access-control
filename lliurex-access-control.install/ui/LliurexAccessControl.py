@@ -121,6 +121,7 @@ class LliurexAccessControl(QObject):
 		self._isCDCAccessControlAllowed=False
 		self._isAccessDenyCDCEnabled=False
 		self._cdcCode=""
+		self._defaultCDCCode=""
 		self._enableUserConfig=True
 		self.tmpNewUser=[]
 		self.tmpAdminUser=[]
@@ -145,6 +146,8 @@ class LliurexAccessControl(QObject):
 		self.enableUserConfig=LliurexAccessControl.n4dMan.enableUserConfig
 		if len(self.cdcInfo)>0:
 			self.cdcCode=self.cdcInfo["code"]
+
+		self.defaultCDCCode=LliurexAccessControl.n4dMan.defaultCDCCode
 		self._updateGroupModel()
 		self._updateUserModel()
 		self.currentStack=1
@@ -318,6 +321,20 @@ class LliurexAccessControl(QObject):
 			self.on_cdcCode.emit()
 
 	#def _setCdcCode
+
+	def _getDefaultCDCCode(self):
+
+		return self._defaultCDCCode
+
+	#def _getDefaultCDCCode
+
+	def _setDefaultCDCCode(self,defaultCDCCode):
+
+		if self._defaultCDCCode!=defaultCDCCode:
+			self._defaultCDCCode=defaultCDCCode
+			self.on_defaultCDCCode.emit()
+
+	#def _setDefaultCDCCode
 
 	def _getClosePopUp(self):
 
@@ -1064,6 +1081,9 @@ class LliurexAccessControl(QObject):
 	on_cdcCode=Signal()
 	cdcCode=Property(str,_getCdcCode,_setCdcCode,notify=on_cdcCode)
 	
+	on_defaultCDCCode=Signal()
+	defaultCDCCode=Property(str,_getDefaultCDCCode,_setDefaultCDCCode,notify=on_defaultCDCCode)
+
 	on_settingsCDCChanged=Signal()
 	settingsCDCChanged=Property(bool,_getSettingsCDCChanged,_setSettingsCDCChanged, notify=on_settingsCDCChanged)
 
