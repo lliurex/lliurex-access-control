@@ -68,8 +68,13 @@ Rectangle{
                     text:{
                         if (accessControlBridge.cdcCode!=""){
                             accessControlBridge.cdcCode
-                        }else{
+                        }
+                    }
+                    placeholderText:{
+                        if (accessControlBridge.defaultCDCCode!=""){
                             accessControlBridge.defaultCDCCode
+                        }else{
+                            "00000000"
                         }
                     }
                     enabled:cdcControlCb.checked
