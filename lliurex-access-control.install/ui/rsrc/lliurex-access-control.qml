@@ -43,8 +43,8 @@ ApplicationWindow {
         id: mainLayout
         anchors.fill: parent
         anchors.margins: margin
-        Layout.minimumWidth:670
-        Layout.preferredWidth:670
+        Layout.minimumWidth:675
+        Layout.preferredWidth:675
         Layout.minimumHeight:500
 
         RowLayout {
@@ -68,8 +68,8 @@ ApplicationWindow {
         StackView {
             id: mainView
             property int currentIndex:accessControlBridge.currentStack
-            Layout.minimumWidth:670
-            Layout.preferredWidth:670
+            Layout.minimumWidth:675
+            Layout.preferredWidth:675
             Layout.minimumHeight:370
             Layout.preferredHeight:370
             Layout.alignment:Qt.AlignHCenter|Qt.AlignVCenter

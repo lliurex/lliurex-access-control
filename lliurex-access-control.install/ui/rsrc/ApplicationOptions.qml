@@ -10,7 +10,7 @@ GridLayout{
     columnSpacing:10
 
     Rectangle{
-        width:160
+        width:165
         Layout.minimumHeight:370
         Layout.preferredHeight:370
         Layout.fillHeight:true
@@ -25,7 +25,7 @@ GridLayout{
             MenuOptionBtn {
                 id:groupItem
                 optionText:i18nd("lliurex-access-control","Control by groups")
-                optionIcon:"/usr/share/icons/breeze/actions/16/group.svg"
+                optionIcon:"/usr/share/icons/breeze/actions/22/group.svg"
                 optionEnabled:true
                 Connections{
                     function onMenuOptionClicked(){
@@ -37,7 +37,7 @@ GridLayout{
             MenuOptionBtn {
                 id:userItem
                 optionText:i18nd("lliurex-access-control","Control by users")
-                optionIcon:"/usr/share/icons/breeze/actions/16/user.svg"
+                optionIcon:"/usr/share/icons/breeze/actions/22/user.svg"
                 optionEnabled:accessControlBridge.enableUserConfig
                 Connections{
                     function onMenuOptionClicked(){
@@ -50,7 +50,7 @@ GridLayout{
             MenuOptionBtn {
                 id:cdcItem
                 optionText:i18nd("lliurex-access-control","Control by center")
-                optionIcon:"/usr/share/icons/breeze/actions/16/view-institution.svg"
+                optionIcon:"/usr/share/icons/breeze/actions/22/view-institution.svg"
                 optionEnabled:accessControlBridge.isCDCAccessControlAllowed
                 Connections{
                     function onMenuOptionClicked(){
@@ -63,7 +63,7 @@ GridLayout{
             MenuOptionBtn {
                 id:helpItem
                 optionText:i18nd("lliurex-access-control","Help")
-                optionIcon:"/usr/share/icons/breeze/actions/16/help-contents.svg"
+                optionIcon:"/usr/share/icons/breeze/actions/22/help-contents.svg"
                 Connections{
                     function onMenuOptionClicked(){
                         accessControlBridge.openHelp();
