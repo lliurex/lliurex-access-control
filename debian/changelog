@@ -1,3 +1,10 @@
+lliurex-access-control (1.2.10) focal; urgency=medium
+
+  * Minor changes in GUI
+  * New method to get current version
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 14 Jun 2023 17:26:26 +0200
+
 lliurex-access-control (1.2.9) focal; urgency=medium
 
   * Improved close window performance
