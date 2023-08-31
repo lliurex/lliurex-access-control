@@ -1,0 +1,2 @@
+n4d-lliurex-access-control.install/config/AccessControlManager.json /etc/n4d/conf.d/
+n4d-lliurex-access-control.install/src/* /usr/share/n4d/python-plugins/

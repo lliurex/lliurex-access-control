@@ -1,0 +1,81 @@
+lliurex-access-control (1.2.10) focal; urgency=medium
+
+  * Minor changes in GUI
+  * New method to get current version
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 14 Jun 2023 17:26:26 +0200
+
+lliurex-access-control (1.2.9) focal; urgency=medium
+
+  * Improved close window performance
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 13 Feb 2023 11:23:18 +0100
+
+lliurex-access-control (1.2.8) focal; urgency=medium
+
+  * Enabled use for teachers.
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 06 Feb 2023 11:00:38 +0100
+
+lliurex-access-control (1.2.7) focal; urgency=medium
+
+  * Fixed log when cli is used
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 02 Nov 2022 10:59:20 +0100
+
+lliurex-access-control (1.2.6) focal; urgency=medium
+
+  * Clean code
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 31 Oct 2022 10:57:10 +0100
+
+lliurex-access-control (1.2.5) focal; urgency=medium
+
+  * Added to the GUI some improvements in user access control
+  * Added new param in CLI
+  * Maked window resizable
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 31 Oct 2022 10:05:40 +0100
+
+lliurex-access-control (1.2.4) focal; urgency=medium
+
+  * Changed spinner to reduce ram consumption
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Mon, 01 Aug 2022 13:40:18 +0200
+
+lliurex-access-control (1.2.3) focal-updates; urgency=medium
+
+  * Enable function to clear cache
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 30 Jun 2022 11:07:53 +0200
+
+lliurex-access-control (1.2.2) focal-updates; urgency=medium
+
+  * Fixed translations
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 28 Jun 2022 11:10:27 +0200
+
+lliurex-access-control (1.2.1) focal-updates; urgency=medium
+
+  * Fixed translations
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Fri, 03 Jun 2022 10:31:21 +0200
+
+lliurex-access-control (1.2) focal-updates; urgency=medium
+
+  * Added option to access control by center
+  * Changed some qml to reduce ram consumption
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 02 Jun 2022 10:22:15 +0200
+
+lliurex-access-control (1.1) focal; urgency=medium
+
+  * Check if cli it's exec with root user
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 31 Mar 2022 12:47:40 +0200
+
+lliurex-access-control (1.0) focal; urgency=medium
+
+  * Initial release
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 31 Mar 2022 09:45:41 +0200
