@@ -1,4 +1,4 @@
-lliurex-access-control (1.2.11) focal ; urgency=medium
+lliurex-access-control (1.2.11) focal; urgency=medium
 
   * Fixed bug when remove lock user list is cancelled
   * Refactorize code
