@@ -25,9 +25,9 @@ ApplicationWindow {
     
     onClosing: {
         close.accepted=closing;
-        accessControlBridge.closeApplication()
+        mainStackBridge.closeApplication()
         delay(100, function() {
-            if (accessControlBridge.closeGui){
+            if (mainStackBridge.closeGui){
                 closing=true,
                 closeTimer.stop(),           
                 mainWindow.close();
@@ -67,7 +67,7 @@ ApplicationWindow {
 
         StackView {
             id: mainView
-            property int currentIndex:accessControlBridge.currentStack
+            property int currentIndex:mainStackBridge.currentStack
             Layout.minimumWidth:675
             Layout.preferredWidth:675
             Layout.minimumHeight:370

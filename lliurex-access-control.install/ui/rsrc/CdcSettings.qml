@@ -23,9 +23,9 @@ Rectangle{
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:accessControlBridge.showSettingsCDCMessage[0]
-            text:getMessageText(accessControlBridge.showSettingsCDCMessage[1])
-            type:getMessageType(accessControlBridge.showSettingsCDCMessage[2])
+            visible:cdcStackBridge.showSettingsCDCMessage[0]
+            text:getMessageText(cdcStackBridge.showSettingsCDCMessage[1])
+            type:getMessageType(cdcStackBridge.showSettingsCDCMessage[2])
             Layout.minimumWidth:490
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -41,13 +41,13 @@ Rectangle{
             CheckBox {
                 id:cdcControlCb
                 text:i18nd("lliurex-access-control","Activated access control by center on this computer")
-                checked:accessControlBridge.isAccessDenyCDCEnabled
+                checked:cdcStackBridge.isAccessDenyCDCEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 Keys.onReturnPressed: cdcControlCb.toggled()
                 Keys.onEnterPressed: cdcControlCb.toggled()
                 onToggled:{
-                   accessControlBridge.manageCDCAccessControl(checked)
+                   cdcStackBridge.manageCDCAccessControl(checked)
                 }
 
                 Layout.alignment:Qt.AlignLeft
@@ -65,7 +65,7 @@ Rectangle{
                 }
                 TextField{
                     id:cdcEntry
-                    text:accessControlBridge.cdcCode
+                    text:cdcStackBridge.cdcCode
                     enabled:cdcControlCb.checked
                     maximumLength:8
                     font.pointSize:10
@@ -76,7 +76,7 @@ Rectangle{
                         if ((cdcEntry.text=="")||(cdcEntry.text.length==8)){
                             wait(1000, function() {
                                 waitTimer.stop()
-                                accessControlBridge.manageCDCCodeChange(cdcEntry.text)
+                                cdcStackBridge.manageCDCCodeChange(cdcEntry.text)
                             })
                         }
                     }
@@ -101,13 +101,13 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
-            enabled:accessControlBridge.settingsCDCChanged
+            enabled:cdcStackBridge.settingsCDCChanged
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
                 applyChanges()
                 closeTimer.stop()
-                accessControlBridge.applyCDCChanges()
+                cdcStackBridge.applyCDCChanges()
             }
         }
         Button {
@@ -118,13 +118,13 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
-            enabled:accessControlBridge.settingsCDCChanged
+            enabled:cdcStackBridge.settingsCDCChanged
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
                 discardChanges()
                 closeTimer.stop()
-                accessControlBridge.cancelCDCChanges()
+                cdcStackBridge.cancelCDCChanges()
             }
         }
     } 
@@ -132,7 +132,7 @@ Rectangle{
     ChangesDialog{
         id:cdcChangesDialog
         dialogTitle:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by center")
-        dialogVisible:accessControlBridge.showCDCChangesDialog
+        dialogVisible:cdcStackBridge.showCDCChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
         Connections{
             target:cdcChangesDialog
@@ -221,7 +221,7 @@ Rectangle{
         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
         delayTimer.stop()
         delay(500, function() {
-            if (accessControlBridge.closePopUp){
+            if (mainStackBridge.closePopUp){
                 synchronizePopup.close(),
                 delayTimer.stop()
             }
@@ -233,7 +233,7 @@ Rectangle{
         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
         delayTimer.stop()
         delay(1000, function() {
-            if (accessControlBridge.closePopUp){
+            if (mainStackBridge.closePopUp){
                 synchronizePopup.close(),
                 delayTimer.stop()
 

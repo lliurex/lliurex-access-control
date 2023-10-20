@@ -29,7 +29,7 @@ Components.ListItem{
             id:groupCheck
             checked:isLocked
             onToggled:{
-                accessControlBridge.manageGroupChecked([groupId,checked])
+                groupStackBridge.manageGroupChecked([groupId,checked])
             }
             anchors.left:parent.left
             anchors.leftMargin:5

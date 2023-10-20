@@ -6,14 +6,22 @@ from PySide2.QtGui import QIcon
 from PySide2.QtQml import QQmlApplicationEngine
 
 import sys
-import LliurexAccessControl
+import Core
+c=Core.Core.get_core()
 
 app = QApplication()
 engine = QQmlApplicationEngine()
 engine.clearComponentCache()
 context=engine.rootContext()
-accessControlBridge=LliurexAccessControl.LliurexAccessControl(sys.argv[1])
-context.setContextProperty("accessControlBridge", accessControlBridge)
+mainStackBridge=c.mainStack
+groupStackBridge=c.groupStack
+userStackBridge=c.userStack
+cdcStackBridge=c.cdcStack
+context.setContextProperty("mainStackBridge", mainStackBridge)
+context.setContextProperty("groupStackBridge", groupStackBridge)
+context.setContextProperty("userStackBridge", userStackBridge)
+context.setContextProperty("cdcStackBridge", cdcStackBridge)
+
 
 url = QUrl("/usr/share/lliurex-access-control/rsrc/lliurex-access-control.qml")
 
