@@ -29,7 +29,7 @@ Components.ListItem{
             id:userCheck
             checked:isLocked
             onToggled:{
-                accessControlBridge.manageUserChecked([userId,checked])
+                userStackBridge.manageUserChecked([userId,checked])
             }
             anchors.left:parent.left
             anchors.leftMargin:5
@@ -62,7 +62,7 @@ Components.ListItem{
             anchors.left:userName.right
             visible:listUserItem.ListView.isCurrentItem
             onClicked:{
-                accessControlBridge.removeUser(index)
+                userStackBridge.removeUser(index)
                 entryRow.visible=false
             }
             ToolTip.delay: 1000

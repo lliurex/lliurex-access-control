@@ -92,19 +92,19 @@ Dialog {
 
             onApplied:{
                 dialogApplyClicked()
-                accessControlBridge.manageSettingsDialog("Accept")
+                mainStackBridge.manageSettingsDialog("Accept")
 
             }
 
             onDiscarded:{
                 discardDialogClicked(),
-                accessControlBridge.manageSettingsDialog("Discard")
+                mainStackBridge.manageSettingsDialog("Discard")
 
             }
 
             onRejected:{
                 cancelDialogClicked(),
-                accessControlBridge.manageSettingsDialog("Cancel")
+                mainStackBridge.manageSettingsDialog("Cancel")
 
             }
         }

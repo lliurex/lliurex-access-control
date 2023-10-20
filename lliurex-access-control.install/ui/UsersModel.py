@@ -84,4 +84,4 @@ class UsersModel(QtCore.QAbstractListModel):
 	
 	#def clear
 	
-#class GroupModel
+#class UsersModel

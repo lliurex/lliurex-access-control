@@ -29,7 +29,7 @@ GridLayout{
                 optionEnabled:true
                 Connections{
                     function onMenuOptionClicked(){
-                        accessControlBridge.manageTransitions(0)
+                        mainStackBridge.manageTransitions(0)
                     }
                 }
             }
@@ -38,10 +38,10 @@ GridLayout{
                 id:userItem
                 optionText:i18nd("lliurex-access-control","Control by users")
                 optionIcon:"/usr/share/icons/breeze/actions/22/user.svg"
-                optionEnabled:accessControlBridge.enableUserConfig
+                optionEnabled:userStackBridge.enableUserConfig
                 Connections{
                     function onMenuOptionClicked(){
-                        accessControlBridge.manageTransitions(1)
+                        mainStackBridge.manageTransitions(1)
                    
                     }
                 }
@@ -51,10 +51,10 @@ GridLayout{
                 id:cdcItem
                 optionText:i18nd("lliurex-access-control","Control by center")
                 optionIcon:"/usr/share/icons/breeze/actions/22/view-institution.svg"
-                optionEnabled:accessControlBridge.isCDCAccessControlAllowed
+                optionEnabled:cdcStackBridge.isCDCAccessControlAllowed
                 Connections{
                     function onMenuOptionClicked(){
-                        accessControlBridge.manageTransitions(2)
+                        mainStackBridge.manageTransitions(2)
                    
                     }
                 }
@@ -66,7 +66,7 @@ GridLayout{
                 optionIcon:"/usr/share/icons/breeze/actions/22/help-contents.svg"
                 Connections{
                     function onMenuOptionClicked(){
-                        accessControlBridge.openHelp();
+                        mainStackBridge.openHelp();
                     }
                 }
             }
@@ -75,7 +75,7 @@ GridLayout{
 
     StackView{
         id: optionsView
-        property int currentIndex:accessControlBridge.currentOptionsStack
+        property int currentIndex:mainStackBridge.currentOptionsStack
         Layout.fillWidth:true
         Layout.fillHeight: true
         Layout.alignment:Qt.AlignHCenter
