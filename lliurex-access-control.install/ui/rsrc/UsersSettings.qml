@@ -385,9 +385,7 @@ Rectangle{
                 }
 
                 onRejected:{
-                    accessControlBridge.manageLocalAdminDialog("Cancel")
                     removeListDialog.close()
-
                 }
             }
         }
