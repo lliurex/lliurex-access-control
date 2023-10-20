@@ -24,9 +24,9 @@ Rectangle{
         enabled:true
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:accessControlBridge.showSettingsGroupMessage[0]
-            text:getMessageText(accessControlBridge.showSettingsGroupMessage[1])
-            type:getMessageType(accessControlBridge.showSettingsGroupMessage[2])
+            visible:groupStackBridge.showSettingsGroupMessage[0]
+            text:getMessageText(groupStackBridge.showSettingsGroupMessage[1])
+            type:getMessageType(groupStackBridge.showSettingsGroupMessage[2])
             Layout.minimumWidth:490
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -42,13 +42,13 @@ Rectangle{
             CheckBox {
                 id:groupControlCb
                 text:i18nd("lliurex-access-control","Activated access control by group on this computer")
-                checked:accessControlBridge.isAccessDenyGroupEnabled
+                checked:groupStackBridge.isAccessDenyGroupEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 Keys.onReturnPressed: groupControlCb.toggled()
                 Keys.onEnterPressed: groupControlCb.toggled()
                 onToggled:{
-                   accessControlBridge.manageGroupAccessControl(checked)
+                   groupStackBridge.manageGroupAccessControl(checked)
                 }
 
                 Layout.alignment:Qt.AlignLeft
@@ -67,7 +67,7 @@ Rectangle{
             }
             GroupList{
                 id:groupList
-                structModel:accessControlBridge.groupsModel
+                structModel:groupStackBridge.groupsModel
                 structEnabled:groupControlCb.checked
                 Layout.fillHeight:true
                 Layout.fillWidth:true
@@ -91,13 +91,13 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
-            enabled:accessControlBridge.settingsGroupChanged
+            enabled:groupStackBridge.settingsGroupChanged
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
                 applyChanges()
                 closeTimer.stop()
-                accessControlBridge.applyGroupChanges()
+                groupStackBridge.applyGroupChanges()
             }
         }
         Button {
@@ -108,13 +108,13 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
-            enabled:accessControlBridge.settingsGroupChanged
+            enabled:groupStackBridge.settingsGroupChanged
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
                 discardChanges()
                 closeTimer.stop()
-                accessControlBridge.cancelGroupChanges()
+                groupStackBridge.cancelGroupChanges()
             }
         }
     } 
@@ -122,7 +122,7 @@ Rectangle{
     ChangesDialog{
         id:groupChangesDialog
         dialogTitle:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by groups")
-        dialogVisible:accessControlBridge.showGroupChangesDialog
+        dialogVisible:groupStackBridge.showGroupChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
         Connections{
             target:groupChangesDialog
@@ -195,7 +195,7 @@ Rectangle{
         synchronizePopup.open()
         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
         delay(500, function() {
-            if (accessControlBridge.closePopUp){
+            if (mainStackBridge.closePopUp){
                 synchronizePopup.close(),
                 timer.stop()
             }
@@ -206,7 +206,7 @@ Rectangle{
         synchronizePopup.open()
         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
         delay(1000, function() {
-            if (accessControlBridge.closePopUp){
+            if (mainStackBridge.closePopUp){
                 synchronizePopup.close(),
                 timer.stop()
 

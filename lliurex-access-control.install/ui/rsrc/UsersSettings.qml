@@ -24,9 +24,9 @@ Rectangle{
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:accessControlBridge.showSettingsUserMessage[0]
-            text:getMessageText(accessControlBridge.showSettingsUserMessage[1])
-            type:getMessageType(accessControlBridge.showSettingsUserMessage[2])
+            visible:userStackBridge.showSettingsUserMessage[0]
+            text:getMessageText(userStackBridge.showSettingsUserMessage[1])
+            type:getMessageType(userStackBridge.showSettingsUserMessage[2])
             Layout.minimumWidth:490
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -43,11 +43,11 @@ Rectangle{
             CheckBox {
                 id:userControlCb
                 text:i18nd("lliurex-access-control","Activated access control by user on this computer")
-                checked:accessControlBridge.isAccessDenyUserEnabled
+                checked:userStackBridge.isAccessDenyUserEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 onToggled:{
-                   accessControlBridge.manageUserAccessControl(checked)
+                   userStackBridge.manageUserAccessControl(checked)
                 }
 
                 Layout.alignment:Qt.AlignLeft
@@ -96,13 +96,13 @@ Rectangle{
                         synchronizePopup.open()
                         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Validating data. Wait a moment...")
                         delay(500, function() {
-                            if (accessControlBridge.closePopUp){
+                            if (mainStackBridge.closePopUp){
                                 synchronizePopup.close(),
                                 timer.stop
 
                             }
                         })
-                        accessControlBridge.addUser(userEntry.text)
+                        userStackBridge.addUser(userEntry.text)
                         entryRow.visible=false
                         userEntry.text=""
 
@@ -132,7 +132,7 @@ Rectangle{
 
                 UserList{
                     id:userList
-                    structModel:accessControlBridge.usersModel
+                    structModel:userStackBridge.usersModel
                     structEnabled:userControlCb.checked
                     Layout.fillHeight:true
                     Layout.fillWidth:true
@@ -196,13 +196,13 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
-            enabled:accessControlBridge.settingsUserChanged
+            enabled:userStackBridge.settingsUserChanged
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()                    
             onClicked:{
                 applyChanges(),
                 closeTimer.stop(),
-                accessControlBridge.applyUserChanges()
+                userStackBridge.applyUserChanges()
             }
         }
         Button {
@@ -213,20 +213,20 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
-            enabled:accessControlBridge.settingsUserChanged
+            enabled:userStackBridge.settingsUserChanged
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()                    
             onClicked:{
                 discardChanges(),
                 closeTimer.stop(),
-                accessControlBridge.cancelUserChanges()
+                userStackBridge.cancelUserChanges()
             }
         }
     } 
 
     Dialog {
         id:localAdminDialog
-        visible:accessControlBridge.showLocalAdminDialog
+        visible:userStackBridge.showLocalAdminDialog
         title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
         modality:Qt.WindowModal
 
@@ -287,11 +287,11 @@ Rectangle{
                 }
 
                 onApplied:{
-                    accessControlBridge.manageLocalAdminDialog("Accept")
+                    userStackBridge.manageLocalAdminDialog("Accept")
                 }
 
                 onRejected:{
-                    accessControlBridge.manageLocalAdminDialog("Cancel")
+                    userStackBridge.manageLocalAdminDialog("Cancel")
 
                 }
             }
@@ -301,7 +301,7 @@ Rectangle{
     ChangesDialog{
         id:userChangesDialog
         dialogTitle:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
-        dialogVisible:accessControlBridge.showUserChangesDialog
+        dialogVisible:userStackBridge.showUserChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
         Connections{
             target:userChangesDialog
@@ -379,13 +379,12 @@ Rectangle{
                 }
 
                 onApplied:{
-                    accessControlBridge.removeUserList()
-                    userList.structModel=accessControlBridge.usersModel
+                    userStackBridge.removeUserList()
+                    userList.structModel=userStackBridge.usersModel
                     removeListDialog.close()
                 }
 
                 onRejected:{
-                    accessControlBridge.manageLocalAdminDialog("Cancel")
                     removeListDialog.close()
 
                 }
@@ -461,7 +460,7 @@ Rectangle{
         synchronizePopup.open()
         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
         delay(500, function() {
-            if (accessControlBridge.closePopUp){
+            if (mainStackBridge.closePopUp){
                 synchronizePopup.close(),
                 timer.stop()
             }
@@ -472,7 +471,7 @@ Rectangle{
         synchronizePopup.open()
         synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
         delay(1000, function() {
-            if (accessControlBridge.closePopUp){
+            if (mainStackBridge.closePopUp){
                 synchronizePopup.close(),
                 timer.stop()
             }
