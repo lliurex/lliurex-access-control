@@ -1,10 +1,10 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQml.Models 2.8
-import org.kde.plasma.components 2.0 as Components
+import QtQuick
+import QtQuick.Controls
+import QtQml.Models
+import org.kde.plasma.components as Components
 
 
-Components.ListItem{
+Components.ItemDelegate{
 
     id: listGroupItem
     property string groupId
@@ -12,19 +12,23 @@ Components.ListItem{
     property string description
 
     enabled:true
-
-    onContainsMouseChanged: {
-        if (containsMouse) {
-            listGroup.currentIndex = index
-        } else {
-            listGroup.currentIndex = -1
-        }
-
-    }
+    height:40
 
     Item{
         id: menuItem
         height:visible?30:0
+
+        MouseArea {
+            id: mouseAreaOption
+            anchors.fill: parent
+            hoverEnabled:true
+            propagateComposedEvents:true
+
+            onEntered: {
+                listGroup.currentIndex=index
+            }
+        }
+
         CheckBox {
             id:groupCheck
             checked:isLocked

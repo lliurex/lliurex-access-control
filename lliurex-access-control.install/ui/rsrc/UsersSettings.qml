@@ -1,9 +1,9 @@
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.kirigami 2.16 as Kirigami
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
-import QtQuick.Dialogs 1.3
+import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Dialogs
 
 Rectangle{
     color:"transparent"
@@ -228,7 +228,8 @@ Rectangle{
         id:localAdminDialog
         visible:userStackBridge.showLocalAdminDialog
         title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
-        modality:Qt.WindowModal
+        modal:true
+        anchors.centerIn:Overlay.overlay
 
         contentItem: Rectangle {
             color: "#ebeced"
@@ -320,7 +321,8 @@ Rectangle{
         id:removeListDialog
         title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
         visible:false
-        modality:Qt.WindowModal
+        modal:true
+        anchors.centerIn:Overlay.overlay
 
         contentItem: Rectangle {
             color: "#ebeced"

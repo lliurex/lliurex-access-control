@@ -1,30 +1,37 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
-import QtQml.Models 2.8
-import org.kde.plasma.components 2.0 as Components
+import QtQuick
+import QtQuick.Controls
+import QtQml.Models
+import org.kde.plasma.components as Components
 
 
-Components.ListItem{
+Components.ItemDelegate{
 
     id: listUserItem
     property string userId
     property bool isLocked
 
     enabled:true
-
-    onContainsMouseChanged: {
-        if (containsMouse) {
-            listUser.currentIndex = index
-        } else {
-            listUser.currentIndex = -1
-        }
-
-    }
+    height:45
 
     Item{
         id: menuItem
         height:visible?30:0
         width:parent.width-removeUserBtn.width
+	anchors.verticalCenter:parent.verticalCenter
+
+        MouseArea {
+            id: mouseAreaOption
+            anchors.fill: parent
+            hoverEnabled:true
+            propagateComposedEvents:true
+
+            onEntered: {
+                listUser.currentIndex=index
+            }
+	    onExited:{
+		listUser.currentIndex=-1
+	    }
+        }
         CheckBox {
             id:userCheck
             checked:isLocked
@@ -60,6 +67,7 @@ Components.ListItem{
             display:AbstractButton.IconOnly
             icon.name:"delete.svg"
             anchors.left:userName.right
+	    anchors.verticalCenter:parent.verticalCenter
             visible:listUserItem.ListView.isCurrentItem
             onClicked:{
                 userStackBridge.removeUser(index)

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from PySide2.QtCore import QObject,Signal,Slot,QThread,Property,QTimer,Qt,QModelIndex
+from PySide6.QtCore import QObject,Signal,Slot,QThread,Property,QTimer,Qt,QModelIndex
 import os
 import threading
 import signal
