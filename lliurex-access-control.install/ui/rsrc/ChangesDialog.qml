@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Dialogs
 
 
 Dialog {
@@ -17,6 +16,9 @@ Dialog {
     title:dialogTitle
     modal:true
     anchors.centerIn:Overlay.overlay
+    background:Rectangle{
+        color:"#ebeced"
+    }
 
     contentItem: Rectangle {
         color: "#ebeced"

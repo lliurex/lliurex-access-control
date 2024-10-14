@@ -3,7 +3,6 @@ import org.kde.kirigami as Kirigami
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Dialogs
 
 Rectangle{
     color:"transparent"

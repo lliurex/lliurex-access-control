@@ -28,9 +28,7 @@ Components.ItemDelegate{
             onEntered: {
                 listUser.currentIndex=index
             }
-	    onExited:{
-		listUser.currentIndex=-1
-	    }
+		
         }
         CheckBox {
             id:userCheck

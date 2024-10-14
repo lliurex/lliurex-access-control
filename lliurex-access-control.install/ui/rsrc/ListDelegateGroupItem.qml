@@ -12,11 +12,14 @@ Components.ItemDelegate{
     property string description
 
     enabled:true
-    height:40
+    height:45
 
     Item{
         id: menuItem
         height:visible?30:0
+	width:parent.width
+	anchors.verticalCenter:parent.verticalCenter
+
 
         MouseArea {
             id: mouseAreaOption
