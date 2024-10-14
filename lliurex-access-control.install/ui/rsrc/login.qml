@@ -18,7 +18,7 @@ Rectangle {
         
         /*anchors.centerIn: parent*/
         
-        onLogged: {
+        onLogged: (ticket)=> {
             tunnel.onTicket(ticket),
             showAddress=true;
 

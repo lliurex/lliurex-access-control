@@ -326,6 +326,9 @@ Rectangle{
         visible:false
         modal:true
         anchors.centerIn:Overlay.overlay
+	background:Rectangle{
+            color:"#ebeced"
+        }
 
         contentItem: Rectangle {
             color: "#ebeced"
