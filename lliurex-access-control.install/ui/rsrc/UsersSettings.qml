@@ -3,7 +3,6 @@ import org.kde.kirigami as Kirigami
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Dialogs
 
 Rectangle{
     color:"transparent"
@@ -230,6 +229,10 @@ Rectangle{
         title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
         modal:true
         anchors.centerIn:Overlay.overlay
+
+        background:Rectangle{
+            color:"#ebeced"
+        }
 
         contentItem: Rectangle {
             color: "#ebeced"
