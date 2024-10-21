@@ -232,6 +232,9 @@ Rectangle{
 
         background:Rectangle{
             color:"#ebeced"
+            border.color:"#b8b9ba"
+            border.width:1
+            radius:0,5
         }
 
         contentItem: Rectangle {
@@ -326,9 +329,12 @@ Rectangle{
         visible:false
         modal:true
         anchors.centerIn:Overlay.overlay
-	background:Rectangle{
+        background:Rectangle{
             color:"#ebeced"
-        }
+            border.color:"#b8b9ba"
+            border.width:1
+            radius:0,5
+       }
 
         contentItem: Rectangle {
             color: "#ebeced"
