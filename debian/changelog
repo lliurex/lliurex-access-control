@@ -1,3 +1,9 @@
+lliurex-access-control (1.22.14) noble; urgency=medium
+
+  * Minor fixes in style
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 13 Nov 2024 09:00:07 +0100
+
 lliurex-access-control (1.22.13) noble; urgency=medium
 
   * Fixed Dialog style
