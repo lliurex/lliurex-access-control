@@ -10,6 +10,7 @@ import Core
 c=Core.Core.get_core()
 
 app = QApplication()
+app.setDesktopFileName("lliurex-access-control")
 engine = QQmlApplicationEngine()
 engine.clearComponentCache()
 context=engine.rootContext()
@@ -30,7 +31,6 @@ if not engine.rootObjects():
 	sys.exit(-1)
 
 engine.quit.connect(QApplication.quit)
-app.setWindowIcon(QIcon("/usr/share/icons/hicolor/scalable/apps/lliurex-access-control.svg"));
 ret=app.exec()
 del engine
 del app
