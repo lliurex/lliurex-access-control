@@ -418,7 +418,6 @@ class Bridge(QObject):
 
 		if self.updateUserInfo.ret[0]:
 			self._updateUsersConfig()
-			time.sleep(1)
 			self.showSettingsUserMessage=[True,self.updateUserInfo.ret[1],"Success"]
 			self.core.mainStack.closeGui=True
 		else:

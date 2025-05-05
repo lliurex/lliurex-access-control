@@ -43,7 +43,6 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.margins: margin
         Layout.minimumWidth:675
-        Layout.preferredWidth:675
         Layout.minimumHeight:500
 
         RowLayout {
@@ -67,10 +66,7 @@ ApplicationWindow {
         StackView {
             id: mainView
             property int currentIndex:mainStackBridge.currentStack
-            Layout.minimumWidth:675
-            Layout.preferredWidth:675
             Layout.minimumHeight:370
-            Layout.preferredHeight:370
             Layout.alignment:Qt.AlignHCenter|Qt.AlignVCenter
             Layout.leftMargin:0
             Layout.fillWidth:true
@@ -92,7 +88,7 @@ ApplicationWindow {
                     property: "opacity"
                     from: 0
                     to:1
-                    duration: 600
+                    duration: 60
                 }
             }
             replaceExit: Transition {
@@ -100,7 +96,7 @@ ApplicationWindow {
                     property: "opacity"
                     from: 1
                     to:0
-                    duration: 600
+                    duration: 60
                 }
             }
 
