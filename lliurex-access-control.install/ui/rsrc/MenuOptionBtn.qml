@@ -5,12 +5,12 @@ import QtQuick.Layouts
 
 Item {
 	id:menuItem
-	Layout.preferredWidth: 165
-	Layout.preferredHeight: 35
+	width: 165
+	height: 35
 
 	property alias optionIcon:menuOptionIcon.source
 	property alias optionText:menuOptionText.text
-  property alias optionEnabled:menuOption.enabled
+	property alias optionEnabled:menuOption.enabled
 	signal menuOptionClicked()
 
 	Rectangle{
@@ -19,39 +19,39 @@ Item {
 		height:35
 		color:"transparent"
 		border.color:"transparent"
-    enabled:optionEnabled
+		enabled:optionEnabled
 
 		Row{
 			spacing:5
 			anchors.verticalCenter:menuOption.verticalCenter
 			leftPadding:5
-            
-      Image{
-        id:menuOptionIcon
-        source:optionIcon
-      }
 
-      Text {
-        id:menuOptionText
-        text:optionText
-        anchors.verticalCenter:menuOptionIcon.verticalCenter
-      }  
+			Image{
+				id:menuOptionIcon
+				source:optionIcon
+			}
+
+			Text {
+				id:menuOptionText
+				text:optionText
+				anchors.verticalCenter:menuOptionIcon.verticalCenter
+			}  
     }
 
     MouseArea {
     	id: mouseAreaOption
-      	anchors.fill: parent
-        hoverEnabled:true
+      anchors.fill: parent
+       hoverEnabled:true
 
-        onEntered: {
-          menuOption.color="#add8e6"
-        }
-        onExited: {
-          menuOption.color="transparent"
-        }
-        onClicked: {
-        	menuOptionClicked()
-        }
+      onEntered: {
+        menuOption.color="#add8e6"
+       }
+      onExited: {
+        menuOption.color="transparent"
+      }
+      onClicked: {
+       	menuOptionClicked()
+      }
     }   
   }
 }
