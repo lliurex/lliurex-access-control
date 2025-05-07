@@ -13,8 +13,8 @@ ApplicationWindow {
     visible: true
     title: "LliureX Access Control"
     property int margin: 1
-    width: mainLayout.implicitWidth + 2 * margin
-    height: mainLayout.implicitHeight + 2 * margin
+    width: mainLayout.width + 2 * margin
+    height: mainLayout.height + 2 * margin
     minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
     minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
     Component.onCompleted: {
