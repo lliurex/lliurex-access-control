@@ -1,3 +1,10 @@
+lliurex-access-control (1.22.18) noble; urgency=medium
+
+  * Hided control by center if integration with ID is disabled
+  * Added zero launcher
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Wed, 21 May 2025 09:58:30 +0200
+
 lliurex-access-control (1.22.17) noble; urgency=medium
 
   * Clean code
