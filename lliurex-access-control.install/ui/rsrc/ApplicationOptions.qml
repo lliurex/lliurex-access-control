@@ -49,7 +49,7 @@ GridLayout{
                 id:cdcItem
                 optionText:i18nd("lliurex-access-control","Control by center")
                 optionIcon:"/usr/share/icons/breeze/actions/22/view-institution.svg"
-                optionEnabled:cdcStackBridge.isCDCAccessControlAllowed
+                visible:cdcStackBridge.isCDCAccessControlAllowed
                 Connections{
                     function onMenuOptionClicked(){
                         mainStackBridge.manageTransitions(2)
