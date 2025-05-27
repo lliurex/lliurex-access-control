@@ -1,3 +1,9 @@
+lliurex-access-control (1.12.15) jammy; urgency=medium
+
+  * Fixed clint imports in cli
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 27 May 2025 09:06:52 +0200
+
 lliurex-access-control (1.12.14) jammy; urgency=medium
 
   * Fixed position in screen
