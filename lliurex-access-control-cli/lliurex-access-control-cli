@@ -3,7 +3,7 @@ import sys
 import os
 
 from clint import arguments
-from clint.textui import puts, indent, colored
+from clint.textui import puts, indent
 
 from accesscontrolcli import AccessControlCliManager
 
