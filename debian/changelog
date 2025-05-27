@@ -1,3 +1,9 @@
+lliurex-access-control (1.22.19) noble; urgency=medium
+
+  * Fixed clint import in cli
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Tue, 27 May 2025 08:38:40 +0200
+
 lliurex-access-control (1.22.18) noble; urgency=medium
 
   * Hided control by center if integration with ID is disabled
