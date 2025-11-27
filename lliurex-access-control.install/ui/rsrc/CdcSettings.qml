@@ -130,7 +130,6 @@ Rectangle{
 
     ChangesDialog{
         id:cdcChangesDialog
-        dialogTitle:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by center")
         dialogVisible:cdcStackBridge.showCDCChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
         Connections{
