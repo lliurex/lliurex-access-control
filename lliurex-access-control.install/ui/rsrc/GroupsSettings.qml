@@ -120,7 +120,6 @@ Rectangle{
 
     ChangesDialog{
         id:groupChangesDialog
-        dialogTitle:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by groups")
         dialogVisible:groupStackBridge.showGroupChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
         Connections{

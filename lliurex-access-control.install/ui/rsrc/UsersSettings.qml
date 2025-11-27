@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+
 Rectangle{
     color:"transparent"
     Text{ 
@@ -223,13 +224,13 @@ Rectangle{
         }
     } 
 
-    Dialog {
+    Popup {
         id:localAdminDialog
         visible:userStackBridge.showLocalAdminDialog
-        title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
         modal:true
-        anchors.centerIn:Overlay.overlay
 
+        anchors.centerIn:Overlay.overlay
+        closePolicy:Popup.NoAutoClose
         background:Rectangle{
             color:"#ebeced"
             border.color:"#b8b9ba"
@@ -259,11 +260,11 @@ Rectangle{
                 anchors.leftMargin:10
             
             }
-             DialogButtonBox {
-                buttonLayout:DialogButtonBox.KdeLayout
+            RowLayout {
                 anchors.bottom:parent.bottom
                 anchors.right:parent.right
                 anchors.topMargin:15
+                spacing:10
 
                 Button {
                     id:adminDialogApplyBtn
@@ -273,9 +274,11 @@ Rectangle{
                     focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
-                    DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
                     Keys.onReturnPressed: adminDialogApplyBtn.clicked()
-                    Keys.onEnterPressed: adminDialogApplyBtn.clicked()                    
+                    Keys.onEnterPressed: adminDialogApplyBtn.clicked()
+                    onClicked:{
+                        userStackBridge.manageLocalAdminDialog("Accept")
+                    }                    
 
                 }
 
@@ -287,27 +290,20 @@ Rectangle{
                     focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
-                    DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
                     Keys.onReturnPressed: adminDialogCancelBtn.clicked()
-                    Keys.onEnterPressed: adminDialogCancelBtn.clicked()                    
+                    Keys.onEnterPressed: adminDialogCancelBtn.clicked()
+                    onClicked:{
+                        userStackBridge.manageLocalAdminDialog("Cancel")
+                    }                    
        
                 }
 
-                onApplied:{
-                    userStackBridge.manageLocalAdminDialog("Accept")
-                }
-
-                onRejected:{
-                    userStackBridge.manageLocalAdminDialog("Cancel")
-
-                }
             }
         }
      }
 
     ChangesDialog{
         id:userChangesDialog
-        dialogTitle:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
         dialogVisible:userStackBridge.showUserChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
         Connections{
@@ -323,11 +319,11 @@ Rectangle{
         }
     }
 
-    Dialog{
+    Popup{
         id:removeListDialog
-        title:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by users")
         visible:false
         modal:true
+        closePolicy:Popup.NoAutoClose
         anchors.centerIn:Overlay.overlay
         background:Rectangle{
             color:"#ebeced"
@@ -358,11 +354,11 @@ Rectangle{
                 anchors.leftMargin:10
             }
            
-           DialogButtonBox {
-                buttonLayout:DialogButtonBox.KdeLayout
+            RowLayout {
                 anchors.bottom:parent.bottom
                 anchors.right:parent.right
                 anchors.topMargin:15
+                spacing:10
 
                 Button {
                     id:removeListDialogApplyBtn
@@ -372,13 +368,17 @@ Rectangle{
                     focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
-                    DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
                     Keys.onReturnPressed: removeListDialogApplyBtn.clicked()
-                    Keys.onEnterPressed: removeListDialogApplyBtn.clicked()                    
+                    Keys.onEnterPressed: removeListDialogApplyBtn.clicked()
+                    onClicked:{
+                        userStackBridge.removeUserList()
+                        userList.structModel=userStackBridge.usersModel
+                        removeListDialog.close()
+                    }                    
 
                 }
 
-                Button {
+               Button {
                     id:removeListDialogCancelBtn
                     display:AbstractButton.TextBesideIcon
                     icon.name:"dialog-cancel.svg"
@@ -386,22 +386,14 @@ Rectangle{
                     focus:true
                     font.family: "Quattrocento Sans Bold"
                     font.pointSize: 10
-                    DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
                     Keys.onReturnPressed: removeListDialogCancelBtn.clicked()
-                    Keys.onEnterPressed: removeListDialogCancelBtn.clicked()                    
+                    Keys.onEnterPressed: removeListDialogCancelBtn.clicked()
+                    onClicked:{
+                        removeListDialog.close() 
+                    }                  
 
                 }
-
-                onApplied:{
-                    userStackBridge.removeUserList()
-                    userList.structModel=userStackBridge.usersModel
-                    removeListDialog.close()
-                }
-
-                onRejected:{
-                    removeListDialog.close()
-
-                }
+          
             }
         }
     }

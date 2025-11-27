@@ -1,20 +1,19 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import org.kde.plasma.components as PC
 
 
-Dialog {
+Popup {
     id: customDialog
-    property alias dialogTitle:customDialog.title
     property alias dialogVisible:customDialog.visible
     property alias dialogMsg:dialogText.text
     signal dialogApplyClicked
     signal discardDialogClicked
     signal cancelDialogClicked
 
-    visible:dialogVisible
-    title:dialogTitle
     modal:true
+    closePolicy:Popup.NoAutoClose
     anchors.centerIn:Overlay.overlay
     background:Rectangle{
         color:"#ebeced"
@@ -47,13 +46,14 @@ Dialog {
         
         }
       
-        DialogButtonBox {
-            buttonLayout:DialogButtonBox.KdeLayout
+        RowLayout {
+            id:btnBox
             anchors.bottom:parent.bottom
             anchors.right:parent.right
             anchors.topMargin:15
+            spacing:10
 
-            Button {
+            PC.Button {
                 id:dialogApplyBtn
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-ok.svg"
@@ -61,13 +61,17 @@ Dialog {
                 focus:true
                 font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
-                DialogButtonBox.buttonRole: DialogButtonBox.ApplyRole
                 Keys.onReturnPressed: dialogApplyBtn.clicked()
                 Keys.onEnterPressed: dialogApplyBtn.clicked()
+                onClicked:{
+                    dialogApplyClicked(),
+                    mainStackBridge.manageSettingsDialog("Accept")
+
+                }
 
             }
 
-            Button {
+            PC.Button {
                 id:dialogDiscardBtn
                 display:AbstractButton.TextBesideIcon
                 icon.name:"delete.svg"
@@ -75,14 +79,18 @@ Dialog {
                 focus:true
                 font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
-                DialogButtonBox.buttonRole: DialogButtonBox.DestructiveRole
                 Keys.onReturnPressed: dialogDiscardBtn.clicked()
                 Keys.onEnterPressed: dialogDiscardBtn.clicked()
+                onClicked:{
+                    discardDialogClicked(),
+                    mainStackBridge.manageSettingsDialog("Discard")
+
+                }
 
 
             }
 
-            Button {
+            PC.Button {
                 id:dialogCancelBtn
                 display:AbstractButton.TextBesideIcon
                 icon.name:"dialog-cancel.svg"
@@ -90,28 +98,13 @@ Dialog {
                 focus:true
                 font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
-                DialogButtonBox.buttonRole:DialogButtonBox.RejectRole
                 Keys.onReturnPressed: dialogCancelBtn.clicked()
                 Keys.onEnterPressed: dialogCancelBtn.clicked()
+                onClicked:{
+                    cancelDialogClicked(),
+                    mainStackBridge.manageSettingsDialog("Cancel")
+                }
         
-            }
-
-            onApplied:{
-                dialogApplyClicked()
-                mainStackBridge.manageSettingsDialog("Accept")
-
-            }
-
-            onDiscarded:{
-                discardDialogClicked(),
-                mainStackBridge.manageSettingsDialog("Discard")
-
-            }
-
-            onRejected:{
-                cancelDialogClicked(),
-                mainStackBridge.manageSettingsDialog("Cancel")
-
             }
         }
     }
