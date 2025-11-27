@@ -1,3 +1,9 @@
+lliurex-access-control (1.22.20) noble; urgency=medium
+
+  * Fixed custom dialog template
+  
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 27 Nov 2025 09:38:51 +0100
+
 lliurex-access-control (1.22.19) noble; urgency=medium
 
   * Fixed clint import in cli
