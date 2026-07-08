@@ -30,25 +30,21 @@ class Tunnel(QObject):
 		cachePath2="/home/%s/.cache/lliurex-access-control-gui.py"%user
 		installedVersion=self.getPackageVersion()
 
-		if installedVersion!="":
-			if not os.path.exists(versionFile):
+
+		if not os.path.exists(versionFile):
+			with open(versionFile,'w') as fd:
+				fd.write(installedVersion)
+
+			clear=True
+
+		else:
+			with open(versionFile,'r') as fd:
+				fileVersion=fd.readline()
+
+			if fileVersion!=installedVersion:
 				with open(versionFile,'w') as fd:
 					fd.write(installedVersion)
-
 				clear=True
-
-			else:
-				with open(versionFile,'r') as fd:
-					fileVersion=fd.readline()
-					fd.close()
-
-				if fileVersion!=installedVersion:
-					with open(versionFile,'w') as fd:
-						fd.write(installedVersion)
-						fd.close()
-					clear=True
-		else:
-			clear=True
 		
 		if clear:
 			if os.path.exists(cachePath1):
@@ -65,33 +61,11 @@ class Tunnel(QObject):
 
 		if os.path.exists(packageVersionFile):
 			with open(packageVersionFile,'r') as fd:
-				pkgVersion=fd.readline()
-				fd.close()
+				pkgVersion=fd.readline().strip()
 
 		return pkgVersion
 
 	#def getPackageVersion
-
-	def checkFlavour(self):
-
-		cmd='lliurex-version -v'
-		p=subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE)
-		result=p.communicate()[0]
-		lockFlavour=False
-
-		if type(result) is bytes:
-			result=result.decode()
-		flavours = [ x.strip() for x in result.split(',') ]	
-		
-		
-		for item in flavours:
-			if 'server' in item or 'client' in item:
-				lockFlavour=True
-				break
-							
-		return lockFlavour
-
-	#def checkFlavour
 
 	def checkUser(self,user):
 
@@ -103,14 +77,8 @@ class Tunnel(QObject):
 
 		for item in userGroups:
 			if item in GROUPS:
-				isAdmin=True
+				return True
 				break
-
-		if not isAdmin:
-			if self.checkFlavour():
-				return False
-
-		return True
 
 	#def checkUser
 
@@ -129,6 +97,7 @@ class Tunnel(QObject):
 			os.system(cmd)
 		
 		app.quit()
+		
 	#def on_ticket
 	
 #class Tunnel	

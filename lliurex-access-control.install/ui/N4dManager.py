@@ -17,6 +17,12 @@ class N4dManager:
 	APPLY_CHANGES_WITHOUT_CODE=-90
 	CDC_CODE_NOT_VALID=-101
 
+	KIRIGAMI_MSG_OK=0
+	KIRIGAMI_MSG_ERROR=1
+	KIRIGAMI_MSG_WARNING=2
+	KIRIGAMI_MSG_INFO=3
+
+
 	def __init__(self):
 
 		self.debug=True
@@ -44,7 +50,7 @@ class N4dManager:
 		self.client=n4d.client.Client(ticket=tk)
 
 		self.writeLog("Init session in lliurex-access-control GUI")
-		self.writeLog("User login in GUI: %s"%self.currentUser)
+		self.writeLog(f"User login in GUI: {self.currentUser}")
 	
 	#def setServer
 
@@ -59,61 +65,70 @@ class N4dManager:
 
 	def loadGroupConfig(self,step="Initial"):
 
-		self.writeLog("Access Control by Group. %s configuration:"%step)
+		self.writeLog(f"Access Control by Group. {step} configuration:")
 		self.isAccessDenyGroupEnabled=self.client.AccessControlManager.is_access_denied_group_enabled()
-		self.writeLog("- Access control by group activated: %s"%(str(self.isAccessDenyGroupEnabled)))
-		if step=="Initial":
-			initLoad=True 
-		else:
-			initLoad=False
+		self.writeLog(f"- Access control by group activated: {self.isAccessDenyGroupEnabled}")
+		
+		initLoad=(step=="Initial")
 		self.groupsInfo=self.client.AccessControlManager.get_groups_info(initLoad)
 		self.writeLog("- Groups with restricted access: ")
-		for item in self.groupsInfo:
-			self.writeLog("  - %s: locked access %s"%(item,str(self.groupsInfo[item]["isLocked"])))
+		
+		for groupName,groupData in self.groupsInfo.items():
+			self.writeLog(f"  - {groupName}: locked access {groupData.get("isLocked",False)}")
+		
 		self.getGroupsConfig()
 		
 	#def loadGroupConfig()
 
 	def loadUserConfig(self,step="Initial"):
 
-		self.writeLog("Access Control by User. %s configuration:"%step)
+		self.writeLog(f"Access Control by User. {step} configuration:")
 		self.isAccessDenyUserEnabled=self.client.AccessControlManager.is_access_denied_user_enabled()
-		self.writeLog("- Access Control by User activated: %s"%(str(self.isAccessDenyUserEnabled)))
+		self.writeLog(f"- Access Control by User activated: {self.isAccessDenyUserEnabled}")
+		
 		self.usersInfo=self.client.AccessControlManager.get_users_info()
 		self.writeLog("- Users with restricted access: ")
-		if len(self.usersInfo)>0:
-				for item in self.usersInfo:
-					self.writeLog("  - %s: locked access %s"%(item,str(self.usersInfo[item]["isLocked"])))
+		
+		if self.usersInfo:
+			for userName,userData in self.usersInfo.items():
+				self.writeLog(f"  - {userName}: locked access {userData.get("isLocked",False)}")
 		else:
 			self.writeLog("  - There is no user list")
+		
 		self.getUsersConfig()
 
 	#def loadUserConfig
 
 	def loadCDCConfig(self,step="Initial"):
 
-		self.writeLog("Access Control by CDC. %s configuration:"%step)
+		self.writeLog(f"Access Control by CDC. {step} configuration:")
 		self.isCDCAccessControlAllowed=self.client.AccessControlManager.is_cdc_access_control_allowed()
-		self.writeLog("- Access Control by CDC allowed: %s"%(str(self.isCDCAccessControlAllowed)))
+		self.writeLog(f"- Access Control by CDC allowed: {self.isCDCAccessControlAllowed}")
+		
 		self.isAccessDenyCDCEnabled=self.client.AccessControlManager.is_access_denied_cdc_enabled()
-		self.writeLog("- Access Control by CDC enabled: %s"%(str(self.isAccessDenyCDCEnabled)))
+		self.writeLog(f"- Access Control by CDC enabled: {self.isAccessDenyCDCEnabled}")
+		
 		self.cdcInfo=self.client.AccessControlManager.get_cdc_info()
-		if self.cdcInfo["code"]!="":
-			currentCode=self.cdcInfo["code"]
-		else:
-			currentCode="None"
-		self.writeLog("- Center code to control access: %s"%(str(currentCode)))
+		code=self.cdcInfo.get("code","")
+		currentCode=code if code!="" else "None"
+		self.writeLog(f"- Center code to control access: {currentCode}")
 
 	#def loadCDCConfig
 	
 	def getSessionLang(self):
 
-		lang=os.environ["LANG"]
-		
-		if 'valencia' in lang:
-			self.sessionLang="ca@valencia"
+		language=os.environ.get("LANGUAGE","")
+		if language!="":
+			tmpLang=language.split(":")[0]
 		else:
+			tmpLang=os.environ.get("LANG","")
+		
+		if 'valencia' in tmpLang:
+			self.sessionLang="ca@valencia"
+		elif 'es':
 			self.sessionLang="es"
+		else:
+			self.sessionLang="default"
 
 	#def getSessionLang
 
@@ -121,348 +136,277 @@ class N4dManager:
 
 		self.groupsConfigData=[]
 				
-		for item in self.groupsInfo:
-			hide=False
-			if item == 'teachers':
-				if not self.isCurrentUserAdmin:
-					hide=True
-			if not hide:
-				tmp={}
-				tmp["groupId"]=item
-				tmp["isLocked"]=self.groupsInfo[item]["isLocked"]
-				tmp["description"]=self.groupsInfo[item][self.sessionLang]
-				self.groupsConfigData.append(tmp)
+		for groupId,groupData in self.groupsInfo.items():
+			if groupId=="teachers" and not self.isCurrentUserAdmin:
+				continue
+			
+			tmp={
+				"groupId":groupId,
+				"isLocked":groupData.get("isLocked",False),
+				"description":groupData.get(self.sessionLang,"default")
+			}
+
+			self.groupsConfigData.append(tmp)
 
 	#def getGroupsConfig 
 
 	def getUsersConfig(self):
 
-		#self._readDefaultGroups()
 		self.usersConfigData=[]
 
-		for item in self.usersInfo:
-			hide=False
-			if item !="":
-				if self._checkIfUserIsTeacher(item) or self._checkIfUserIsAdmin(item):
-					if not self.isCurrentUserAdmin:
-						hide=True
-						self.enableUserConfig=False
-				if not hide:
-					tmp={}
-					tmp["userId"]=item
-					tmp["isLocked"]=self.usersInfo[item]["isLocked"]
-					self.usersConfigData.append(tmp)
+		for userId,userData in self.usersInfo.items():
+			if not userId:
+				continue
+
+			isProtected=self._checkIfUserIsTeacher(userId) or self._checkIfUserIsAdmin(userId)
+
+			if isProtected and not self.isCurrentUserAdmin:
+				self.enableUserConfig=False
+				continue
+
+			tmp={
+				"userId":userId,
+				"isLocked":userData.get("isLocked",False)
+			}
+			
+			self.usersConfigData.append(tmp)
 
 	#def getUsersConfig 			
 			
+	def applyGroupChanges(self, groupAccessControl, groupsInfo):
 
-	def applyGroupChanges(self,groupAccessControl,groupsInfo):
+		isControlChanged = groupAccessControl != self.isAccessDenyGroupEnabled
+		enableControl = isControlChanged and groupAccessControl
+		disableControl = isControlChanged and not groupAccessControl
+		updateGroupInfo = groupsInfo != self.groupsInfo
 
-		disableControl=False
-		updateGroupInfo=False
-		enableControl=False
-
-		result=["",""]
-
-		if groupsInfo != self.groupsInfo:
-			updateGroupInfo=True
-
-		if not groupAccessControl:
-			if groupAccessControl != self.isAccessDenyGroupEnabled:
-				disableControl=True
-		else:
-			if not self.thereAreGroupsLocked(groupsInfo):
-				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_GROUP]
-				return result
-			else:
-				if not updateGroupInfo:
-					enableControl=True
+		if groupAccessControl and not self.thereAreGroupsLocked(groupsInfo):
+			return {
+				"status": False,
+				"code": N4dManager.APPLY_CHANGES_WITHOUT_GROUP,
+				"type": N4dManager.KIRIGAMI_MSG_ERROR
+			}
 
 		self.writeLog("Changes in configuration of access control by Group:")		
-		if updateGroupInfo:
-			try:
-				self.writeLog("- Action: change group list")
-				ret=self.client.AccessControlManager.set_groups_info(groupsInfo)		
-				self.writeLog("- New groups with locked access: Changes apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-				if disableControl:
-					self.writeLog("- Action: disable access control by group")
-					ret=self.client.AccessControlManager.disable_access_denied_group()
-					self.writeLog("- Disable access control by group: Change apply successful")
-					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
-
-
-		if disableControl and not updateGroupInfo:
-			try:
-				self.writeLog("- Action: disable access control by group")
-				ret=self.client.AccessControlManager.disable_access_denied_group()
-				self.writeLog("- Disable access control by group: Changes apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
-
-		if enableControl:
-			try:
+		
+		try:
+			if enableControl:
 				self.writeLog("- Action: enable access control by group")
-				ret=self.client.AccessControlManager.set_groups_info(groupsInfo)		
+				self.client.AccessControlManager.set_groups_info(groupsInfo)		
 				self.writeLog("- Enable access control by group: Changes apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
-
-		if result[0]:
+			
+			elif updateGroupInfo and groupAccessControl:
+				self.writeLog("- Action: change group list")
+				self.client.AccessControlManager.set_groups_info(groupsInfo)		
+				self.writeLog("- New groups with locked access: Changes apply successful")
+				
+			if disableControl:
+				self.writeLog("- Action: disable access control by group")
+				self.client.AccessControlManager.disable_access_denied_group()
+				self.writeLog("- Disable access control by group: Change apply successful")
+				
 			self.loadGroupConfig("End")
-		return result
-
+			return {
+				"status": True,
+				"code": N4dManager.APPLY_CHANGES_SUCCESSFUL,
+				"type": N4dManager.KIRIGAMI_MSG_OK
+			}
+			
+		except n4d.client.CallFailedError as e:
+			self.writeLog("- Error applying changes: %s" % e.code)
+			return {
+				"status": False,
+				"code": e.code,
+				"type": N4dManager.KIRIGAMI_MSG_ERROR
+			}
+	
 	#def applyGroupChanges
 
 	def applyUsersChanges(self,userAccessControl,usersInfo):
 
-		disableControl=False
-		enableControl=False
-		updateUsersInfo=False
-		result=[]
+		isControlChanged = userAccessControl != self.isAccessDenyUserEnabled
+		enableControl = isControlChanged and userAccessControl
+		disableControl = isControlChanged and not userAccessControl
+		updateUsersInfo=usersInfo!=self.usersInfo
 
-		if usersInfo!=self.usersInfo:
-			updateUsersInfo=True
-
-		if not userAccessControl:
-			if userAccessControl != self.isAccessDenyUserEnabled:
-				disableControl=True
-		else:
-			if not self.thereAreUsersLocked(usersInfo):
-				result=[False,N4dManager.APPLY_CHANGES_WITHOUT_USER]
-				return result
-			else:
-				if not updateUsersInfo:
-					enableControl=True
-
+		if userAccessControl and not self.thereAreUsersLocked(usersInfo):
+			return {
+				"status":False,
+				"code":N4dManager.APPLY_CHANGES_WITHOUT_USER,
+				"type":N4dManager.KIRIGAMI_MSG_ERROR
+			}
+	
 		self.writeLog("Changes in configuration of access control by User:")		
 
-		if updateUsersInfo:
-			try:
-				self.writeLog("- Action: change user list")
-				ret=self.client.AccessControlManager.set_users_info(usersInfo)
-				self.writeLog("- New users with locked access: Changes apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
+		try:
+			if enableControl:
+				self.writeLog("- Action: enable access control by user")
+				self.client.AccessControlManager.set_users_info(usersInfo)
+				self.writeLog("- Enable access control by user: Change apply successful")
+			else:
+				if updateUsersInfo:
+						self.writeLog("- Action: change user list")
+						self.client.AccessControlManager.set_users_info(usersInfo)
+						self.writeLog("- New users with locked access: Changes apply successful")
+			
 				if disableControl:
 					self.writeLog("- Action: disable access control by user")
-					ret=self.client.AccessControlManager.disable_access_denied_user()
+					self.client.AccessControlManager.disable_access_denied_user()
 					self.writeLog("- Disable access control by user: Change apply successful")
-					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
 
-		if disableControl and not updateUsersInfo:
-			try:
-				self.writeLog("- Action: disable access control by user")
-				ret=self.client.AccessControlManager.disable_access_denied_user()
-				self.writeLog("- Disable access control by user: Change apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
-
-		if enableControl:
-			try:
-				self.writeLog("- Action: enable access control by user")
-				ret=self.client.AccessControlManager.set_users_info(usersInfo)
-				self.writeLog("- Enable access control by user: Change apply successful")
-				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-			except n4d.client.CallFailedError as e:
-				self.writeLog("- Error applying changes: %s"%e.code)
-				result=[False,e.code]
-
-
-		if result[0]:
 			self.loadUserConfig("End")
-		return result
+			return {
+				"status":True,
+				"code":N4dManager.APPLY_CHANGES_SUCCESSFUL,
+				"type":N4dManager.KIRIGAMI_MSG_OK
+			}
+
+		except n4d.client.CallFailedError as e:
+			self.writeLog("- Error applying changes: %s"%e.code)
+			return {
+				"status":False,
+				"code":e.code,
+				"type":N4dManager.KIRIGAMI_MSG_OK
+			}
 
 	#def applyUsersChanges
 
 	def thereAreGroupsLocked(self,groupsInfo):
 
-		thereAreGroupLocked=False
-
-		for item in groupsInfo:
-			if groupsInfo[item]["isLocked"]:
-				thereAreGroupLocked=True
-				break
-
-		return thereAreGroupLocked
+		return any(groupsInfo[item]["isLocked"] for item in groupsInfo)
 
 	#def thereAreGroupsLocked
 	
 	def thereAreUsersLocked(self,usersInfo):
 
-		thereAreUsersLocked=False
-
-		for item in usersInfo:
-			if usersInfo[item]["isLocked"]:
-				thereAreUsersLocked=True
-				break
-
-		return thereAreUsersLocked
+		return any(usersInfo[item]["isLocked"] for item in usersInfo)
 
 	#def thereAreUsersLocked
 	
 	def checkIfUserIsValidGroup(self,userList):
 
-		#adminGroups=["sudo","admins","adm"]
-		isLocalAdmin=False
-		localAdminList=[]
-		isTeacher=False
-		teachersList=[]
-	
-		for item in userList:
-			if item != self.currentUser:
-				userGroups=self._getUserGroups(item)
-				for element in userGroups:
-					if element in self.adminGroups:
-						localAdminList.append(item) 
-				
-				if not self.isCurrentUserAdmin:
-					if self._checkIfUserIsTeacher(item):
-						teachersList.append(item)
+		localAdminList = []
+		teachersList = []
 
-		if len(localAdminList)>0:
-			isLocalAdmin=True
-		
-		return [isLocalAdmin,localAdminList,teachersList]
+		adminGroupsSet = set(self.adminGroups)
+
+		for item in userList:
+			if item == self.currentUser:
+				continue
+
+			userGroups = self._getUserGroups(item)
+			if any(group in adminGroupsSet for group in userGroups):
+				localAdminList.append(item)
+
+			if not self.isCurrentUserAdmin and self._checkIfUserIsTeacher(item):
+				teachersList.append(item)
+
+		isLocalAdmin = bool(localAdminList)
+
+		return {
+			"isLocalAdmin":isLocalAdmin, 
+			"localAdminList":localAdminList, 
+			"teachersList":teachersList
+		}
 
 	#def checkIfUserIsValidGroup
 
 	def checkIfUserIsCurrrentUser(self,userList):
 
-		userListFilter=[self.currentUser,'root']
-		isCurrentUser=False
-		currentUserList=[]
+		rawList = [user for user in userList if user in [self.currentUser, 'root']]
 
-		for user in userList:
-			if user in userListFilter:
-				currentUserList.append(user)
-
-		if len(currentUserList)>0:
-			isCurrentUser=True
-
-		return [isCurrentUser,currentUserList]
+		currentUserList = list(dict.fromkeys(rawList))
+		return {
+			"validGroup":len(currentUserList) > 0, 
+			"userList":currentUserList
+		}
 
 	#def checkIfUserIsCurrrentUser 
 	
 	def _checkIfUserIsTeacher(self,user):
 		
-		userGroups=self._getUserGroups(user)
-		
-		if 'teachers' in userGroups:
-			return True
-		
-		return False
+		return 'teachers' in self._getUserGroups(user)
 		
 	#def checkIfUserIsTeacher
 	
 	def _checkIfUserIsAdmin(self,user):
-		
-		userGroups=self._getUserGroups(user)
-		ret=False
-		for item in userGroups:
-			if item in self.adminGroups:
-				ret=True
-				break
-		
-		return ret
+
+		userGroups = self._getUserGroups(user)
+		return any(item in self.adminGroups for item in userGroups)
 		
 	#def _checkIfUserIsAdmin
 
-	def applyCDCChanges(self,cdcAccessControl,cdcInfo):
+	def applyCDCChanges(self, cdcAccessControl, cdcInfo):
 
-		disableControl=False
-		enableControl=False
-		updateCDCInfo=False
-		result=[]
+		if not self.isCorrectCode(cdcInfo.get("code", "")):
+			return {
+				"status":False, 
+				"code":N4dManager.CDC_CODE_NOT_VALID,
+				"type":N4dManager.KIRIGAMI_MSG_ERROR
+			}
 
-		if self.isCorrectCode(cdcInfo["code"]):
-			if (cdcInfo["code"]!=self.cdcInfo["code"]) and (cdcInfo["code"]!=""):
-				updateCDCInfo=True
+		if cdcAccessControl and cdcInfo.get("code") == "":
+			return {
+				"status":False, 
+				"code":N4dManager.APPLY_CHANGES_WITHOUT_CODE,
+				"type":N4dManager.KIRIGAMI_MSG_ERROR
+			}
 
-			if not cdcAccessControl:
-				if cdcInfo["code"]=="":
-					cdcInfo={}
-					updateCDCInfo=True
-				else:
-					if cdcAccessControl != self.isAccessDenyCDCEnabled:
-						disableControl=True
-			else:
-				if cdcInfo["code"]=="":
-					result=[False,N4dManager.APPLY_CHANGES_WITHOUT_CODE]
-					return result
-				else:
-					if not updateCDCInfo:
-						enableControl=True
+		currentCode = self.cdcInfo.get("code", "")
+		newCode = cdcInfo.get("code", "")
 
-			self.writeLog("Changes in configuration of access control by CDC:")		
-			if updateCDCInfo:
-				try:
+		updateCDCInfo = (newCode != currentCode) and (newCode != "")
+
+		if not cdcAccessControl and new_code == "":
+			updateCDCInfo = True
+			cdcInfo = {"code": ""} 
+
+		isCcontrolChanged = cdcAccessControl != self.isAccessDenyCDCEnabled
+		enableControl = isCcontrolChanged and cdcAccessControl
+		disableControl = isCcontrolChanged and not cdcAccessControl
+
+		self.writeLog("Changes in configuration of access control by CDC:")
+
+		try:
+			if updateCDCInfo or enableControl:
+				if updateCDCInfo:
 					self.writeLog("- Action: change center code")
-					ret=self.client.AccessControlManager.set_cdc_info(cdcInfo)		
-					self.writeLog("- New center code: Changes apply successful")
-					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-					if disableControl:
-						self.writeLog("- Action: disable access control by CDC")
-						ret=self.client.AccessControlManager.disable_access_denied_cdc()
-						self.writeLog("- Disable access control by CDC: Change apply successful")
-						result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-
-				except n4d.client.CallFailedError as e:
-					self.writeLog("- Error applying changes: %s"%e.code)
-					result=[False,e.code]
-
-			if disableControl and not updateCDCInfo:
-				try:
-					self.writeLog("- Action: disable access control by CDC")
-					ret=self.client.AccessControlManager.disable_access_denied_cdc(True)
-					self.writeLog("- Disable access control by CDC: Changes apply successful")
-					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-				except n4d.client.CallFailedError as e:
-					self.writeLog("- Error applying changes: %s"%e.code)
-					result=[False,e.code]
-
-			if enableControl:
-				try:
+				if enableControl:
 					self.writeLog("- Action: enable access control by CDC")
-					ret=self.client.AccessControlManager.set_cdc_info(cdcInfo)		
+					
+				self.client.AccessControlManager.set_cdc_info(cdcInfo)
+				
+				if updateCDCInfo:
+					self.writeLog("- New center code: Changes apply successful")
+				if enableControl:
 					self.writeLog("- Enable access control by CDC: Changes apply successful")
-					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
-				except n4d.client.CallFailedError as e:
-					self.writeLog("- Error applying changes: %s"%e.code)
-					result=[False,e.code]
-
-			if result[0]:
-				self.loadCDCConfig("End")
-		else:
-			result=[False,N4dManager.CDC_CODE_NOT_VALID]
-		
-		return result
+					
+			if disableControl:
+				self.writeLog("- Action: disable access control by CDC")
+				self.client.AccessControlManager.disable_access_denied_cdc()
+				self.writeLog("- Disable access control by CDC: Changes apply successful")
+				
+			self.loadCDCConfig("End")
+			
+			return {
+				"status":True, 
+				"code":N4dManager.APPLY_CHANGES_SUCCESSFUL,
+				"type":N4dManager.KIRIGAMI_MSG_OK
+			}
+			
+		except n4d.client.CallFailedError as e:
+			self.writeLog("- Error applying changes: %s" % e.code)
+			return {
+				"status":False, 
+				"code":e.code,
+				"type":N4dManager.KIRIGAMI_MSG_ERROR
+			}
 
 	#def applyCDCChanges
 
 	def isCorrectCode(self,cdcCode):
 
-		if cdcCode!="":
-			if len(cdcCode)==8:
-				if cdcCode.isdecimal():
-					head=cdcCode[0:2]
-					if head in ['03','12','46']:
-						return True
-			return False
-		else:
-			return True
+		return not cdcCode or (len(cdcCode) == 8 and cdcCode.isdecimal() and cdcCode[:2] in ['03', '12', '46'])
 
 	#def isCorrectCode
 	
