@@ -27,7 +27,7 @@ class AccessControlManager:
 		self.group_deny_list_path=os.path.join(self.config_path,"login.group.deny")
 		self.default_groups_file=os.path.join(self.config_path+"/groups-lists","defaultGroups.json")
 		self.user_denied_list_path=os.path.join(self.config_path,"login.user.deny")
-		self.users_list=os.path.join(self.config_path+"/users-lists","users_list.json")
+		self.users_list=os.path.join(self.config_path+"/users-lists","usersList.json")
 		self.sssd_config_path="/etc/sssd/sssd.conf"
 		self.cdc_info=os.path.join(self.config_path+"/cdc-info","cdc.json")
 		self.section_ref_desa="domain/DESEDU.GVA.ES"
@@ -50,8 +50,8 @@ class AccessControlManager:
 		deny_groups=set(self._read_denied_groups_file())
 		groups_info=self._read_groups_list(init_load)
 
-		for group_name,groups_data in groups_info.items():
-			if isInstance(group_data,dict):
+		for group_name,group_data in groups_info.items():
+			if isinstance(group_data,dict):
 				group_data["isLocked"]=group_name in deny_groups
 
 		return n4d.responses.build_successful_call_response(groups_info)
@@ -246,13 +246,13 @@ class AccessControlManager:
 
 			for username,user_data in users_info.items():
 				clean_name=username.lower()
-				normalized_users[clean_name]=user_data
+				normalized_users_info[clean_name]=user_data
 
 				if user_data.get("isLocked",False):
 					deny_users.append(clean_name)
 
 			with open(self.users_list,'w',encoding="'utf-8") as fd:
-				json.dump(normalized_users,fd)
+				json.dump(normalized_users_info,fd)
 
 			if deny_users:
 				with open(self.user_denied_list_path,'w',encoding='utf-8') as fd:
@@ -272,7 +272,7 @@ class AccessControlManager:
 	def disable_access_denied_user(self):
 
 		try:
-			if os.paht.exists(self.user_denied_list_path):
+			if os.path.exists(self.user_denied_list_path):
 				os.remove(self.user_denied_list_path)
 		
 			return n4d.responses.build_successful_call_response()
@@ -319,7 +319,7 @@ class AccessControlManager:
 			cdc_info["code"]=clean_code
 
 		else:
-			cdcInfo["accessControlEnabled"]=False
+			cdc_info["accessControlEnabled"]=False
 			cdc_info["code"]=""
 				
 		return n4d.responses.build_successful_call_response(cdc_info)

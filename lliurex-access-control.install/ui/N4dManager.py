@@ -60,13 +60,13 @@ class N4dManager:
 	def loadGroupConfig(self,step="Initial"):
 
 		self.writeLog("Access Control by Group. %s configuration:"%step)
-		self.isAccessDenyGroupEnabled=self.client.AccessControlManager.isAccessDenyGroupEnabled()
+		self.isAccessDenyGroupEnabled=self.client.AccessControlManager.is_access_denied_group_enabled()
 		self.writeLog("- Access control by group activated: %s"%(str(self.isAccessDenyGroupEnabled)))
 		if step=="Initial":
 			initLoad=True 
 		else:
 			initLoad=False
-		self.groupsInfo=self.client.AccessControlManager.getGroupsInfo(initLoad)
+		self.groupsInfo=self.client.AccessControlManager.get_groups_info(initLoad)
 		self.writeLog("- Groups with restricted access: ")
 		for item in self.groupsInfo:
 			self.writeLog("  - %s: locked access %s"%(item,str(self.groupsInfo[item]["isLocked"])))
@@ -77,9 +77,9 @@ class N4dManager:
 	def loadUserConfig(self,step="Initial"):
 
 		self.writeLog("Access Control by User. %s configuration:"%step)
-		self.isAccessDenyUserEnabled=self.client.AccessControlManager.isAccessDenyUserEnabled()
+		self.isAccessDenyUserEnabled=self.client.AccessControlManager.is_access_denied_user_enabled()
 		self.writeLog("- Access Control by User activated: %s"%(str(self.isAccessDenyUserEnabled)))
-		self.usersInfo=self.client.AccessControlManager.getUsersInfo()
+		self.usersInfo=self.client.AccessControlManager.get_users_info()
 		self.writeLog("- Users with restricted access: ")
 		if len(self.usersInfo)>0:
 				for item in self.usersInfo:
@@ -93,11 +93,11 @@ class N4dManager:
 	def loadCDCConfig(self,step="Initial"):
 
 		self.writeLog("Access Control by CDC. %s configuration:"%step)
-		self.isCDCAccessControlAllowed=self.client.AccessControlManager.isCDCAccessControlAllowed()
+		self.isCDCAccessControlAllowed=self.client.AccessControlManager.is_cdc_access_control_allowed()
 		self.writeLog("- Access Control by CDC allowed: %s"%(str(self.isCDCAccessControlAllowed)))
-		self.isAccessDenyCDCEnabled=self.client.AccessControlManager.isAccessDenyCDCEnabled()
+		self.isAccessDenyCDCEnabled=self.client.AccessControlManager.is_access_denied_cdc_enabled()
 		self.writeLog("- Access Control by CDC enabled: %s"%(str(self.isAccessDenyCDCEnabled)))
-		self.cdcInfo=self.client.AccessControlManager.getCDCInfo()
+		self.cdcInfo=self.client.AccessControlManager.get_cdc_info()
 		if self.cdcInfo["code"]!="":
 			currentCode=self.cdcInfo["code"]
 		else:
@@ -182,12 +182,12 @@ class N4dManager:
 		if updateGroupInfo:
 			try:
 				self.writeLog("- Action: change group list")
-				ret=self.client.AccessControlManager.setGroupsInfo(groupsInfo)		
+				ret=self.client.AccessControlManager.set_groups_info(groupsInfo)		
 				self.writeLog("- New groups with locked access: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 				if disableControl:
 					self.writeLog("- Action: disable access control by group")
-					ret=self.client.AccessControlManager.disableAccessDenyGroup()
+					ret=self.client.AccessControlManager.disable_access_denied_group()
 					self.writeLog("- Disable access control by group: Change apply successful")
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 
@@ -199,7 +199,7 @@ class N4dManager:
 		if disableControl and not updateGroupInfo:
 			try:
 				self.writeLog("- Action: disable access control by group")
-				ret=self.client.AccessControlManager.disableAccessDenyGroup()
+				ret=self.client.AccessControlManager.disable_access_denied_group()
 				self.writeLog("- Disable access control by group: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			except n4d.client.CallFailedError as e:
@@ -209,7 +209,7 @@ class N4dManager:
 		if enableControl:
 			try:
 				self.writeLog("- Action: enable access control by group")
-				ret=self.client.AccessControlManager.setGroupsInfo(groupsInfo)		
+				ret=self.client.AccessControlManager.set_groups_info(groupsInfo)		
 				self.writeLog("- Enable access control by group: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			except n4d.client.CallFailedError as e:
@@ -248,12 +248,12 @@ class N4dManager:
 		if updateUsersInfo:
 			try:
 				self.writeLog("- Action: change user list")
-				ret=self.client.AccessControlManager.setUsersInfo(usersInfo)
+				ret=self.client.AccessControlManager.set_users_info(usersInfo)
 				self.writeLog("- New users with locked access: Changes apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 				if disableControl:
 					self.writeLog("- Action: disable access control by user")
-					ret=self.client.AccessControlManager.disableAccessDenyUser()
+					ret=self.client.AccessControlManager.disable_access_denied_user()
 					self.writeLog("- Disable access control by user: Change apply successful")
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			except n4d.client.CallFailedError as e:
@@ -263,7 +263,7 @@ class N4dManager:
 		if disableControl and not updateUsersInfo:
 			try:
 				self.writeLog("- Action: disable access control by user")
-				ret=self.client.AccessControlManager.disableAccessDenyUser()
+				ret=self.client.AccessControlManager.disable_access_denied_user()
 				self.writeLog("- Disable access control by user: Change apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			except n4d.client.CallFailedError as e:
@@ -273,7 +273,7 @@ class N4dManager:
 		if enableControl:
 			try:
 				self.writeLog("- Action: enable access control by user")
-				ret=self.client.AccessControlManager.setUsersInfo(usersInfo)
+				ret=self.client.AccessControlManager.set_users_info(usersInfo)
 				self.writeLog("- Enable access control by user: Change apply successful")
 				result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 			except n4d.client.CallFailedError as e:
@@ -410,12 +410,12 @@ class N4dManager:
 			if updateCDCInfo:
 				try:
 					self.writeLog("- Action: change center code")
-					ret=self.client.AccessControlManager.setCDCInfo(cdcInfo)		
+					ret=self.client.AccessControlManager.set_cdc_info(cdcInfo)		
 					self.writeLog("- New center code: Changes apply successful")
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 					if disableControl:
 						self.writeLog("- Action: disable access control by CDC")
-						ret=self.client.AccessControlManager.disableAccessDenyCDC()
+						ret=self.client.AccessControlManager.disable_access_denied_cdc()
 						self.writeLog("- Disable access control by CDC: Change apply successful")
 						result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 
@@ -426,7 +426,7 @@ class N4dManager:
 			if disableControl and not updateCDCInfo:
 				try:
 					self.writeLog("- Action: disable access control by CDC")
-					ret=self.client.AccessControlManager.disableAccessDenyCDC(True)
+					ret=self.client.AccessControlManager.disable_access_denied_cdc(True)
 					self.writeLog("- Disable access control by CDC: Changes apply successful")
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 				except n4d.client.CallFailedError as e:
@@ -436,7 +436,7 @@ class N4dManager:
 			if enableControl:
 				try:
 					self.writeLog("- Action: enable access control by CDC")
-					ret=self.client.AccessControlManager.setCDCInfo(cdcInfo)		
+					ret=self.client.AccessControlManager.set_cdc_info(cdcInfo)		
 					self.writeLog("- Enable access control by CDC: Changes apply successful")
 					result=[True,N4dManager.APPLY_CHANGES_SUCCESSFUL]
 				except n4d.client.CallFailedError as e:
