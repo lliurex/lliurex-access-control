@@ -36,7 +36,7 @@ Components.ItemDelegate{
             id:groupCheck
             checked:isLocked
             onToggled:{
-                groupStackBridge.manageGroupChecked([groupId,checked])
+                groupStackBridge.manageGroupChecked({"groupId":groupId,"isLocked":checked})
             }
             anchors.left:parent.left
             anchors.leftMargin:5

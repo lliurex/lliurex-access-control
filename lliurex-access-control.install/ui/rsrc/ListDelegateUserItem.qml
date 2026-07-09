@@ -34,7 +34,7 @@ Components.ItemDelegate{
             id:userCheck
             checked:isLocked
             onToggled:{
-                userStackBridge.manageUserChecked([userId,checked])
+                userStackBridge.manageUserChecked({"userId":userId,"isLocked":checked})
             }
             anchors.left:parent.left
             anchors.leftMargin:5

@@ -23,9 +23,9 @@ Rectangle{
         enabled:true
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:groupStackBridge.showSettingsGroupMessage[0]
-            text:getMessageText(groupStackBridge.showSettingsGroupMessage[1])
-            type:getMessageType(groupStackBridge.showSettingsGroupMessage[2])
+            visible:groupStackBridge.showSettingsGroupMessage.show
+            text:getMessageText(groupStackBridge.showSettingsGroupMessage.msgCode)
+            type:getMessageType(groupStackBridge.showSettingsGroupMessage.type)
             Layout.minimumWidth:490
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -41,7 +41,7 @@ Rectangle{
             CheckBox {
                 id:groupControlCb
                 text:i18nd("lliurex-access-control","Activated access control by group on this computer")
-                checked:groupStackBridge.isAccessDenyGroupEnabled
+                checked:groupStackBridge.isGroupAccessControlEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 Keys.onReturnPressed: groupControlCb.toggled()
@@ -90,7 +90,7 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
-            enabled:groupStackBridge.settingsGroupChanged
+            enabled:groupStackBridge.hasGroupChanges
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
@@ -107,7 +107,7 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
-            enabled:groupStackBridge.settingsGroupChanged
+            enabled:groupStackBridge.hasGroupChanges
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
@@ -155,36 +155,33 @@ Rectangle{
 
     function getMessageText(code){
 
-        var msg="";
         switch (code){
             case 10:
-                msg=i18nd("lliurex-access-control","Changes applied successfully");
-                break;
+                return i18nd("lliurex-access-control","Changes applied successfully")
             case -10:
-                msg=i18nd("lliurex-access-control","It is not possible to deactive access control by group");
-                break;
+                return i18nd("lliurex-access-control","It is not possible to deactive access control by group")
             case -20:
-                msg=i18nd("lliurex-access-control","Unable to update the list of groups with restricted access");
-                break;
+                return i18nd("lliurex-access-control","Unable to update the list of groups with restricted access")
             case -70:
-                msg=i18nd("lliurex-access-control","There are no groups selected to lock their access");
-                break;
+                return i18nd("lliurex-access-control","There are no groups selected to lock their access")
             default:
-                break;
+                return ""
         }
-        return msg;
-
     }
 
     function getMessageType(type){
 
-        switch (type){
-            case "Info":
-                return Kirigami.MessageType.Information
-            case "Success":
+        switch (type) {
+            case 0:
                 return Kirigami.MessageType.Positive
-            case "Error":
+            case 1:
                 return Kirigami.MessageType.Error
+            case 2:
+                return Kirigami.MessageType.Warning
+            case 3:
+                return Kirigami.MessageType.Information
+           default:
+                return Kirigami.MessageType.Information
         }
 
     } 

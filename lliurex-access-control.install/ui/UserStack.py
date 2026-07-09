@@ -2,7 +2,6 @@
 
 from PySide6.QtCore import QObject,Signal,Slot,QThread,Property,QTimer,Qt,QModelIndex
 import os
-import threading
 import signal
 import copy
 import time
@@ -12,20 +11,23 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 class UpdateInfo(QThread):
 
-	def __init__(self,*args):
+	infoUpdated=Signal(dict)
+
+	def __init__(self,manager,accessControlEnabled,usersInfo):
 
 		QThread.__init__(self)
 
-		self.enabledInfo=args[0]
-		self.listInfo=args[1]
-		self.ret=[]
+		self.manager=manager
+		self.accessControlEnabled=accessControlEnabled
+		self.usersInfo=usersInfo
 
 	#def __init__
 
 	def run(self,*args):
 		
 		time.sleep(1)
-		self.ret=Bridge.n4dMan.applyUsersChanges(self.enabledInfo,self.listInfo)
+		ret=self.manager.applyUsersChanges(self.accessControlEnabled,self.usersInfo)
+		self.infoUpdated.emit(ret)
 
 	#def run
 
@@ -33,27 +35,30 @@ class UpdateInfo(QThread):
 
 class AddNewUser(QThread):
 
-	def __init__(self,*args):
+	newUserAdded=Signal(dict,dict)
 
-		QThread.__init__(self)
+	def __init__(self,manager,newUsers):
 
-		self.newUser=args[0]
-		self.retCurrentUser=[False,[]]
-		self.retAdminUser=[False,[],[]]
+		super().__init__()
 
+		self.manager=manager
+		self.newUsers=newUsers
+		
 	#def __init__
 
 	def run(self,*args):
 		
 		time.sleep(1)
-		self.retCurrentUser=Bridge.n4dMan.checkIfUserIsCurrrentUser(self.newUser)
+		retCurrentUser=self.manager.checkIfUserIsCurrrentUser(self.newUsers)
 
-		if not self.retCurrentUser[0]:
-			self.retAdminUser=Bridge.n4dMan.checkIfUserIsValidGroup(self.newUser)
+		if not retCurrentUser.get("validGroup"):
+			retAdminUser=self.manager.checkIfUserIsValidGroup(self.newUsers)
 		else:
-			if len(self.newUser)>1:
-				self.retAdminUser=Bridge.n4dMan.checkIfUserIsValidGroup(self.newUser)
+			if len(self.newsUser)>1:
+				retAdminUser=self.manager.checkIfUserIsValidGroup(self.newUsers)
 		
+		self.newUserAdded.emit(retCurrentUser,retAdminUser)	
+	
 	#def run
 
 #class AddUser
@@ -63,16 +68,23 @@ class Bridge(QObject):
 	USER_DUPLICATE_ERROR=-90
 	CURRENT_USER_ERROR=-100
 	USERS_NOT_ALLOWED_ERROR=-200
-	
+
+	isUserAccessControlEnabledChanged=Signal()
+	hasUserChangesChanged=Signal()
+	showSettingsUserMessageChanged=Signal()
+	showLocalAdminDialogChanged=Signal()
+	showUserChangesDialogChanged=Signal()
+	enableUserConfigChanged=Signal()
+
 	def __init__(self,ticket=None):
 
-		QObject.__init__(self)
+		super().__init__()
 		self.core=Core.Core.get_core()
-		Bridge.n4dMan=self.core.n4dManager
+		self.n4dManager=self.core.n4dManager
 		self._usersModel=UsersModel.UsersModel()
-		self._isAccessDenyUserEnabled=False
-		self._settingsUserChanged=False
-		self._showSettingsUserMessage=[False,"","Success"]
+		self._isUserAccessControlEnabled=False
+		self._hasUserChanges=False
+		self._showSettingsUserMessage={"show":False,"msgCode":"","type":""}
 		self._showLocalAdminDialog=False
 		self._showUserChangesDialog=False
 		self._enableUserConfig=True
@@ -81,109 +93,121 @@ class Bridge(QObject):
 
 	#def __init__
 
+	@Property(bool,notify=isUserAccessControlEnabledChanged)
+	def isUserAccessControlEnabled(self):
+
+		return self._isUserAccessControlEnabled
+
+	#def isUserAccessControlEnabled
+
+	@isUserAccessControlEnabled.setter
+	def isUserAccessControlEnabled(self,isUserAccessControlEnabled):
+
+		if self._isUserAccessControlEnabled!=isUserAccessControlEnabled:
+			self._isUserAccessControlEnabled=isUserAccessControlEnabled
+			self.isUserAccessControlEnabledChanged.emit()
+
+	#def isUserAccessControlEnabled
+
+	@Property(bool,notify=hasUserChangesChanged)
+	def hasUserChanges(self):
+
+		return self._hasUserChanges
+
+	#def hasUserChanges
+
+	@hasUserChanges.setter
+	def hasUserChanges(self,hasUserChanges):
+
+		if self._hasUserChanges!=hasUserChanges:
+			self._hasUserChanges=hasUserChanges
+			self.hasUserChangesChanged.emit()
+
+	#def hasUserChanges
+	@Property(dict,notify=showSettingsUserMessageChanged)
+	def showSettingsUserMessage(self):
+
+		return self._showSettingsUserMessage
+
+	#def showSettingsUserMessage
+
+	@showSettingsUserMessage.setter
+	def showSettingsUserMessage(self,showSettingsUserMessage):
+
+		if self._showSettingsUserMessage!=showSettingsUserMessage:
+			self._showSettingsUserMessage=showSettingsUserMessage
+			self.showSettingsUserMessageChanged.emit()
+
+	#def showSettingsUserMessage
+
+	@Property(bool,notify=showLocalAdminDialogChanged)
+	def showLocalAdminDialog(self):
+
+		return self._showLocalAdminDialog
+
+	#def showLocalAdminDialog
+
+	@showLocalAdminDialog.setter
+	def showLocalAdminDialog(self,showLocalAdminDialog):
+
+		if self._showLocalAdminDialog!=showLocalAdminDialog:
+			self._showLocalAdminDialog=showLocalAdminDialog
+			self.showLocalAdminDialogChanged.emit()
+
+	#def showLocalAdminDialog
+
+	@Property(bool,notify=showUserChangesDialogChanged)
+	def showUserChangesDialog(self):
+
+		return self._showUserChangesDialog
+
+	#def showUserChangesDialog	
+
+	@showUserChangesDialog.setter
+	def showUserChangesDialog(self,showUserChangesDialog):
+		
+		if self._showUserChangesDialog!=showUserChangesDialog:
+			self._showUserChangesDialog=showUserChangesDialog		
+			self.showUserChangesDialogChanged.emit()
+
+	#def showUserChangesDialog
+
+	@Property(bool,notify=enableUserConfigChanged)
+	def enableUserConfig(self):
+
+		return self._enableUserConfig
+
+	#def enableUserConfig
+
+	@enableUserConfig.setter
+	def enableUserConfig(self,enableUserConfig):
+
+		if self._enableUserConfig!=enableUserConfig:
+			self._enableUserConfig=enableUserConfig
+			self.enableUserConfigChanged.emit()
+
+	#def enableUserConfig
+
+	@Property(QObject,constant=True)
+	def usersModel(self):
+		
+		return self._usersModel
+
+	#def usersModel
+
 	def getUserConfig(self):		
 
-		self.isAccessDenyUserEnabled=copy.deepcopy(Bridge.n4dMan.isAccessDenyUserEnabled)
-		self.usersInfo=copy.deepcopy(Bridge.n4dMan.usersInfo)
-		self.enableUserConfig=Bridge.n4dMan.enableUserConfig
+		self.isUserAccessControlEnabled=copy.deepcopy(self.n4dManager.isUserAccessControlEnabled)
+		self.usersInfo=copy.deepcopy(self.n4dManager.usersInfo)
+		self.enableUserConfig=self.n4dManager.enableUserConfig
 		self._updateUserModel()
 
 	#def getUserConfig
 
-	def _getIsAccessDenyUserEnabled(self):
-
-		return self._isAccessDenyUserEnabled
-
-	#def _getIsAccessDenyUserEnabled
-
-	def _setIsAccessDenyUserEnabled(self,isAccessDenyUserEnabled):
-
-		if self._isAccessDenyUserEnabled!=isAccessDenyUserEnabled:
-			self._isAccessDenyUserEnabled=isAccessDenyUserEnabled
-			self.on_isAccessDenyUserEnabled.emit()
-
-	#def _setIsAccessDenyUserEnabled
-
-	def _getSettingsUserChanged(self):
-
-		return self._settingsUserChanged
-
-	#def _getSettingsUserChanged
-
-	def _setSettingsUserChanged(self,settingsUserChanged):
-
-		if self._settingsUserChanged!=settingsUserChanged:
-			self._settingsUserChanged=settingsUserChanged
-			self.on_settingsUserChanged.emit()
-
-	#def _setSettingsUserChanged
-
-	def _getShowSettingsUserMessage(self):
-
-		return self._showSettingsUserMessage
-
-	#def _getShowSettingsUserMessage
-
-	def _setShowSettingsUserMessage(self,showSettingsUserMessage):
-
-		if self._showSettingsUserMessage!=showSettingsUserMessage:
-			self._showSettingsUserMessage=showSettingsUserMessage
-			self.on_showSettingsUserMessage.emit()
-
-	#def _setShowSettingsUserMessage
-
-	def _getShowLocalAdminDialog(self):
-
-		return self._showLocalAdminDialog
-
-	#def _getShowLocalAdminDialog
-
-	def _setShowLocalAdminDialog(self,showLocalAdminDialog):
-
-		if self._showLocalAdminDialog!=showLocalAdminDialog:
-			self._showLocalAdminDialog=showLocalAdminDialog
-			self.on_showLocalAdminDialog.emit()
-
-	#def _setShowLocalAdminDialog
-
-	def _getShowUserChangesDialog(self):
-
-		return self._showUserChangesDialog
-
-	#def _getShowUserChangesDialog	
-
-	def _setShowUserChangesDialog(self,showUserChangesDialog):
-		
-		if self._showUserChangesDialog!=showUserChangesDialog:
-			self._showUserChangesDialog=showUserChangesDialog		
-			self.on_showUserChangesDialog.emit()
-
-	#def _setShowUserChangesDialog
-	
-	def _getEnableUserConfig(self):
-
-		return self._enableUserConfig
-
-	#def _getEnableUserConfig
-
-	def _setEnableUserConfig(self,enableUserConfig):
-
-		if self._enableUserConfig!=enableUserConfig:
-			self._enableUserConfig=enableUserConfig
-			self.on_enableUserConfig.emit()
-
-	#def _setEnableUserConfig
-
-	def _getUsersModel(self):
-		
-		return self._usersModel
-
-	#def _getUsersModel
-
 	def _updateUserModel(self):
 
 		ret=self._usersModel.clear()
-		usersEntries=Bridge.n4dMan.usersConfigData
+		usersEntries=self.n4dManager.usersConfigData
 		for item in usersEntries:
 			if item["userId"]!="":
 				self._usersModel.appendRow(item["userId"],item["isLocked"])
@@ -193,128 +217,107 @@ class Bridge(QObject):
 	@Slot(bool)
 	def manageUserAccessControl(self,value):
 
-		self.showSettingsUserMessage=[False,"","Success"]
+		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
 
-		if value!=self.isAccessDenyUserEnabled:
-			self.isAccessDenyUserEnabled=value
-			if self.isAccessDenyUserEnabled!=Bridge.n4dMan.isAccessDenyUserEnabled:
-				self.settingsUserChanged=True
-			else:
-				self.settingsUserChanged=False
-
+		if value!=self.isUserAccessControlEnabled:
+			self.isUserAccessControlEnabled=value
+			self.hasUserChanges=(self.isUserAccessControlEnabled!=self.n4dManager.isUserAccessControlEnabled)
+	
 	#def manageUserAccessControl
 	
-	@Slot('QVariantList')
+	@Slot(dict)
 	def manageUserChecked(self,value):
 
-		self.showSettingsUserMessage=[False,"","Success"]
-		userId=value[0]
-		userChecked=value[1]
+		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
+		userId=value.get("userId")
+		userChecked=value.get("isLocked")
 
-		if self.usersInfo[userId]["isLocked"]!=userChecked:
+		if self.usersInfo.get(userId,{}).get("isLocked")!=userChecked:
 			self.usersInfo[userId]["isLocked"]=userChecked
-			if userId in Bridge.n4dMan.usersInfo.keys():
-				if self.usersInfo!=Bridge.n4dMan.usersInfo:
-					self.settingsUserChanged=True
-				else:
-					self.settingsUserChanged=False
+			if userId in self.n4dManager.usersInfo.keys():
+				self.hasUserChanges=(self.usersInfo!=self.n4dManager.usersInfo)
 			else:		
-				self.settingsUserChanged=True
+				self.hasUserChanges=True
 
-		if not Bridge.n4dMan.thereAreUsersLocked(self.usersInfo):
-			self.isAccessDenyUserEnabled=False
+		if not self.n4dManager.thereAreUsersLocked(self.usersInfo):
+			self.isUserAccessControlEnabled=False
 		
 	#def manageUserChecked
 
 	@Slot(str)
-	def addUser(self,userId):
+	def addUser(self,usersId):
 
-		self.showSettingsUserMessage=[False,"","Success"]
+		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
 		self.core.mainStack.closePopUp=False
-		tmpUserList=userId.split(" ")
-		self.userId=[]
-
-		for item in tmpUserList:
-			if item !="":
-				self.userId.append(item.lower())
-		
-		self.addNewUser=AddNewUser(self.userId)
-		self.addNewUser.start()
-		self.addNewUser.finished.connect(self._checkNewUser)
+		usersId=usersId.replace(","," ")
+		self.usersId=[item.lower() for item in usersId.split(" ") if item]
+		self.addNewUserT=AddNewUser(self.n4dManager,self.usersId)
+		self.addNewUserT.start()
+		self.addNewUserT.newUserAdded.connect(self._checkNewUser)
+		self.addNewUserT.finished.connect(self.addNewUserT.deleteLater)
 
 	#def addUser	
 
-	def _checkNewUser(self):
+	@Slot()
+	def _checkNewUser(self,retCurrentUser,retAdminUser):
 
 		self.tmpNewUser=[]
 		self.tmpAdminUser=[]
-		matchDuplicateList=[]
-		nextStep=False
+		
+		self.usersId=[u for u in self.usersId if u not in self.usersInfo]
+
+		if not self.usersId:
+			self.showSettingsUserMessage={"show":True,"msgCode":Bridge.USER_DUPLICATE_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
+			self.core.mainStack.closePopUp=True
+			return 
+
+		self.isCurrentUser=retCurrentUser.get("isCurrentUser")
+		if self.isCurrentUser:
+			currentUsers=set(retCurrentUser.get("userList") if len(retCurrentUser.get("userList")) > 1 else set())
+			self.usersId=[u for u in self.usersId if u not in currentUsers]
+
+		if not self.usersId:
+			self.showSettingsUserMessage={"show":True,"msgCode":Bridge.CURRENT_USER_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
+			self.core.mainStack.closePopUp=True
+			return
 
 		invalidUsers=False
 
-		for item in range(len(self.userId)-1,-1,-1):
-			if self.userId[item] in self.usersInfo.keys():
-				matchDuplicateList.append(self.userId[item])
-				self.userId.pop(item)
+		if not self.n4dManager.isCurrentUserAdmin:
+			localAdminList=retAdminUser.get("localAdminList")
+			teachersList=retAdminUser.get("teachersList")
+			restricedAdminList=set(localAdminList+teachersList)
 
-		if len(self.userId)>0:
-			if self.addNewUser.retCurrentUser[0]:
-				for item in range(len(self.userId)-1,-1,-1):
-					try:
-						if self.userId[item] in self.addNewUser.retCurrentUser[1]:
-							self.userId.pop(item)
-					except:
-						pass
+			originalCount=len(self.usersId)
+			self.usersId=[u for u in self.usersId if u not in restricedAdminList]
 
-			if len(self.userId)>0:
-				nextStep=True
-				if not Bridge.n4dMan.isCurrentUserAdmin:
-					for item in range(len(self.userId)-1,-1,-1):
-						try:
-							if self.userId[item] in self.addNewUser.retAdminUser[1]:
-								self.userId.pop(item)
-								invalidUsers=True
-							if self.userId[item] in self.addNewUser.retAdminUser[2]:
-								self.userId.pop(item)
-								invalidUsers=True
-						except:
-							pass
-					if len(self.userId)==0:
-						nextStep=False
-			else:
-				nextStep=False
+			if len(self.usersId)<originalCount:
+				invalidUsers=True
 
-			if nextStep:
-				isLocalAdmin=self.addNewUser.retAdminUser[0]
-				if isLocalAdmin:
-					self.showLocalAdminDialog=True 
-					self.tmpNewUser=self.userId
-					self.tmpAdminUser=self.addNewUser.retAdminUser[1]
-				else:
-					for item in self.userId:
-						self._usersModel.appendRow(item,True)
-						self._updateUserList(item,False)
-						
-					if self.addNewUser.retCurrentUser[0]:
-						self.showSettingsUserMessage=[True,Bridge.CURRENT_USER_ERROR,"Warning"]
-				
-					else:
-						if invalidUsers:
-							self.showSettingsUserMessage=[True,Bridge.USERS_NOT_ALLOWED_ERROR,"Warning"]
-						
-					if not Bridge.n4dMan.thereAreUsersLocked(self.usersInfo):
-						self.isAccessDenyUserEnabled=False
-				
-			else:
-				if not invalidUsers:
-					self.showSettingsUserMessage=[True,Bridge.CURRENT_USER_ERROR,"Warning"]
-				else:
-					self.showSettingsUserMessage=[True,Bridge.USERS_NOT_ALLOWED_ERROR,"Warning"]
+		if not self.usersId:
+			self.showSettingsUserMessage={"show":True,"msgCode":Bridge.USERS_NOT_ALLOWED_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
+			self.core.mainStack.closePopUp=True
+			return
 
+		isLocalAdmin=retAdminUser.get("isLocalAdmin")
+
+		if isLocalAdmin:
+			self.showLocalAdminDialog=True 
+			self.tmpNewUser=self.usersId
+			self.tmpAdminUser=retAdminUser.get("localAdminList")
 		else:
-			self.showSettingsUserMessage=[True,Bridge.USER_DUPLICATE_ERROR,"Warning"]
-		
+			for user in self.usersId:
+				self._usersModel.appendRow(user,True)
+				self._updateUserList(user,False)
+
+			if 	self.isCurrentUser:
+				self.showSettingsUserMessage={"show":True,"msgCode":Bridge.CURRENT_USER_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
+			elif invalidUsers:
+				self.showSettingsUserMessage={"show":True,"msgCode":Bridge.USERS_NOT_ALLOWED_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
+						
+			if not self.n4dManager.thereAreUsersLocked(self.usersInfo):
+				self.isUserAccessControlEnabled=False
+			
 		self.core.mainStack.closePopUp=True
 
 	#def _checkNewUser
@@ -325,121 +328,106 @@ class Bridge(QObject):
 		self.showLocalAdminDialog=False
 
 		if action=="Accept":
-			Bridge.n4dMan.writeLog("Action: Added admin user to user list: %s"%self.tmpAdminUser)
-			nextStep=True
+			self.n4dManager.writeLog(f"Action: Added admin user to user list: {self.tmpAdminUser}")
 		else:
-			for item in range(len(self.tmpNewUser)-1,-1,-1):
-				if self.tmpNewUser[item] in self.tmpAdminUser:
-					self.tmpNewUser.pop(item)
+			adminSet=set(self.tmpAdminUser)
+			self.tmpNewUser=[u for u in self.tmpNewUser if u not in adminSet]
+		
+		if not self.tmpNewUser:
+			return
 
-		if len(self.tmpNewUser)>0:
-			for item in self.tmpNewUser:
-				self._usersModel.appendRow(item,True)
-				self._updateUserList(item,False)
-			if not Bridge.n4dMan.thereAreUsersLocked(self.usersInfo):
-				self.isAccessDenyUserEnabled=False
+		for user in self.tmpNewUser:
+			self._usersModel.appendRow(user,True)
+			self._updateUserList(usersEntries,False)
+	
+		if not self.n4dManager.thereAreUsersLocked(self.usersInfo):
+			self.isUserAccessControlEnabled=False
 
-		if self.addNewUser.retCurrentUser[0]:
-			self.showSettingsUserMessage=[True,Bridge.CURRENT_USER_ERROR,"Warning"]
+		if self.isCurrentUser:
+			self.showSettingsUserMessage={"show":True,"msgCode":Bridge.CURRENT_USER_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
 
 	#def manageLocalAdminDialog
 
 	@Slot(int)
 	def removeUser(self,index):
 
-		self.showSettingsUserMessage=[False,"","Success"]
+		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
 		tmpUser=self._usersModel._entries[index]
 		self._usersModel.removeRow(index)
 		self._updateUserList(tmpUser["userId"],True)
-		if not Bridge.n4dMan.thereAreUsersLocked(self.usersInfo):
-			self.isAccessDenyUserEnabled=False
+		if not self.n4dManager.thereAreUsersLocked(self.usersInfo):
+			self.isUserAccessControlEnabled=False
 
 	#def removeUser
 
 	@Slot()
 	def removeUserList(self):
 
-		self.showSettingsUserMessage=[False,"","Success"]
+		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
 		self._usersModel.clear()
 		self.usersInfo={}
-		self.isAccessDenyUserEnabled=False
-		if self.usersInfo!=Bridge.n4dMan.usersInfo:
-			self.settingsUserChanged=True
+		self.isUserAccessControlEnabled=False
+		if self.usersInfo!=self.n4dManager.usersInfo:
+			self.hasUserChanges=True
 		else:
-			if self.isAccessDenyUserEnabled!=Bridge.n4dMan.isAccessDenyUserEnabled:
-				self.settingsUserChanged=True 
-			else:
-				self.settingsUserChanged=False
+			self.hasUserChanges=(self.isUserAccessControlEnabled!=self.n4dManager.isUserAccessControlEnabled)
 
-		if self.settingsUserChanged:
-			Bridge.n4dMan.writeLog("Action: Removed user list")
+		if self.hasUserChanges:
+			self.n4dManager.writeLog("Action: Removed user list")
 
 	#def removeUserList
 
 	def _updateUserList(self,userId,delete):
 
-		tmpList=copy.deepcopy(self.usersInfo)
-		userIdMatch=False
-
-		if userId in tmpList.keys():
-			userIdMatch=True
-		
-		if userIdMatch:
-			if delete:
-				del tmpList[userId]
+		if delete:
+			self.usersInfo.pop(userId,None)
 		else:
-			if not delete:
-				tmpList[userId]={}
-				tmpList[userId]["isLocked"]=True
+			if userId not in self.usersInfo:
+				self.usersInfo[userId]={"isLocked":True}
 
-		if tmpList!=self.usersInfo:
-			if tmpList!=Bridge.n4dMan.usersInfo:
-				self.settingsUserChanged=True
-			else:
-				self.settingsUserChanged=False
-
-			self.usersInfo=tmpList
-
+		self.hasUserChanges=(self.usersInfo!=self.n4dManager.usersInfo)
+		
 	#def _updateUserList
 
 	@Slot()
 	def applyUserChanges(self):
 
-		self.showSettingsUserMessage=[False,"","Success"]
+		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
 		self.core.mainStack.closePopUp=False
 		self.showUserChangesDialog=False
-		self.updateUserInfo=UpdateInfo(self.isAccessDenyUserEnabled,self.usersInfo)
-		self.updateUserInfo.start()
-		self.updateUserInfo.finished.connect(self._applyUserChanges)
+		self.updateUserInfoT=UpdateInfo(self.n4dManager,self.isUserAccessControlEnabled,self.usersInfo)
+		self.updateUserInfoT.start()
+		self.updateUserInfoT.infoUpdated.connect(self._applyUserChanges)
+		self.updateUserInfoT.finished.connect(self.updateUserInfoT.deleteLater)
 
 	#def applyUserChanges	
 
-	def _applyUserChanges(self):
+	@Slot(dict)
+	def _applyUserChanges(self,ret):
 
-		if self.updateUserInfo.ret[0]:
+		if ret.get("status"):
 			self._updateUsersConfig()
-			self.showSettingsUserMessage=[True,self.updateUserInfo.ret[1],"Success"]
 			self.core.mainStack.closeGui=True
 		else:
-			self.showSettingsUserMessage=[True,self.updateUserInfo.ret[1],"Error"]
 			self.core.mainStack.closeGui=False
 			self.core.mainStack.moveToStack=""
 
+		self.showSettingsUserMessage={"show":True,"msgCode":ret.get("code"),"type":ret.get("type")}
+
 		if self.core.mainStack.moveToStack!="":
 			self.core.mainStack.currentOptionsStack=self.core.mainStack.moveToStack
-			self.showSettingsUserMessage=[False,"","Info"]
+			self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
 			self.core.mainStack.moveToStack=""
 
-		self.settingsUserChanged=False
+		self.hasUserChanges=False
 		self.core.mainStack.closePopUp=True
-
 
 	#def _applyUserChanges
 
 	@Slot()
 	def cancelUserChanges(self):
 
-		self.showSettingsUserMessage=[False,"","Success"]
+		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
 		self.core.mainStack.closePopUp=False
 		self.showUserChangesDialog=False
 		self._cancelUserChanges()
@@ -449,7 +437,7 @@ class Bridge(QObject):
 	def _cancelUserChanges(self):
 
 		self._updateUsersConfig()
-		self.settingsUserChanged=False
+		self.hasUserChanges=False
 		self.core.mainStack.closePopUp=True
 		if self.core.mainStack.moveToStack!="":
 			self.core.mainStack.currentOptionsStack=self.core.mainStack.moveToStack
@@ -461,32 +449,12 @@ class Bridge(QObject):
 
 	def _updateUsersConfig(self):
 
-		self.isAccessDenyUserEnabled=copy.deepcopy(Bridge.n4dMan.isAccessDenyUserEnabled)
-		self.usersInfo=copy.deepcopy(Bridge.n4dMan.usersInfo)
+		self.isUserAccessControlEnabled=copy.deepcopy(self.n4dManager.isUserAccessControlEnabled)
+		self.usersInfo=copy.deepcopy(self.n4dManager.usersInfo)
 		self._updateUserModel()
 	
 	#def _updateUsersConfig
-
-	on_isAccessDenyUserEnabled=Signal()
-	isAccessDenyUserEnabled=Property(bool,_getIsAccessDenyUserEnabled,_setIsAccessDenyUserEnabled,notify=on_isAccessDenyUserEnabled)
 	
-	on_settingsUserChanged=Signal()
-	settingsUserChanged=Property(bool,_getSettingsUserChanged,_setSettingsUserChanged, notify=on_settingsUserChanged)
-
-	on_showSettingsUserMessage=Signal()
-	showSettingsUserMessage=Property('QVariantList',_getShowSettingsUserMessage,_setShowSettingsUserMessage,notify=on_showSettingsUserMessage)
-
-	on_showLocalAdminDialog=Signal()
-	showLocalAdminDialog=Property(bool,_getShowLocalAdminDialog,_setShowLocalAdminDialog,notify=on_showLocalAdminDialog)
-
-	on_showUserChangesDialog=Signal()
-	showUserChangesDialog=Property(bool,_getShowUserChangesDialog,_setShowUserChangesDialog, notify=on_showUserChangesDialog)
-
-	on_enableUserConfig=Signal()
-	enableUserConfig=Property(bool,_getEnableUserConfig,_setEnableUserConfig,notify=on_enableUserConfig)
-
-	usersModel=Property(QObject,_getUsersModel,constant=True)
-
 #class Bridge
 
 import Core

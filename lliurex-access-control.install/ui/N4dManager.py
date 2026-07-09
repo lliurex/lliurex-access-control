@@ -22,17 +22,16 @@ class N4dManager:
 	KIRIGAMI_MSG_WARNING=2
 	KIRIGAMI_MSG_INFO=3
 
-
 	def __init__(self):
 
 		self.debug=True
 		self.groupsInfo={}
 		self.groupsConfigData=[]
 		self.sessionLang=""
-		self.isAccessDenyGroupEnabled=False
+		self.isGroupAccessControlEnabled=False
 		self.usersInfo={}
 		self.usersConfigData=[]
-		self.isAccessDenyUserEnabled=False
+		self.isUserAccessControlEnabled=False
 		self.isCDCAccessControlAllowed=False
 		self.isAccessDenyCDCEnabled=False
 		self.cdcInfo={}
@@ -66,8 +65,8 @@ class N4dManager:
 	def loadGroupConfig(self,step="Initial"):
 
 		self.writeLog(f"Access Control by Group. {step} configuration:")
-		self.isAccessDenyGroupEnabled=self.client.AccessControlManager.is_access_denied_group_enabled()
-		self.writeLog(f"- Access control by group activated: {self.isAccessDenyGroupEnabled}")
+		self.isGroupAccessControlEnabled=self.client.AccessControlManager.is_access_denied_group_enabled()
+		self.writeLog(f"- Access control by group activated: {self.isGroupAccessControlEnabled}")
 		
 		initLoad=(step=="Initial")
 		self.groupsInfo=self.client.AccessControlManager.get_groups_info(initLoad)
@@ -83,8 +82,8 @@ class N4dManager:
 	def loadUserConfig(self,step="Initial"):
 
 		self.writeLog(f"Access Control by User. {step} configuration:")
-		self.isAccessDenyUserEnabled=self.client.AccessControlManager.is_access_denied_user_enabled()
-		self.writeLog(f"- Access Control by User activated: {self.isAccessDenyUserEnabled}")
+		self.isUserAccessControlEnabled=self.client.AccessControlManager.is_access_denied_user_enabled()
+		self.writeLog(f"- Access Control by User activated: {self.isUserAccessControlEnabled}")
 		
 		self.usersInfo=self.client.AccessControlManager.get_users_info()
 		self.writeLog("- Users with restricted access: ")
@@ -175,7 +174,7 @@ class N4dManager:
 			
 	def applyGroupChanges(self, groupAccessControl, groupsInfo):
 
-		isControlChanged = groupAccessControl != self.isAccessDenyGroupEnabled
+		isControlChanged = groupAccessControl != self.isGroupAccessControlEnabled
 		enableControl = isControlChanged and groupAccessControl
 		disableControl = isControlChanged and not groupAccessControl
 		updateGroupInfo = groupsInfo != self.groupsInfo
@@ -224,7 +223,7 @@ class N4dManager:
 
 	def applyUsersChanges(self,userAccessControl,usersInfo):
 
-		isControlChanged = userAccessControl != self.isAccessDenyUserEnabled
+		isControlChanged = userAccessControl != self.isUserAccessControlEnabled
 		enableControl = isControlChanged and userAccessControl
 		disableControl = isControlChanged and not userAccessControl
 		updateUsersInfo=usersInfo!=self.usersInfo
@@ -317,7 +316,7 @@ class N4dManager:
 
 		currentUserList = list(dict.fromkeys(rawList))
 		return {
-			"validGroup":len(currentUserList) > 0, 
+			"isCurrentUser":len(currentUserList) > 0, 
 			"userList":currentUserList
 		}
 

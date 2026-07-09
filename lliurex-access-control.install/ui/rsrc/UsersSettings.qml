@@ -24,9 +24,9 @@ Rectangle{
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:userStackBridge.showSettingsUserMessage[0]
-            text:getMessageText(userStackBridge.showSettingsUserMessage[1])
-            type:getMessageType(userStackBridge.showSettingsUserMessage[2])
+            visible:userStackBridge.showSettingsUserMessage.show
+            text:getMessageText(userStackBridge.showSettingsUserMessage.msgCode)
+            type:getMessageType(userStackBridge.showSettingsUserMessage.type)
             Layout.minimumWidth:490
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -43,7 +43,7 @@ Rectangle{
             CheckBox {
                 id:userControlCb
                 text:i18nd("lliurex-access-control","Activated access control by user on this computer")
-                checked:userStackBridge.isAccessDenyUserEnabled
+                checked:userStackBridge.isUserAccessControlEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 onToggled:{
@@ -196,7 +196,7 @@ Rectangle{
             icon.name:"dialog-ok.svg"
             text:i18nd("lliurex-access-control","Apply")
             Layout.preferredHeight:40
-            enabled:userStackBridge.settingsUserChanged
+            enabled:userStackBridge.hasUserChanges
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()                    
             onClicked:{
@@ -213,7 +213,7 @@ Rectangle{
             icon.name:"dialog-cancel.svg"
             text:i18nd("lliurex-access-control","Cancel")
             Layout.preferredHeight: 40
-            enabled:userStackBridge.settingsUserChanged
+            enabled:userStackBridge.hasUserChanges
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()                    
             onClicked:{
@@ -416,48 +416,40 @@ Rectangle{
 
     function getMessageText(code){
 
-        var msg="";
         switch (code){
             case 10:
-                msg=i18nd("lliurex-access-control","Changes applied successfully");
-                break;
+                return i18nd("lliurex-access-control","Changes applied successfully")
             case -30:
-                msg=i18nd("lliurex-access-control","It is not possible to deactive access control by user");
-                break;
+                return i18nd("lliurex-access-control","It is not possible to deactive access control by user")
             case -40:
-                msg=i18nd("lliurex-access-control","Unable to update the user list");
-                break;                
+                return i18nd("lliurex-access-control","Unable to update the user list")           
             case -80:
-                msg=i18nd("lliurex-access-control","There are no users selected to lock their access");
-                break;
+                return i18nd("lliurex-access-control","There are no users selected to lock their access")
             case -90:
-                msg=i18nd("lliurex-access-control","The indicated users already exist in the list");
-                break;
+                return i18nd("lliurex-access-control","The indicated users already exist in the list")
             case -100:
-                msg=i18nd("lliurex-access-control","It is not possible to lock the user with which you are configuring the access control");
-                break;
+                return i18nd("lliurex-access-control","It is not possible to lock the user with which you are configuring the access control")
             case -200:
-				msg=i18nd("lliurex-access-control", "It is not possible to lock users from teacher or admins groups")
-				break;
+				return i18nd("lliurex-access-control", "It is not possible to lock users from teacher or admins groups")
             default:
-                break;
+                return ""
         }
-        return msg;
 
     }
 
     function getMessageType(type){
 
-        switch (type){
-            case "Info":
-                return Kirigami.MessageType.Information
-            case "Success":
+        switch (type) {
+            case 0:
                 return Kirigami.MessageType.Positive
-            case "Error":
+            case 1:
                 return Kirigami.MessageType.Error
-            case "Warning":
+            case 2:
                 return Kirigami.MessageType.Warning
-
+            case 3:
+                return Kirigami.MessageType.Information
+           default:
+                return Kirigami.MessageType.Information
         }
 
     } 
