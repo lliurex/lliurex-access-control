@@ -32,9 +32,12 @@ class GatherInfo(QThread):
 
 class Bridge(QObject):
 
+	SAVE_DATA_MSG=30
+	RESTORE_DATA_MSG=31
+
 	currentStackChanged=Signal()
 	currentOptionsStackChanged=Signal()
-	closePopUpChanged=Signal()
+	showPopUpChanged=Signal()
 	closeGuiChanged=Signal()
 
 	def __init__(self):
@@ -43,7 +46,7 @@ class Bridge(QObject):
 		self.core=Core.Core.get_core()
 		self.n4dManager=self.core.n4dManager
 		self._closeGui=False
-		self._closePopUp=True
+		self._showPopUp={"show":False,"msgCode":""}
 		self._currentStack=0
 		self._currentOptionsStack=0
 		self.moveToStack=""
@@ -83,21 +86,21 @@ class Bridge(QObject):
 
 	#def currentOptionsStack
 
-	@Property(bool,notify=closePopUpChanged)
-	def closePopUp(self):
+	@Property(dict,notify=showPopUpChanged)
+	def showPopUp(self):
 
-		return self._closePopUp
+		return self._showPopUp
 
-	#def closePopUp
+	#def showPopUp
 
-	@closePopUp.setter
-	def closePopUp(self,closePopUp):
+	@showPopUp.setter
+	def showPopUp(self,showPopUp):
 
-		if self._closePopUp!=closePopUp:
-			self._closePopUp=closePopUp
-			self.closePopUpChanged.emit()
+		if self._showPopUp!=showPopUp:
+			self._showPopUp=showPopUp
+			self.showPopUpChanged.emit()
 
-	#def closePopUp
+	#def showPopUp
 
 	@Property(bool,notify=closeGuiChanged)
 	def closeGui(self):

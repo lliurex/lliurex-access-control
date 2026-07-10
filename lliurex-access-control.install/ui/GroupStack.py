@@ -173,7 +173,7 @@ class Bridge(QObject):
 
 		self.showSettingsGroupMessage={"show":False,"msgCode":"","type":""}
 		self.showGroupChangesDialog=False
-		self.core.mainStack.closePopUp=False
+		self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.SAVE_DATA_MSG}
 		self.core.mainStack.closeGui=False
 		self.updateInfoGroupsT=UpdateInfo(self.n4dManager,self.isGroupAccessControlEnabled,self.groupsInfo)
 		self.updateInfoGroupsT.start()
@@ -200,7 +200,7 @@ class Bridge(QObject):
 			self.core.mainStack.moveToStack=""
 
 		self.hasGroupChanges=False
-		self.core.mainStack.closePopUp=True
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 
 	#def _applyGroupChanges
 
@@ -208,7 +208,7 @@ class Bridge(QObject):
 	def cancelGroupChanges(self):
 
 		self.showSettingsGroupMessage={"show":False,"msgCode":"","type":""}
-		self.core.mainStack.closePopUp=False
+		self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.RESTORE_DATA_MSG}
 		self.core.mainStack.closeGui=False
 		self.showGroupChangesDialog=False
 		self._cancelGroupChanges()
@@ -224,7 +224,7 @@ class Bridge(QObject):
 			self.core.mainStack.currentOptionsStack=self.core.mainStack.moveToStack
 		self.core.mainStack.moveToStack=""
 
-		self.core.mainStack.closePopUp=True
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		self.core.mainStack.closeGui=True
 
 	#def _cancelGroupChanges

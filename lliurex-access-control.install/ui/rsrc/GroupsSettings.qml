@@ -1,42 +1,41 @@
-import org.kde.plasma.core as PlasmaCore
-import org.kde.kirigami as Kirigami
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
 
 Rectangle{
     color:"transparent"
-    Text{ 
-        text:i18nd("lliurex-access-control","Restrict access by group")
-        font.family: "Quattrocento Sans Bold"
-        font.pointSize: 16
-    }
-
-    GridLayout{
+    
+    ColumnLayout{
         id:generalLayout
-        rows:2
-        flow: GridLayout.TopToBottom
-        rowSpacing:10
+        anchors.top:parent.top
         anchors.left:parent.left
-        width:parent.width-10
-        height:parent.height-90
-        enabled:true
+        anchors.right:parent.right
+        anchors.bottom:btnBox.top
+
+        anchors.leftMargin:5
+        anchors.rightMargin:15
+        anchors.bottomMargin:25
+        spacing: 10
+
+        Text{ 
+            text:i18nd("lliurex-access-control","Restrict access by group")
+            font.pointSize: 16
+        }
+
+    
         Kirigami.InlineMessage {
             id: messageLabel
             visible:groupStackBridge.showSettingsGroupMessage.show
             text:getMessageText(groupStackBridge.showSettingsGroupMessage.msgCode)
             type:getMessageType(groupStackBridge.showSettingsGroupMessage.type)
-            Layout.minimumWidth:490
             Layout.fillWidth:true
-            Layout.topMargin: 40
         }
 
-        GridLayout{
+        ColumnLayout{
             id: optionsGrid
-            rows: 3
-            flow: GridLayout.TopToBottom
-            rowSpacing:5
-            Layout.topMargin: messageLabel.visible?0:50
+            spacing:5
 
             CheckBox {
                 id:groupControlCb
@@ -51,19 +50,15 @@ Rectangle{
                 }
 
                 Layout.alignment:Qt.AlignLeft
-                Layout.bottomMargin:15
             }
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.alignment:Qt.AlignHCenter
 
-                Text{
-                    id:groupsList
-                    text:i18nd("lliurex-access-control","Groups with restricted access:")
-                    font.pointSize:10
-
-                }
+            Text{
+                id:groupsList
+                text:i18nd("lliurex-access-control","Groups with restricted access:")
+                font.pointSize:10
             }
+
+
             GroupList{
                 id:groupList
                 structModel:groupStackBridge.groupsModel
@@ -74,12 +69,12 @@ Rectangle{
             }
         }
     }
+
     RowLayout{
         id:btnBox
         anchors.bottom: parent.bottom
         anchors.right:parent.right
-        anchors.bottomMargin:15
-        anchors.rightMargin:10
+        anchors.margins:15
         spacing:10
 
         Button {
@@ -87,31 +82,28 @@ Rectangle{
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-ok.svg"
+            icon.name:"dialog-ok"
             text:i18nd("lliurex-access-control","Apply")
-            Layout.preferredHeight:40
             enabled:groupStackBridge.hasGroupChanges
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
-                applyChanges()
                 closeTimer.stop()
                 groupStackBridge.applyGroupChanges()
             }
         }
+
         Button {
             id:cancelBtn
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-cancel.svg"
+            icon.name:"dialog-cancel"
             text:i18nd("lliurex-access-control","Cancel")
-            Layout.preferredHeight: 40
             enabled:groupStackBridge.hasGroupChanges
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
-                discardChanges()
                 closeTimer.stop()
                 groupStackBridge.cancelGroupChanges()
             }
@@ -122,37 +114,9 @@ Rectangle{
         id:groupChangesDialog
         dialogVisible:groupStackBridge.showGroupChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
-        Connections{
-            target:groupChangesDialog
-            function onDialogApplyClicked(){
-                applyChanges()
-                
-            }
-            function onDiscardDialogClicked(){
-                discardChanges()
-            }
-            function onCancelDialogClicked(){
-                closeTimer.stop()
-            }
-
-        }
+        
     }
-    CustomPopup{
-        id:synchronizePopup
-     }
-
-    Timer{
-        id:timer
-    }
-
-    function delay(delayTime,cb){
-        timer.interval=delayTime;
-        timer.repeat=true;
-        timer.triggered.connect(cb);
-        timer.start()
-    }
-
-
+   
     function getMessageText(code){
 
         switch (code){
@@ -185,27 +149,5 @@ Rectangle{
         }
 
     } 
-
-    function applyChanges(){
-        synchronizePopup.open()
-        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
-        delay(500, function() {
-            if (mainStackBridge.closePopUp){
-                synchronizePopup.close(),
-                timer.stop()
-            }
-          })
-    } 
-
-    function discardChanges(){
-        synchronizePopup.open()
-        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
-        delay(1000, function() {
-            if (mainStackBridge.closePopUp){
-                synchronizePopup.close(),
-                timer.stop()
-
-            }
-          })
-    }  
+   
 } 

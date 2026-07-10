@@ -2,81 +2,67 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-
-GridLayout{
-    id: optionsGrid
-    columns: 2
-    flow: GridLayout.LeftToRight
-    columnSpacing:10
+RowLayout {
+    id: mainGrid
+    spacing: 10
 
     Rectangle{
-        width:165
+        id: sideBar
+        width:175
         Layout.fillHeight:true
-        border.color: "#d3d3d3"
+        border.color: palette.mid
 
-        GridLayout{
-            id: menuGrid
-            rows:4 
-            flow: GridLayout.TopToBottom
-            rowSpacing:0
+        ColumnLayout {
+            id: menuLayout
+            Layout.fillWidth:true
+            Layout.fillHeight: true
+            spacing: 0
 
             MenuOptionBtn {
                 id:groupItem
                 optionText:i18nd("lliurex-access-control","Control by groups")
-                optionIcon:"/usr/share/icons/breeze/actions/22/group.svg"
+                optionIcon:"group"
                 optionEnabled:true
-                Connections{
-                    function onMenuOptionClicked(){
-                        mainStackBridge.manageTransitions(0)
-                    }
-                }
+                onMenuOptionClicked:mainStackBridge.manageTransitions(0)
             }
 
             MenuOptionBtn {
                 id:userItem
                 optionText:i18nd("lliurex-access-control","Control by users")
-                optionIcon:"/usr/share/icons/breeze/actions/22/user.svg"
+                optionIcon:"user"
                 optionEnabled:userStackBridge.enableUserConfig
-                Connections{
-                    function onMenuOptionClicked(){
-                        mainStackBridge.manageTransitions(1)
-                   
-                    }
-                }
+                onMenuOptionClicked:mainStackBridge.manageTransitions(1)
             }
 
             MenuOptionBtn {
                 id:cdcItem
                 optionText:i18nd("lliurex-access-control","Control by center")
-                optionIcon:"/usr/share/icons/breeze/actions/22/view-institution.svg"
+                optionIcon:"view-institution"
                 visible:cdcStackBridge.isCDCAccessControlAllowed
-                Connections{
-                    function onMenuOptionClicked(){
-                        mainStackBridge.manageTransitions(2)
-                   
-                    }
-                }
+                onMenuOptionClicked:mainStackBridge.manageTransitions(2)
             }
 
             MenuOptionBtn {
                 id:helpItem
                 optionText:i18nd("lliurex-access-control","Help")
-                optionIcon:"/usr/share/icons/breeze/actions/22/help-contents.svg"
-                Connections{
-                    function onMenuOptionClicked(){
-                        mainStackBridge.openHelp();
-                    }
-                }
+                optionIcon:"help-contents"
+                onMenuOptionClicked:mainStackBridge.openHelp()
             }
+
+            Item {
+                    Layout.fillHeight:true
+
+            }
+
         }
     }
 
     StackView{
         id: optionsView
-        property int currentIndex:mainStackBridge.currentOptionsStack
         Layout.fillWidth:true
         Layout.fillHeight: true
-        Layout.alignment:Qt.AlignHCenter
+        
+        property int currentIndex:mainStackBridge.currentOptionsStack
        
         initialItem:groupsView
 
@@ -95,18 +81,18 @@ GridLayout{
         }
 
         replaceEnter: Transition {
-            PropertyAnimation {
+            NumberAnimation {
                 property: "opacity"
                 from: 0
-                to:1
-                duration:60
+                to: 1
+                duration: 60
             }
         }
         replaceExit: Transition {
-            PropertyAnimation {
+            NumberAnimation {
                 property: "opacity"
                 from: 1
-                to:0
+                to: 0
                 duration: 60
             }
         }
@@ -130,6 +116,10 @@ GridLayout{
             }
         }
 
+    }
+
+    CustomPopup{
+        id:synchronizePopup
     }
 }
 

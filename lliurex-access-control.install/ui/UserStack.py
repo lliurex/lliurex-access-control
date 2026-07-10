@@ -248,7 +248,7 @@ class Bridge(QObject):
 	def addUser(self,usersId):
 
 		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
-		self.core.mainStack.closePopUp=False
+		self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.SAVE_DATA_MSG}
 		usersId=usersId.replace(","," ")
 		self.usersId=[item.lower() for item in usersId.split(" ") if item]
 		self.addNewUserT=AddNewUser(self.n4dManager,self.usersId)
@@ -268,7 +268,7 @@ class Bridge(QObject):
 
 		if not self.usersId:
 			self.showSettingsUserMessage={"show":True,"msgCode":Bridge.USER_DUPLICATE_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
-			self.core.mainStack.closePopUp=True
+			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 			return 
 
 		self.isCurrentUser=retCurrentUser.get("isCurrentUser")
@@ -278,7 +278,7 @@ class Bridge(QObject):
 
 		if not self.usersId:
 			self.showSettingsUserMessage={"show":True,"msgCode":Bridge.CURRENT_USER_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
-			self.core.mainStack.closePopUp=True
+			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 			return
 
 		invalidUsers=False
@@ -296,7 +296,7 @@ class Bridge(QObject):
 
 		if not self.usersId:
 			self.showSettingsUserMessage={"show":True,"msgCode":Bridge.USERS_NOT_ALLOWED_ERROR,"type":self.n4dManager.KIRIGAMI_MSG_WARNING}
-			self.core.mainStack.closePopUp=True
+			self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 			return
 
 		isLocalAdmin=retAdminUser.get("isLocalAdmin")
@@ -318,7 +318,7 @@ class Bridge(QObject):
 			if not self.n4dManager.thereAreUsersLocked(self.usersInfo):
 				self.isUserAccessControlEnabled=False
 			
-		self.core.mainStack.closePopUp=True
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 
 	#def _checkNewUser
 
@@ -393,7 +393,7 @@ class Bridge(QObject):
 	def applyUserChanges(self):
 
 		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
-		self.core.mainStack.closePopUp=False
+		self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.SAVE_DATA_MSG}
 		self.showUserChangesDialog=False
 		self.updateUserInfoT=UpdateInfo(self.n4dManager,self.isUserAccessControlEnabled,self.usersInfo)
 		self.updateUserInfoT.start()
@@ -420,7 +420,7 @@ class Bridge(QObject):
 			self.core.mainStack.moveToStack=""
 
 		self.hasUserChanges=False
-		self.core.mainStack.closePopUp=True
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 
 	#def _applyUserChanges
 
@@ -428,7 +428,7 @@ class Bridge(QObject):
 	def cancelUserChanges(self):
 
 		self.showSettingsUserMessage={"show":False,"msgCode":"","type":""}
-		self.core.mainStack.closePopUp=False
+		self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.RESTORE_DATA_MSG}
 		self.showUserChangesDialog=False
 		self._cancelUserChanges()
 
@@ -438,7 +438,7 @@ class Bridge(QObject):
 
 		self._updateUsersConfig()
 		self.hasUserChanges=False
-		self.core.mainStack.closePopUp=True
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		if self.core.mainStack.moveToStack!="":
 			self.core.mainStack.currentOptionsStack=self.core.mainStack.moveToStack
 		self.core.mainStack.moveToStack=""
