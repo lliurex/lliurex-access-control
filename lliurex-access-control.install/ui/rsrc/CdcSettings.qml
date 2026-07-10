@@ -22,9 +22,9 @@ Rectangle{
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:cdcStackBridge.showSettingsCDCMessage[0]
-            text:getMessageText(cdcStackBridge.showSettingsCDCMessage[1])
-            type:getMessageType(cdcStackBridge.showSettingsCDCMessage[2])
+            visible:cdcStackBridge.showSettingsCDCMessage.show
+            text:getMessageText(cdcStackBridge.showSettingsCDCMessage.msgCode)
+            type:getMessageType(cdcStackBridge.showSettingsCDCMessage.type)
             Layout.minimumWidth:490
             Layout.fillWidth:true
             Layout.topMargin: 40
@@ -176,42 +176,36 @@ Rectangle{
 
     function getMessageText(code){
 
-        var msg="";
         switch (code){
             case 10:
-                msg=i18nd("lliurex-access-control","Changes applied successfully");
-                break;
+                return i18nd("lliurex-access-control","Changes applied successfully")
             case -50:
-                msg=i18nd("lliurex-access-control","It is not possible to deactive access control by center");
-                break;
+                return i18nd("lliurex-access-control","It is not possible to deactive access control by center")
             case -60:
-                msg=i18nd("lliurex-access-control","Unable to update the center code");
-                break;
+                return i18nd("lliurex-access-control","Unable to update the center code")
             case -90:
-                msg=i18nd("lliurex-access-control","No center code has been indicated");
-                break;
+                return i18nd("lliurex-access-control","No center code has been indicated")
             case -101:
-                 msg=i18nd("lliurex-access-control","Center code is not valid");
-                break;
-           
+                 return i18nd("lliurex-access-control","Center code is not valid")           
             default:
-                break;
+                return ""
         }
-        return msg;
-
     }
 
     function getMessageType(type){
 
-        switch (type){
-            case "Info":
-                return Kirigami.MessageType.Information
-            case "Success":
+        switch (type) {
+            case 0:
                 return Kirigami.MessageType.Positive
-            case "Error":
+            case 1:
                 return Kirigami.MessageType.Error
+            case 2:
+                return Kirigami.MessageType.Warning
+            case 3:
+                return Kirigami.MessageType.Information
+           default:
+                return Kirigami.MessageType.Information
         }
-
     } 
 
     function applyChanges(){

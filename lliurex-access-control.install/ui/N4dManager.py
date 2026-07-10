@@ -33,7 +33,7 @@ class N4dManager:
 		self.usersConfigData=[]
 		self.isUserAccessControlEnabled=False
 		self.isCDCAccessControlAllowed=False
-		self.isAccessDenyCDCEnabled=False
+		self.isCDCAccessControlEnabled=False
 		self.cdcInfo={}
 		self.getSessionLang()
 		self.adminGroups=["sudo","admins","adm"]
@@ -104,8 +104,8 @@ class N4dManager:
 		self.isCDCAccessControlAllowed=self.client.AccessControlManager.is_cdc_access_control_allowed()
 		self.writeLog(f"- Access Control by CDC allowed: {self.isCDCAccessControlAllowed}")
 		
-		self.isAccessDenyCDCEnabled=self.client.AccessControlManager.is_access_denied_cdc_enabled()
-		self.writeLog(f"- Access Control by CDC enabled: {self.isAccessDenyCDCEnabled}")
+		self.isCDCAccessControlEnabled=self.client.AccessControlManager.is_access_denied_cdc_enabled()
+		self.writeLog(f"- Access Control by CDC enabled: {self.isCDCAccessControlEnabled}")
 		
 		self.cdcInfo=self.client.AccessControlManager.get_cdc_info()
 		code=self.cdcInfo.get("code","")
@@ -360,7 +360,7 @@ class N4dManager:
 			updateCDCInfo = True
 			cdcInfo = {"code": ""} 
 
-		isCcontrolChanged = cdcAccessControl != self.isAccessDenyCDCEnabled
+		isCcontrolChanged = cdcAccessControl != self.isCDCAccessControlEnabled
 		enableControl = isCcontrolChanged and cdcAccessControl
 		disableControl = isCcontrolChanged and not cdcAccessControl
 

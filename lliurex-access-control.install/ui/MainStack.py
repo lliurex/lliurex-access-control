@@ -143,7 +143,7 @@ class Bridge(QObject):
 				self.core.groupStack.showGroupChangesDialog=True
 			elif self.core.userStack.hasUserChanges:
 				self.core.userStack.showUserChangesDialog=True
-			elif self.core.cdcStack.settingsCDCChanged:
+			elif self.core.cdcStack.hasCDCChanges:
 				self.core.cdcStack.showCDCChangesDialog=True
 			else:
 				self.currentOptionsStack=stack
@@ -159,14 +159,14 @@ class Bridge(QObject):
 				self.core.groupStack.applyGroupChanges()
 			elif self.core.userStack.hasUserChanges:
 				self.core.userStack.applyUserChanges()
-			elif self.core.cdcStack.settingsCDCChanged:
+			elif self.core.cdcStack.hasCDCChanges:
 				self.core.cdcStack.applyCDCChanges()
 		elif action=="Discard":
 			if self.core.groupStack.hasGroupChanges:
 				self.core.groupStack.cancelGroupChanges()
 			elif self.core.userStack.hasUserChanges:
 				self.core.userStack.cancelUserChanges()
-			elif self.core.cdcStack.settingsCDCChanged:
+			elif self.core.cdcStack.hasCDCChanges:
 				self.core.cdcStack.cancelCDCChanges()
 		elif action=="Cancel":
 			self.closeGui=False
@@ -174,7 +174,7 @@ class Bridge(QObject):
 				self.core.groupStack.showGroupChangesDialog=False
 			elif self.core.userStack.hasUserChanges:
 				self.core.userStack.showUserChangesDialog=False
-			elif self.core.cdcStack.settingsCDCChanged:
+			elif self.core.cdcStack.hasCDCChanges:
 				self.core.cdcStack.showCDCChangesDialog=False
 			self.moveToStack=""
 
@@ -196,7 +196,7 @@ class Bridge(QObject):
 			self.core.groupStack.showGroupChangesDialog=True
 		elif self.core.userStack.hasUserChanges:
 			self.core.userStack.showUserChangesDialog=True
-		elif self.core.cdcStack.settingsCDCChanged:
+		elif self.core.cdcStack.hasCDCChanges:
 			self.core.cdcStack.showCDCChangesDialog=True
 		else:
 			self.closeGui=True
