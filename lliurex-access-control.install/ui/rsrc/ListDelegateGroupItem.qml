@@ -1,12 +1,11 @@
 import QtQuick
 import QtQuick.Controls
-import QtQml.Models
-import org.kde.plasma.components as Components
+import QtQuick.Layouts
 
 
-Components.ItemDelegate{
-
+ItemDelegate{
     id: listGroupItem
+    
     property string groupId
     property bool isLocked
     property string description
@@ -14,23 +13,12 @@ Components.ItemDelegate{
     enabled:true
     height:45
 
-    Item{
-        id: menuItem
-        height:visible?30:0
-	width:parent.width
-	anchors.verticalCenter:parent.verticalCenter
+    leftPadding:15
+    rightPadding:15
 
-
-        MouseArea {
-            id: mouseAreaOption
-            anchors.fill: parent
-            hoverEnabled:true
-            propagateComposedEvents:true
-
-            onEntered: {
-                listGroup.currentIndex=index
-            }
-        }
+    contentItem:RowLayout {
+        
+        spacing:10
 
         CheckBox {
             id:groupCheck
@@ -38,9 +26,7 @@ Components.ItemDelegate{
             onToggled:{
                 groupStackBridge.manageGroupChecked({"groupId":groupId,"isLocked":checked})
             }
-            anchors.left:parent.left
-            anchors.leftMargin:5
-            anchors.verticalCenter:parent.verticalCenter
+           
             ToolTip.delay: 1000
             ToolTip.timeout: 3000
             ToolTip.visible: hovered
@@ -57,11 +43,9 @@ Components.ItemDelegate{
         Text{
             id: text
             text: description
-            width:400
-            clip: true
-            anchors.left:groupCheck.right
-            anchors.leftMargin:5
-            anchors.verticalCenter:parent.verticalCenter
+            Layout.fillWidth: true
+            Layout.preferredWidth: 300
+            verticalAlignment: Text.AlignVCenter
         }
 
     }

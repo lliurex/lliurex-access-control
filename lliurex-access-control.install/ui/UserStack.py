@@ -338,7 +338,7 @@ class Bridge(QObject):
 
 		for user in self.tmpNewUser:
 			self._usersModel.appendRow(user,True)
-			self._updateUserList(usersEntries,False)
+			self._updateUserList(user,False)
 	
 		if not self.n4dManager.thereAreUsersLocked(self.usersInfo):
 			self.isUserAccessControlEnabled=False

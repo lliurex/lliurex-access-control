@@ -44,6 +44,7 @@ Rectangle{
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 Layout.alignment: Qt.AlignLeft
+
                 onToggled: {
                     userStackBridge.manageUserAccessControl(checked)
                 }
@@ -54,6 +55,8 @@ Rectangle{
                 text: i18nd("lliurex-access-control", "Users with restricted access:")
                 font.pointSize: 10
                 Layout.alignment: Qt.AlignLeft
+                Layout.topMargin:10
+
             }
 
             RowLayout {
@@ -90,6 +93,7 @@ Rectangle{
                     onClicked: {
                         userStackBridge.addUser(userEntry.text)
                         entryRow.visible = false
+                        userEntry.text=""
                     }
                 }
 

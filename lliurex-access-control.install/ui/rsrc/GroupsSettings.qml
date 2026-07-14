@@ -55,6 +55,7 @@ Rectangle{
             Text{
                 id:groupsList
                 text:i18nd("lliurex-access-control","Groups with restricted access:")
+                Layout.topMargin:10
                 font.pointSize:10
             }
 

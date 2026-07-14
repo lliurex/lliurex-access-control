@@ -1,41 +1,42 @@
-import org.kde.plasma.core as PlasmaCore
-import org.kde.kirigami as Kirigami
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
 
 Rectangle{
     color:"transparent"
-    Text{ 
-        text:i18nd("lliurex-access-control","Restrict access by center")
-        font.family: "Quattrocento Sans Bold"
-        font.pointSize: 16
-    }
 
-    GridLayout{
+    ColumnLayout{
         id:generalLayout
-        rows:2
-        flow: GridLayout.TopToBottom
-        rowSpacing:10
-        width:parent.width-10
+        anchors.top:parent.top
         anchors.left:parent.left
+        anchors.right:parent.right
+        anchors.bottom:btnBox.top
+
+        anchors.leftMargin:5
+        anchors.rightMargin:15
+        anchors.bottomMargin:25
+        spacing: 10
+
+        Text{ 
+            text:i18nd("lliurex-access-control","Restrict access by center")
+            font.pointSize: 16
+        }
+
 
         Kirigami.InlineMessage {
             id: messageLabel
             visible:cdcStackBridge.showSettingsCDCMessage.show
             text:getMessageText(cdcStackBridge.showSettingsCDCMessage.msgCode)
             type:getMessageType(cdcStackBridge.showSettingsCDCMessage.type)
-            Layout.minimumWidth:490
             Layout.fillWidth:true
-            Layout.topMargin: 40
+
         }
 
-        GridLayout{
+        ColumnLayout{
             id: optionsGrid
-            rows: 2
-            flow: GridLayout.TopToBottom
-            rowSpacing:5
-            Layout.topMargin: messageLabel.visible?0:50
+            spacing: 5
 
             CheckBox {
                 id:cdcControlCb
@@ -50,8 +51,8 @@ Rectangle{
                 }
 
                 Layout.alignment:Qt.AlignLeft
-                Layout.bottomMargin:15
             }
+
             RowLayout {
                 Layout.fillWidth: true
                 Layout.alignment:Qt.AlignLeft
@@ -84,12 +85,16 @@ Rectangle{
             }
         }
     }
+
+    Item{
+        Layout.fillHeight:true
+    }
+
     RowLayout{
         id:btnBox
         anchors.bottom: parent.bottom
         anchors.right:parent.right
-        anchors.bottomMargin:15
-        anchors.rightMargin:10
+        anchors.margins:15
         spacing:10
 
         Button {
@@ -97,14 +102,12 @@ Rectangle{
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-ok.svg"
+            icon.name:"dialog-ok"
             text:i18nd("lliurex-access-control","Apply")
-            Layout.preferredHeight:40
             enabled:cdcStackBridge.settingsCDCChanged
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
-                applyChanges()
                 closeTimer.stop()
                 cdcStackBridge.applyCDCChanges()
             }
@@ -114,14 +117,12 @@ Rectangle{
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-cancel.svg"
+            icon.name:"dialog-cancel"
             text:i18nd("lliurex-access-control","Cancel")
-            Layout.preferredHeight: 40
             enabled:cdcStackBridge.settingsCDCChanged
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
-                discardChanges()
                 closeTimer.stop()
                 cdcStackBridge.cancelCDCChanges()
             }
@@ -132,45 +133,7 @@ Rectangle{
         id:cdcChangesDialog
         dialogVisible:cdcStackBridge.showCDCChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
-        Connections{
-            target:cdcChangesDialog
-            function onDialogApplyClicked(){
-                applyChanges()
-                
-            }
-            function onDiscardDialogClicked(){
-                discardChanges()
-            }
-            function onCancelDialogClicked(){
-                closeTimer.stop()
-            }
 
-        }
-    }
-    CustomPopup{
-        id:synchronizePopup
-     }
-
-    Timer{
-        id:delayTimer
-    }
-
-    function delay(delayTime,cb){
-        delayTimer.interval=delayTime;
-        delayTimer.repeat=true;
-        delayTimer.triggered.connect(cb);
-        delayTimer.start()
-    }
-
-    Timer{
-        id:waitTimer
-    }
-
-    function wait(delayTime,cb){
-        waitTimer.interval=delayTime;
-        waitTimer.repeat=true;
-        waitTimer.triggered.connect(cb);
-        waitTimer.start()
     }
 
 
@@ -207,29 +170,5 @@ Rectangle{
                 return Kirigami.MessageType.Information
         }
     } 
-
-    function applyChanges(){
-        synchronizePopup.open()
-        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
-        delayTimer.stop()
-        delay(500, function() {
-            if (mainStackBridge.closePopUp){
-                synchronizePopup.close(),
-                delayTimer.stop()
-            }
-        })
-    } 
-
-    function discardChanges(){
-        synchronizePopup.open()
-        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
-        delayTimer.stop()
-        delay(1000, function() {
-            if (mainStackBridge.closePopUp){
-                synchronizePopup.close(),
-                delayTimer.stop()
-
-            }
-        })
-    }  
+    
 } 

@@ -4,7 +4,6 @@ import QtQml.Models
 import org.kde.plasma.components as Components
 
 
-
 Rectangle {
     property alias structModel:listGroup.model
     property alias listCount:listGroup.count
@@ -29,7 +28,7 @@ Rectangle {
         clip: true
         focus: true
         boundsBehavior: Flickable.StopAtBounds
-        highlight: Rectangle { color: "#add8e6"; opacity:0.8;border.color:"#53a1c9" }
+        highlightFollowsCurrentItem:true
         highlightMoveDuration: 0
         highlightResizeDuration: 0
         delegate: ListDelegateGroupItem{
