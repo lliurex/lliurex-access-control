@@ -195,7 +195,7 @@ class AccessControlCliManager(object):
 			self._writeLog("Changes in configuration of access control by User:")		
 			self._writeLog("- Action: disable access control by user")
 			self.createClient()
-			ret=self.n4dClient.AccessControlManager.disableAccessDenyUser()
+			ret=self.n4dClient.AccessControlManager.disable_access_denied_user()
 			self._writeLog("- Disable access control by user: Change apply successful")
 			print('   [Access-Control]: Action completed successfull')
 			self._getUserInfo("End")
@@ -230,7 +230,7 @@ class AccessControlCliManager(object):
 			self._writeLog("Changes in configuration of access control by User:")		
 			self._writeLog("- Action: enable access control by user")
 			self.createClient()
-			ret=self.n4dClient.AccessControlManager.setUsersInfo(self.usersInfo)
+			ret=self.n4dClient.AccessControlManager.set_users_info(self.usersInfo)
 			self._writeLog("- Enable access control by user: Change apply successful")
 			print('   [Access-Control]: Action completed successfull')
 			self._getUserInfo("End")
@@ -301,7 +301,7 @@ class AccessControlCliManager(object):
 			self._writeLog("Action: Removed user list")
 			self.createClient()				
 			self.usersInfo={}
-			ret=self.n4dClient.AccessControlManager.setUsersInfo(self.usersInfo)
+			ret=self.n4dClient.AccessControlManager.set_users_info(self.usersInfo)
 			print('   [Access-Control]: Action completed successfull')
 			self._getUserInfo("End")
 			return 0
@@ -347,7 +347,7 @@ class AccessControlCliManager(object):
 			self._writeLog("Changes in configuration of access control by CDC:")		
 			self._writeLog("- Action: disable access control by CDC")
 			self.createClient()
-			ret=self.n4dClient.AccessControlManager.disableAccessDenyCDC(True)
+			ret=self.n4dClient.AccessControlManager.disable_access_denied_cdc(True)
 			self._writeLog("- Disable access control by CDC: Change apply successful")
 			print('   [Access-Control]: Action completed successfull')
 			self._getCDCInfo("End")
@@ -388,7 +388,7 @@ class AccessControlCliManager(object):
 			self._writeLog("- Action: enable access control by CDC")
 			self.createClient()
 			self.cdcInfo["accessControlEnabled"]=True
-			ret=self.n4dClient.AccessControlManager.setCDCInfo(self.cdcInfo)
+			ret=self.n4dClient.AccessControlManager.set_cdc_info(self.cdcInfo)
 			self._writeLog("- Enable access control by CDC: Change apply successful")
 			print('   [Access-Control]: Action completed successfull')
 			self._getCDCInfo("End")
@@ -530,23 +530,22 @@ class AccessControlCliManager(object):
 					print('   [Access-Control]: It is not possible to lock the user with which you are configuring the access control')
 					return 0
 
-				adminInUsers=self._checkIfUserIsLocalAdmin(usersSelected)
-				if adminInUsers.get("adminUser"):
-					if action=="lock":
-						adminUsers=", ".joun(adminInUsers.get("adminList"))
-						
-						if not self.unattendedMode:
-							response=input(f'   [Access-Control]: The user(s) {adminUsers} are local computer administrator. Do you want to add them to the list? (yes/no)): ').lower()
-						else:
-							response='no' if self.skipAdmin else 'yes'
+			adminInUsers=self._checkIfUserIsLocalAdmin(usersSelected)
+			if adminInUsers.get("localAdmin"):
+				if action=="lock":
+					adminUsers=", ".join(adminInUsers.get("adminList"))
+					if not self.unattendedMode:
+						response=input(f'   [Access-Control]: The user(s) {adminUsers} are local computer administrator. Do you want to add them to the list? (yes/no)): ').lower()
+					else:
+						response='no' if self.skipAdmin else 'yes'
 
-						if not response.startswith('y'):
-							usersSelected=[u for u in usersSelected if u not in adminInUsers.get("adminUser")]
-							if len(usersSelected)==0:
-								if ret.get("currentUser"):
-									print('   [Access-Control]: It is not possible to lock the user with which you are configuring the access control')
-								print('   [Access-Control]: Action canceled')
-								return 0
+					if not response.startswith('y'):
+						usersSelected=[u for u in usersSelected if u not in adminInUsers.get("adminList")]
+						if len(usersSelected)==0:
+							if ret.get("currentUser"):
+								print('   [Access-Control]: It is not possible to lock the user with which you are configuring the access control')
+							print('   [Access-Control]: Action canceled')
+							return 0
 
 		if action=="lock":
 			if not correctUsers and ret.get("currentUser"):
@@ -740,12 +739,11 @@ class AccessControlCliManager(object):
 					del self.usersInfo[item]
 		else:
 			isLocked=(action == "lock")
-			for item in self.usersInfo:
+			for item in usersSelected:
 				if item not in self.usersInfo:
 					self.usersInfo[item]={"isLocked":isLocked}
 				else:
 					self.usersInfo[item]["isLocked"]=isLocked
-	
 	
 		return self.n4dClient.AccessControlManager.set_users_info(self.usersInfo)
 
@@ -762,7 +760,7 @@ class AccessControlCliManager(object):
 				try:
 					gid = pwd.getpwnam(item).pw_gid
 					groups_gid=os.getgrouplist(item,gid)
-					user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]			
+					user_groups=[grp.getgrgid(x).gr_name for x in groups_gid]
 					for element in user_groups:
 						if element in adminGroups:
 							match+=1
@@ -817,6 +815,9 @@ class AccessControlCliManager(object):
 			
 		else:
 			self.currentUser=loginUser
+
+		if self.currentUser not in self.usersFilter:
+			self.usersFilter.append(self.currentUser)
 
 		self._writeLog("Init session in lliurex-access-control- CLI")
 		if loginUser:

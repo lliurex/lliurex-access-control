@@ -113,6 +113,19 @@ if __name__ == '__main__':
 	groupsSelected=[g.lower() for g in getattr(args, "groups", [])]
 	usersSelected=[u.lower() for u in getattr(args, "users", [])]
 
+	ACTIONS_WITH_GROUPS=["lockgroup","unlockgroup"]
+	ACTIONS_WITH_USERS=["lockuser","unlockuser","removeuserfromlist"]
+
+	if args.action in ACTIONS_WITH_GROUPS and not groupsSelected:
+		print(f"Error: The action {args.action} requires at least one group'\n", file=sys.stderr)
+		parser.print_help()
+		sys.exit(2)
+
+	if args.action in ACTIONS_WITH_USERS and not usersSelected:
+		print(f"Error: The action {args.action} requires at least one user'\n", file=sys.stderr)
+		parser.print_help()
+		sys.exit(2)
+
 	ac=AccessControlCliManager(mode,skipAdmin)
 
 	if args.action == "currentconfig":
