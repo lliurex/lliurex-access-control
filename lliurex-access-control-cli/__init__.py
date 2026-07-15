@@ -288,10 +288,11 @@ class AccessControlCliManager(object):
 
 		if self.isUserAccessControlEnabled:
 			print('   [Access-Control]: This action will be disable access control by user')
-			if not self.unattendedMode:
-				response=input('   [Access-Control]: Do you want to delete users list? (yes/no)): ').lower()
-			else:
-				response='yes'
+		
+		if not self.unattendedMode:
+			response=input('   [Access-Control]: Do you want to delete users list? (yes/no)): ').lower()
+		else:
+			response='yes'
 
 		if not response.startswith('y'):
 			print('   [Access-Control]: Action canceled')

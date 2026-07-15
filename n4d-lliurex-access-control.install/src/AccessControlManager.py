@@ -50,9 +50,10 @@ class AccessControlManager:
 		deny_groups=set(self._read_denied_groups_file())
 		groups_info=self._read_groups_list(init_load)
 
-		for group_name,group_data in groups_info.items():
-			if isinstance(group_data,dict):
-				group_data["isLocked"]=group_name in deny_groups
+		if deny_groups:
+			for group_name,group_data in groups_info.items():
+				if isinstance(group_data,dict):
+					group_data["isLocked"]=group_name in deny_groups
 
 		return n4d.responses.build_successful_call_response(groups_info)
 
@@ -136,7 +137,7 @@ class AccessControlManager:
 				clean_name=group_name.lower()
 				normalized_groups_info[clean_name]=group_data
 
-				if group_data.get("isLocked",False):
+				if group_data.get("isLocked",True):
 					deny_groups.append(clean_name)
 
 			self._write_default_group_file(normalized_groups_info)
@@ -187,7 +188,8 @@ class AccessControlManager:
 		for username,user_data in raw_users_list.items():
 			clean_name=username.lower()
 			normalized_users[clean_name]=user_data
-			normalized_users[clean_name]["isLocked"]=clean_name in deny_users
+			if deny_users:
+				normalized_users[clean_name]["isLocked"]=clean_name in deny_users
 
 		for blocked_user in deny_users:
 			if blocked_user not in normalized_users:
@@ -248,7 +250,7 @@ class AccessControlManager:
 				clean_name=username.lower()
 				normalized_users_info[clean_name]=user_data
 
-				if user_data.get("isLocked",False):
+				if user_data.get("isLocked",True):
 					deny_users.append(clean_name)
 
 			with open(self.users_list,'w',encoding="'utf-8") as fd:

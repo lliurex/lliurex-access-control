@@ -194,7 +194,7 @@ class N4dManager:
 				self.client.AccessControlManager.set_groups_info(groupsInfo)		
 				self.writeLog("- Enable access control by group: Changes apply successful")
 			
-			elif updateGroupInfo and groupAccessControl:
+			elif updateGroupInfo:
 				self.writeLog("- Action: change group list")
 				self.client.AccessControlManager.set_groups_info(groupsInfo)		
 				self.writeLog("- New groups with locked access: Changes apply successful")
