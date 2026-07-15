@@ -152,7 +152,7 @@ class AccessControlCliManager(object):
 			self._writeLog("Changes in configuration of access control by Group:")		
 			self._writeLog("- Action: enable access control by group")
 			self.createClient()
-			ret=self.n4dClient.AccessControlManager.setGroupsInfo(self.groupsInfo)
+			ret=self.n4dClient.AccessControlManager.set_groups_info(self.groupsInfo)
 			self._writeLog("- Enable access control by group: Change apply successful")
 			print('   [Access-Control]: Action completed successfull')
 			self._getGroupInfo("End")

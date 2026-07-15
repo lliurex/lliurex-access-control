@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 10:18+0200\n"
-"PO-Revision-Date: 2026-07-14 10:18+0200\n"
+"POT-Creation-Date: 2026-07-15 12:03+0200\n"
+"PO-Revision-Date: 2026-07-15 12:03+0200\n"
 "Last-Translator: lliurex <lliurex@gva.es>\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -34,6 +34,14 @@ msgstr "Control por centro"
 #: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:47
 msgid "Help"
 msgstr "Ayuda"
+
+#: ../lliurex-access-control.install/ui/rsrc/CustomPopup.qml:71
+msgid "Apply changes. Wait a moment..."
+msgstr "Aplicando cambios. Espere un momento..."
+
+#: ../lliurex-access-control.install/ui/rsrc/CustomPopup.qml:73
+msgid "Restoring previous values. Wait a moment..."
+msgstr "Restaurando valores previos. Espere un momento..."
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:23
 msgid "Restrict access by group"
@@ -242,12 +250,6 @@ msgid ""
 msgstr ""
 "Necesita permisos de administrador para ejecutar la aplicación en este "
 "equipo."
-
-#~ msgid "Apply changes. Wait a moment..."
-#~ msgstr "Aplicando cambios. Espere un momento..."
-
-#~ msgid "Restoring previous values. Wait a moment..."
-#~ msgstr "Restaurando valores previos. Espere un momento..."
 
 #~ msgid "Validating data. Wait a moment..."
 #~ msgstr "Validando datos. Espere un momento..."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 10:18+0200\n"
+"POT-Creation-Date: 2026-07-15 12:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,6 +31,14 @@ msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:47
 msgid "Help"
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CustomPopup.qml:71
+msgid "Apply changes. Wait a moment..."
+msgstr ""
+
+#: ../lliurex-access-control.install/ui/rsrc/CustomPopup.qml:73
+msgid "Restoring previous values. Wait a moment..."
 msgstr ""
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:23

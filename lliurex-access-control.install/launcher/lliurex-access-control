@@ -24,10 +24,10 @@ class Tunnel(QObject):
 	def clearCache(self):
 
 		clear=False
-		user=os.environ["USER"]
-		versionFile="/home/%s/.config/lliurex-access-control.conf"%user
-		cachePath1="/home/%s/.cache/lliurex-access-control"%user
-		cachePath2="/home/%s/.cache/lliurex-access-control-gui.py"%user
+		userHome=os.path.expanduser("~")
+		versionFile=os.path.join(userHome,".config/lliurex-access-control.conf")
+		cachePath1=os.path.join(userHome,".cache/lliurex-access-control")
+		cachePath2=os.path.join(userHome,".cache/lliurex-access-control-gui.py")
 		installedVersion=self.getPackageVersion()
 
 

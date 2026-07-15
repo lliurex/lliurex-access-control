@@ -50,11 +50,12 @@ class AddNewUser(QThread):
 		
 		time.sleep(1)
 		retCurrentUser=self.manager.checkIfUserIsCurrrentUser(self.newUsers)
+		retAdminUser={}
 
-		if not retCurrentUser.get("validGroup"):
+		if not retCurrentUser.get("isCurrentUser"):
 			retAdminUser=self.manager.checkIfUserIsValidGroup(self.newUsers)
 		else:
-			if len(self.newsUser)>1:
+			if len(self.newUsers)>1:
 				retAdminUser=self.manager.checkIfUserIsValidGroup(self.newUsers)
 		
 		self.newUserAdded.emit(retCurrentUser,retAdminUser)	
@@ -273,7 +274,7 @@ class Bridge(QObject):
 
 		self.isCurrentUser=retCurrentUser.get("isCurrentUser")
 		if self.isCurrentUser:
-			currentUsers=set(retCurrentUser.get("userList") if len(retCurrentUser.get("userList")) > 1 else set())
+			currentUsers=set(retCurrentUser.get("userList") if len(retCurrentUser.get("userList")) > 0 else set())
 			self.usersId=[u for u in self.usersId if u not in currentUsers]
 
 		if not self.usersId:

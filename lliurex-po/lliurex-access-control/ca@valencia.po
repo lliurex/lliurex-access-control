@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 10:18+0200\n"
-"PO-Revision-Date: 2026-07-14 10:18+0200\n"
+"POT-Creation-Date: 2026-07-15 12:03+0200\n"
+"PO-Revision-Date: 2026-07-15 12:03+0200\n"
 "Last-Translator: d33475574v <gimenez_angcam@gva.es>\n"
 "Language-Team: Spanish <https://weblate.gva.es/projects/lliurex/lliurex-"
 "access-control/es/>\n"
@@ -35,6 +35,14 @@ msgstr "Control per centre"
 #: ../lliurex-access-control.install/ui/rsrc/ApplicationOptions.qml:47
 msgid "Help"
 msgstr "Ajuda"
+
+#: ../lliurex-access-control.install/ui/rsrc/CustomPopup.qml:71
+msgid "Apply changes. Wait a moment..."
+msgstr "S’estan aplicant els canvis. Espereu un moment..."
+
+#: ../lliurex-access-control.install/ui/rsrc/CustomPopup.qml:73
+msgid "Restoring previous values. Wait a moment..."
+msgstr "S’estan restaurant els valors previs. Espereu un moment..."
 
 #: ../lliurex-access-control.install/ui/rsrc/GroupsSettings.qml:23
 msgid "Restrict access by group"
@@ -242,12 +250,6 @@ msgid ""
 msgstr ""
 "Necessiteu permisos d'administrador per a executar l'aplicació en aquest "
 "equip."
-
-#~ msgid "Apply changes. Wait a moment..."
-#~ msgstr "S’estan aplicant els canvis. Espereu un moment..."
-
-#~ msgid "Restoring previous values. Wait a moment..."
-#~ msgstr "S’estan restaurant els valors previs. Espereu un moment..."
 
 #~ msgid "Validating data. Wait a moment..."
 #~ msgstr "S’estan validant les dades. Espereu un moment..."
