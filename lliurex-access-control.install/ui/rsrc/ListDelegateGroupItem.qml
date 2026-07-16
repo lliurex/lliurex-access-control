@@ -1,39 +1,61 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 import QtQml.Models 2.8
-import org.kde.plasma.components 2.0 as Components
+import org.kde.kirigami 2.16 as Kirigami
 
 
-Components.ListItem{
-
+ItemDelegate{
     id: listGroupItem
+    
     property string groupId
     property bool isLocked
     property string description
 
     enabled:true
+    height:50
 
-    onContainsMouseChanged: {
-        if (containsMouse) {
-            listGroup.currentIndex = index
-        } else {
-            listGroup.currentIndex = -1
-        }
+    hoverEnabled:true
+
+    leftPadding:15
+    rightPadding:15
+    topPadding:0
+    bottomPadding:0
+
+    background:Rectangle {
+        anchors.fill:parent
+        anchors.margins:5
+
+        color: (listGroupItem.hovered) 
+               ? Qt.hsla(Kirigami.Theme.highlightColor.hslHue, 
+                 Kirigami.Theme.highlightColor.hslSaturation, 
+                 Kirigami.Theme.highlightColor.hslLightness, 
+                 0.15)
+               :"transparent"
+        radius:6
+        border.width:1
+        border.color:(listGroupItem.hovered)
+                      ?Kirigami.Theme.highlightColor
+                      :"transparent"
 
     }
 
-    Item{
-        id: menuItem
-        height:visible?30:0
+    contentItem:RowLayout {
+        
+        anchors.fill:parent
+        anchors.leftMargin:listGroupItem.leftPadding
+        anchors.rightMargin:listGroupItem.rightPadding
+        spacing:10
+
         CheckBox {
             id:groupCheck
             checked:isLocked
+            Layout.alignment: Qt.AlignVCenter
+
             onToggled:{
-                groupStackBridge.manageGroupChecked([groupId,checked])
+                groupStackBridge.manageGroupChecked({"groupId":groupId,"isLocked":checked})
             }
-            anchors.left:parent.left
-            anchors.leftMargin:5
-            anchors.verticalCenter:parent.verticalCenter
+           
             ToolTip.delay: 1000
             ToolTip.timeout: 3000
             ToolTip.visible: hovered
@@ -50,11 +72,9 @@ Components.ListItem{
         Text{
             id: text
             text: description
-            width:400
-            clip: true
-            anchors.left:groupCheck.right
-            anchors.leftMargin:5
-            anchors.verticalCenter:parent.verticalCenter
+            Layout.fillWidth: true
+            Layout.preferredWidth: 300
+            verticalAlignment: Text.AlignVCenter
         }
 
     }

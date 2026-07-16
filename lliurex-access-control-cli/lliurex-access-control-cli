@@ -1,135 +1,183 @@
 #! /usr/bin/python3
 import sys
 import os
-
-from clint import arguments
-from clint.textui import puts, indent
-
+import argparse
 from accesscontrolcli import AccessControlCliManager
 
-def usage():
-	puts("Usage")
-	with indent(4):
-		puts("lliurex-access-control-cli [FLAGS...] ACTION")
-		puts("Actions")
-		with indent(4):	
-			puts("currentconfig [groups|users|center|all] : Shows information about access control for groups, users, center code or all  ")
-			puts("lockgroup <GROUP> <GROUP>...: Lock access to computer for the indicated groups")
-			puts("unlockgroup <GROUP> <GROUP>...: Unlock access to computer for the indicated groups")
-			puts("disablecontrolgroup: Disable access control by group")
-			puts("enablecontrolgroup: Activate access control by groups if there is a previous configuration with locked groups")
-			puts("lockuser <USERNAME> <USENAME>...: Lock access to computer for the indicated usernames")
-			puts("unlockuser <USERNAME> <USERNAME>...: Unlock access to computer for the indicated usernames")
-			puts("disablecontroluser: Disable access control by user")
-			puts("enablecontroluser: Activate access control by users if there is a previous configuration with locked users")
-			puts("removeuserfromlist <USERNAME> <USERNAME>...: Removed the indicated usernames from the user list")
-			puts("removeuserlist: Remove the user list")
-			puts("setcenter <CENTER CODE>: Configure center code to lock access to computer for users who do not belong to it")
-			puts("removecenter: Remove center code to unlock access to compurter for users who do not belong to it")
-			puts("disablecontrolcenter: Disable access control by center")
-			puts("enablecontrolcenter: Enable access control by center if there is a previous configuration with center code")
-		puts("Flags")
-		with indent(4):
-			puts("-h --help : Show help")
-			puts("-u --unattended: Run the actions without prompting for user confirmation")
-			puts("-sa --skip-admin: Prevent local admin lockout. Only valid in combination with unattended option")
-	sys.exit(1)
-
-#def usage	
-		
 if __name__ == '__main__':
 
 	if os.geteuid() != 0:
 		print("   [Access-Control]: You need be root!")
 		sys.exit(1)
 
-	args = arguments.Args().copy
-	mode=False
-	skipAdmin=False
-	debug=False
-	infoOption=None
-	groupsSelected=[]
-	usersSelected=[]
-	cdcCode=""
+	parser = argparse.ArgumentParser(add_help=False)
+	parent_parser=argparse.ArgumentParser(add_help=False)
 
-	if args.contains(["-h","--help"]) or len(args.all) == 0 :
-		usage()		
-	if args.contains(["-u","--unattended"]):
-		mode=True
-		index = args.first(["-u","--unattended"])
-		args.pop(index)
+	def custom_print_help():
+		help_text = (
+			"Usage:\n"
+			"    lliurex-access-control-cli [FLAGS...] ACTION\n\n"
+			"Actions:\n"
+			"    currentconfig [groups|users|center|all] :           Shows information about access control for groups, users or all\n"
+			"    lockgroup <GROUP> <GROUP>...:                Lock access to computer for the indicated groups\n"
+			"    unlockgroup <GROUP> <GROUP>...:              Unlock access to computer for the indicated groups\n"
+			"    disablecontrolgroup:                         Disable access control by group\n"
+			"    enablecontrolgroup:                          Activate access control by groups if there is a previous configuration with locked groups\n"
+			"    lockuser <USERNAME> <USENAME>...:            Lock access to computer for the indicated usernames\n"
+			"    unlockuser <USERNAME> <USERNAME>...:         Unlock access to computer for the indicated usernames\n"
+			"    disablecontroluser:                          Disable access control by user\n"
+			"    enablecontroluser:                           Activate access control by users if there is a previous configuration with locked users\n"
+			"    removeuserfromlist <USERNAME> <USERNAME>...: Removed the indicated usernames from the user list\n"
+			"    removeuserlist:                              Remove the user list\n"
+			"    setcenter <CENTER CODE>:                     Configure center code to lock access to computer for users who do not belong to it\n"
+			"    removecenter:                                Remove center code to unlock access to compurter for users who do not belong to it\n"
+			"    disablecontrolcenter:                        Disable access control by center\n"
+			"    enablecontrolcenter: Enable access control by center if there is a previous configuration with center code\n\n"
 
-	if args.contains(["-sa","--skip-admin"]):
-		skipAdmin=True
-		index= args.first(["-sa","--skip-admin"])
-		args.pop(index)
+			
+			"Flags:\n"
+			"    -h, --help                                   Show help\n"
+			"    -u, --unattended                             Run the actions without prompting for user confirmation\n"
+			"    -sa, --skip-admin                            Prevent local admin lockuup. Only valid in combination with unattended flag"
+		)
+		print(help_text)
 
-	action = args.pop(0)
+	parser.print_help = custom_print_help
+
+	def custom_error(message):
+		print(f"Error: {message}\n", file=sys.stderr)
+		parser.print_help()
+		sys.exit(2)
+
+	parser.error = custom_error
+
+	class HelpAction(argparse.Action):
+		def __call__(self, parser, namespace, values, option_string=None):
+			parser.print_help()
+			sys.exit(0)
+
+	parser.add_argument("-h", "--help", action=HelpAction, nargs=0)
 	
-	if action=="currentconfig":
-		if args.get(0)=="all":
-			infoOption="all"
-		elif args.get(0)=="groups":
-			infoOption="groups"
-		elif args.get(0)=="users":
-			infoOption="users"
-		elif args.get(0)=="center":
-			infoOption="center"
-		else:
-			usage()
-	elif action=="lockgroup" or action=="unlockgroup":
-		if len(args)>0:
-			for item in args.all:
-				groupsSelected.append(item.lower())
-		else:
-			usage()
-	elif action=="lockuser" or action=="unlockuser":
-		if len(args)>0:
-			for item in args.all:
-				usersSelected.append(item.lower())
-		else:
-			usage()
-	elif action=="removeuserfromlist":
-		if len(args)>0:
-			for item in args.all:
-				usersSelected.append(item.lower())
-		else:
-			usage()
-	elif action=="setcenter":
-		if len(args)>0:
-			cdcCode=args.all[0]
+	parent_parser.add_argument("-u", "--unattended", action="store_true",dest="unattended",default=argparse.SUPPRESS)
+	parser.add_argument("-u", "--unattended", action="store_true",dest="unattended")
 	
+	parent_parser.add_argument("-sa", "--skip-admin", action="store_true",dest="skipadmin",default=argparse.SUPPRESS)
+	parser.add_argument("-sa", "--skip-admin", action="store_true",dest="skipadmin")
+	
+	VALID_ACTIONS = [
+		"currentconfig", "lockgroup", "unlockgroup", "disablecontrolgroup",
+		"enablecontrolgroup", "lockuser", "unlockuser",
+		"disablecontroluser","enablecontroluser","removeuserfromlist","removeuserlist",
+		"setcenter","removecenter","disablecontrolcenter","enablecontrolcenter"
+	]
+	
+	user_args = [arg for arg in sys.argv[1:] if arg not in ["-h", "--help", "-u", "--unattended", "-sa", "--skipadmi"]]
+	
+	if user_args:
+		potential_action = user_args[0]
+		if potential_action not in VALID_ACTIONS:
+			print(f"Error: Invalid action or unknown parameter: '{potential_action}'\n", file=sys.stderr)
+			parser.print_help()
+			sys.exit(2)
+			
+	subparsers = parser.add_subparsers(dest="action", required=True)
+	parser_config = subparsers.add_parser("currentconfig", parents=[parent_parser])
+	parser_config.add_argument("config_option", choices=["groups", "users",'center',"all"], nargs="?", default="all")
+	
+	parser_lockgroup=subparsers.add_parser("lockgroup", parents=[parent_parser])
+	parser_lockgroup.add_argument("groups",nargs="*")
+	
+	parser_unlockgroup=subparsers.add_parser("unlockgroup", parents=[parent_parser])
+	parser_unlockgroup.add_argument("groups",nargs="*")
+	
+	subparsers.add_parser("disablecontrolgroup", parents=[parent_parser])
+	subparsers.add_parser("enablecontrolgroup", parents=[parent_parser])
+	
+	parser_lockuser=subparsers.add_parser("lockuser", parents=[parent_parser])
+	parser_lockuser.add_argument("users",nargs="*")
+	
+	parser_unlockuser=subparsers.add_parser("unlockuser", parents=[parent_parser])
+	parser_unlockuser.add_argument("users",nargs="*")
+	
+	subparsers.add_parser("disablecontroluser", parents=[parent_parser])
+	subparsers.add_parser("enablecontroluser", parents=[parent_parser])
+	
+	parser_removefromlist=subparsers.add_parser("removeuserfromlist", parents=[parent_parser])
+	parser_removefromlist.add_argument("users",nargs="*")
+
+	subparsers.add_parser("removeuserlist", parents=[parent_parser])
+
+	parser_setcenter=subparsers.add_parser("setcenter",parents=[parent_parser])
+	parser_setcenter.add_argument("center")
+
+	subparsers.add_parser("removecenter", parents=[parent_parser])
+	subparsers.add_parser("disablecontrolcenter", parents=[parent_parser])
+	subparsers.add_parser("enablecontrolcenter", parents=[parent_parser])
+
+	try:
+		args = parser.parse_args()
+	except argparse.ArgumentError:
+		parser.print_help()
+		sys.exit(1)
+
+	mode = args.unattended
+	skipAdmin=args.skipadmin
+	infoOption=getattr(args,"config_option",None)
+	groupsSelected=[g.lower() for g in getattr(args, "groups", [])]
+	usersSelected=[u.lower() for u in getattr(args, "users", [])]
+	centerCode=getattr(args,"center",None)
+
+	ACTIONS_WITH_GROUPS=["lockgroup","unlockgroup"]
+	ACTIONS_WITH_USERS=["lockuser","unlockuser","removeuserfromlist"]
+	ACTION_WITH_CENTER=["setcenter"]
+
+	if args.action in ACTIONS_WITH_GROUPS and not groupsSelected:
+		print(f"Error: The action {args.action} requires at least one group'\n", file=sys.stderr)
+		parser.print_help()
+		sys.exit(2)
+
+	if args.action in ACTIONS_WITH_USERS and not usersSelected:
+		print(f"Error: The action {args.action} requires at least one user'\n", file=sys.stderr)
+		parser.print_help()
+		sys.exit(2)
+	
+	if args.action in ACTION_WITH_CENTER and not centerCode:
+		print(f"Error: The action {args.action} requires at least one user'\n", file=sys.stderr)
+		parser.print_help()
+		sys.exit(2)
+
 	ac=AccessControlCliManager(mode,skipAdmin)
-	
-	if action == "currentconfig":
+
+	if args.action == "currentconfig":
 		sys.exit(ac.showCurrentConfig(infoOption))
-	elif action=="lockgroup":
+	elif args.action == "lockgroup":
 		sys.exit(ac.lockGroup(groupsSelected))
-	elif action=="unlockgroup":
+	elif args.action == "unlockgroup":
 		sys.exit(ac.unlockGroup(groupsSelected))
-	elif action=="disablecontrolgroup":
+	elif args.action == "disablecontrolgroup":
 		sys.exit(ac.disableControlGroup())
-	elif action=="enablecontrolgroup":
+	elif args.action == "enablecontrolgroup":
 		sys.exit(ac.enableControlGroup())
-	elif action=="lockuser":
+	elif args.action == "lockuser":
 		sys.exit(ac.lockUser(usersSelected))
-	elif action=="unlockuser":
+	elif args.action == "unlockuser":
 		sys.exit(ac.unlockUser(usersSelected))
-	elif action=="disablecontroluser":
+	elif args.action == "disablecontroluser":
 		sys.exit(ac.disableControlUser())
-	elif action=="enablecontroluser":
+	elif args.action == "enablecontroluser":
 		sys.exit(ac.enableControlUser())
-	elif action=="removeuserfromlist":
+	elif args.action == "removeuserfromlist":
 		sys.exit(ac.removeUserFromList(usersSelected))
-	elif action=="removeuserlist":
+	elif args.action == "removeuserlist":
 		sys.exit(ac.removeUserList())
-	elif action=="setcenter":
-		sys.exit(ac.setCenter(cdcCode))
-	elif action=="removecenter":
+	elif args.action == "setcenter":
+		sys.exit(ac.setCenter(centerCode))
+	elif args.action == "removecenter":
 		sys.exit(ac.removeCenter())
-	elif action=="disablecontrolcenter":
+	elif args.action == "disablecontrolcenter":
 		sys.exit(ac.disableControlCenter())
-	elif action=="enablecontrolcenter":
+	elif args.action == "enablecontrolcenter":
 		sys.exit(ac.enableControlCenter())
-	else:
-		usage()		
+
+
+

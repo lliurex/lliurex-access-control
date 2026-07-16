@@ -24,31 +24,27 @@ class Tunnel(QObject):
 	def clearCache(self):
 
 		clear=False
-		user=os.environ["USER"]
-		versionFile="/home/%s/.config/lliurex-access-control.conf"%user
-		cachePath1="/home/%s/.cache/lliurex-access-control"%user
-		cachePath2="/home/%s/.cache/lliurex-access-control-gui.py"%user
+		userHome=os.path.expanduser("~")
+		versionFile=os.path.join(userHome,".config/lliurex-access-control.conf")
+		cachePath1=os.path.join(userHome,".cache/lliurex-access-control")
+		cachePath2=os.path.join(userHome,".cache/lliurex-access-control-gui.py")
 		installedVersion=self.getPackageVersion()
 
-		if installedVersion!="":
-			if not os.path.exists(versionFile):
+
+		if not os.path.exists(versionFile):
+			with open(versionFile,'w') as fd:
+				fd.write(installedVersion)
+
+			clear=True
+
+		else:
+			with open(versionFile,'r') as fd:
+				fileVersion=fd.readline()
+
+			if fileVersion!=installedVersion:
 				with open(versionFile,'w') as fd:
 					fd.write(installedVersion)
-
 				clear=True
-
-			else:
-				with open(versionFile,'r') as fd:
-					fileVersion=fd.readline()
-					fd.close()
-
-				if fileVersion!=installedVersion:
-					with open(versionFile,'w') as fd:
-						fd.write(installedVersion)
-						fd.close()
-					clear=True
-		else:
-			clear=True
 		
 		if clear:
 			if os.path.exists(cachePath1):
@@ -65,8 +61,7 @@ class Tunnel(QObject):
 
 		if os.path.exists(packageVersionFile):
 			with open(packageVersionFile,'r') as fd:
-				pkgVersion=fd.readline()
-				fd.close()
+				pkgVersion=fd.readline().strip()
 
 		return pkgVersion
 
@@ -129,6 +124,7 @@ class Tunnel(QObject):
 			os.system(cmd)
 		
 		app.quit()
+		
 	#def on_ticket
 	
 #class Tunnel	

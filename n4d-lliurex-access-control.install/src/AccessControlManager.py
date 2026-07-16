@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import subprocess
 import json
 import codecs
 import configparser
@@ -20,414 +21,438 @@ class AccessControlManager:
 	def __init__(self):
 
 		self.core=n4dcore.Core.get_core()
-		self.configPath="/etc/lliurex-access-control"
-		self.dataPath="/usr/share/lliurex-access-control-config/GroupsLists"
-		self.groupTemplatePath=os.path.join(self.dataPath,"defaultGroups.json")
-		self.groupDenyListPath=os.path.join(self.configPath,"login.group.deny")
-		self.defaultGroupsFile=os.path.join(self.configPath+"/groups-lists","defaultGroups.json")
-		self.userDenyListPath=os.path.join(self.configPath,"login.user.deny")
-		self.usersList=os.path.join(self.configPath+"/users-lists","usersList.json")
-		self.sssdConfigPath="/etc/sssd/sssd.conf"
-		self.cdcInfo=os.path.join(self.configPath+"/cdc-info","cdc.json")
-		self.sectionRefDesa="domain/DESEDU.GVA.ES"
-		self.sectionRefPro="domain/EDU.GVA.ES"
-		self.sectionRefAlu="domain/ALU.EDU.GVA.ES"
-		self.optionRef="simple_allow_groups"
+		self.config_path="/etc/lliurex-access-control"
+		self.data_path="/usr/share/lliurex-access-control-config/GroupsLists"
+		self.group_template_path=os.path.join(self.data_path,"defaultGroups.json")
+		self.group_deny_list_path=os.path.join(self.config_path,"login.group.deny")
+		self.default_groups_file=os.path.join(self.config_path+"/groups-lists","defaultGroups.json")
+		self.user_denied_list_path=os.path.join(self.config_path,"login.user.deny")
+		self.users_list=os.path.join(self.config_path+"/users-lists","usersList.json")
+		self.sssd_config_path="/etc/sssd/sssd.conf"
+		self.cdc_info=os.path.join(self.config_path+"/cdc-info","cdc.json")
+		self.section_ref_desa="domain/DESEDU.GVA.ES"
+		self.section_ref_pro="domain/EDU.GVA.ES"
+		self.section_ref_alu="domain/ALU.EDU.GVA.ES"
+		self.option_ref="simple_allow_groups"
 	
 	#def __init__
 
-	def isAccessDenyGroupEnabled(self):
+	def is_access_denied_group_enabled(self):
 
-		isEnabled=False
+		is_enabled=os.path.exists(self.group_deny_list_path)
 
-		if os.path.exists(self.groupDenyListPath):
-			isEnabled=True
+		return n4d.responses.build_successful_call_response(is_enabled)
 
-		return n4d.responses.build_successful_call_response(isEnabled)
+	#def is_access_denied_group_enabled
 
-	#def isAccessDenyGroupEnabled
+	def get_groups_info(self,init_load=True):
 
-	def getGroupsInfo(self,initLoad=True):
+		deny_groups=set(self._read_denied_groups_file())
+		groups_info=self._read_groups_list(init_load)
 
-		denyGroups=self._readDenyGroupsFile()
-		groupsInfo=self._readGroupsList(initLoad)
+		if deny_groups:
+			for group_name,group_data in groups_info.items():
+				if isinstance(group_data,dict):
+					group_data["isLocked"]=group_name in deny_groups
 
-		if len(denyGroups)>0:
-			for item in groupsInfo:
-				if item in denyGroups:
-					groupsInfo[item]["isLocked"]=True
-				else:
-					groupsInfo[item]["isLocked"]=False
+		return n4d.responses.build_successful_call_response(groups_info)
 
-		return n4d.responses.build_successful_call_response(groupsInfo)
+	#def get_groups_info 
 
-	#def getGroupsInfo 
+	def _read_denied_groups_file(self):
 
-	def _readDenyGroupsFile(self):
+		deny_groups=[]
 
-		denyGroups=[]
+		if os.path.exists(self.group_deny_list_path):
+			try:
+				with open(self.group_deny_list_path,'r') as fd:
+					for line in fd:
+						clean_line=line.strip()
+						if clean_line:
+							deny_groups.append(clean_line)
+			except Exception as e:
+				print(f"AccessControlManager._read_denied_groups_file. Error:{e}")
+				pass
 
-		if self.isAccessDenyGroupEnabled()['return']:
-			with open(self.groupDenyListPath,'r') as fd:
-				lines=fd.readlines()
-				for line in lines:
-					denyGroups.append(line.strip())
+		return deny_groups
 
-		return denyGroups
+	#def _read_denied_groups_file
 
-	#def _readDenyGroupsFile
+	def _read_groups_list(self,init_load):
 
-	def _readGroupsList(self,initLoad):
+		template_groups={}
+		current_groups={}
 
-		templateGroups={}
-		currentGroups={}
+		if os.path.exists(self.default_groups_file):
+			try:
+				with open(self.default_groups_file,'r',encoding='utf-8') as fd:
+					current_groups=json.load(fd)
+			except Exception as e:
+				print(f"AccessControlManager._read_groups_list. Error: {e}")
+				pass
 		
-		if initLoad:
+		if init_load:
+			if os.path.exists(self.group_template_path):
+				try:
+					with open(self.group_template_path) as fd:
+						template_groups=json.load(fd)
+				except Exception as e:
+					print(f"AccessControlManager._read_groups_list. Error: {e}")
+					pass
 
-			with open(self.groupTemplatePath) as fd:
-				templateGroups=json.load(fd)
+			for item in template_groups:
+				template_groups[item]["isLocked"]=False
 
-			for item in templateGroups:
-				templateGroups[item]["isLocked"]=False
+			if not current_groups:
+				self._write_default_group_file(template_groups)
+				return template_groups
 
-			if not os.path.exists(self.defaultGroupsFile):
-				self._writeDefaultGroupFile(templateGroups)
-				return templateGroups
+			needs_update=False
+			for group_name,group_data in template_groups.items():
+				if group_name not in current_groups:
+					current_groups[group_name]=group_data
+					needs_update=True
 
-			else:
-				with open(self.defaultGroupsFile) as fd:
-					currentGroups=json.load(fd)
+			if needs_update:
+				self._write_default_group_file(current_groups)
 
-				if templateGroups.keys()!=currentGroups.keys():
-					match=0
-					for item in templateGroups:
-						if item not in currentGroups.keys():
-							match+=1
-							currentGroups[item]={}
-							currentGroups[item]=templateGroups[item]
-
-					if match>0:
-						self._writeDefaultGroupFile(currentGroups)
-
-		else:
-			if os.path.exists(self.defaultGroupsFile):
-				with open(self.defaultGroupsFile) as fd:
-					currentGroups=json.load(fd)
+		for group_name in current_groups:
+			if "isLocked" not in  current_groups[group_name]:
+				current_groups[group_name]["isLocked"]=False
 		
-		return currentGroups
+		return current_groups
 
-	#def _readGroupsList
+	#def _read_groups_list
 
-	def setGroupsInfo(self,groupsInfo):
+	def set_groups_info(self,groups_info):
 
-		denyGroups=[]
+		deny_groups=[]
+		normalized_groups_info={}
+
 		try:
-			if len(groupsInfo)>0:
-				for item in groupsInfo:
-					item=item.lower()
-					if groupsInfo[item]["isLocked"]:
-						denyGroups.append(item)
+			if not groups_info:
+				return n4d.responses.build_successful_call_response()
 
-				self._writeDefaultGroupFile(groupsInfo)
+			for group_name,group_data in groups_info.items():
+				clean_name=group_name.lower()
+				normalized_groups_info[clean_name]=group_data
 
-				if len(denyGroups)>0:
-					with open(self.groupDenyListPath,'w') as fd:
-						for item in denyGroups:
-							fd.write(item+"\n")
-					return n4d.responses.build_successful_call_response()
+				if group_data.get("isLocked",True):
+					deny_groups.append(clean_name)
 
-				else:
-					return self.disableAccessDenyGroup()
-		except:
+			self._write_default_group_file(normalized_groups_info)
+
+			if deny_groups:
+				with open(self.group_deny_list_path,'w',encoding='utf-8') as fd:
+					for group in deny_groups:
+						fd.write(f"{group}\n")
+				return n4d.responses.build_successful_call_response()
+				
+			else:
+				return self.disable_access_denied_group()
+		
+		except Exception as e:
+			print(f"AccessControlManager.set_groups_info. Error: {e}")
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_GROUP_ERROR)
 	
-	#def setDennyGroups
+	#def set_groups_info
 
-	def disableAccessDenyGroup(self):
+	def disable_access_denied_group(self):
 
 		try:
-			if self.isAccessDenyGroupEnabled()['return']:
-				os.remove(self.groupDenyListPath)
+			if os.path.exists(self.group_deny_list_path):
+				os.remove(self.group_deny_list_path)
 		
 			return n4d.responses.build_successful_call_response()
 		except:
+			print(f"AccessControlManager.disable_access_denied_group. Error: {e}")
 			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_GROUP_ACCESS_CONTROL_ERROR)
 	
-	#def disableAccessDenyGroup
+	#def disable_access_denied_group
 
-	def isAccessDenyUserEnabled(self):
+	def is_access_denied_user_enabled(self):
 
-		isEnabled=False
+		is_enabled=os.path.exists(self.user_denied_list_path)
 
-		if os.path.exists(self.userDenyListPath):
-			isEnabled=True
+		return n4d.responses.build_successful_call_response(is_enabled)
 
-		return n4d.responses.build_successful_call_response(isEnabled)
+	#def is_access_denied_user_enabled
 
-	#def isAccessDenyUserEnabled
+	def get_users_info(self):
 
-	def getUsersInfo(self):
+		deny_users={user.lower() for user in self._read_denied_users_file()}
+		raw_users_list=self._read_users_list()
 
-		denyUsers=[]
-		usersList={}
+		normalized_users={}
 
-		denyUsers=self._readDenyUsersFile()
-		usersList=self._readUsersList()
+		for username,user_data in raw_users_list.items():
+			clean_name=username.lower()
+			normalized_users[clean_name]=user_data
+			if deny_users:
+				normalized_users[clean_name]["isLocked"]=clean_name in deny_users
 
-		if len(usersList)>0:
-			if len(denyUsers)>0:
-				for item in usersList:
-					item=item.lower()
-					if item in denyUsers:
-						usersList[item]["isLocked"]=True
-					else:
-						usersList[item]["isLocked"]=False
+		for blocked_user in deny_users:
+			if blocked_user not in normalized_users:
+				normalized_users[blocked_user]={"isLocked":True}
 
-		if len(denyUsers)>0:
-			for item in denyUsers:
-				item=item.lower()
-				if item not in usersList:
-					usersList[item]={}
-					usersList[item]["isLocked"]=True
+		return n4d.responses.build_successful_call_response(normalized_users)
 
-		return n4d.responses.build_successful_call_response(usersList)
+	#def get_users_info 
 
-	#def getDenyUsers 
+	def _read_denied_users_file(self):
 
-	def _readDenyUsersFile(self):
+		deny_users=[]
 
-		denyUsers=[]
+		if os.path.exists(self.user_denied_list_path):
+			try: 
+				with open(self.user_denied_list_path,'r') as fd:
+					for line in fd:
+						clean_line=line.strip()
+						if clean_line:
+							deny_users.append(clean_line)
+			except Exception as e:
+				prnit(f"AccessControlManager._read_denied_users_file. Error: {e}")
+				pass
 
-		if self.isAccessDenyUserEnabled()['return']:
-			with open(self.userDenyListPath,'r') as fd:
-				lines=fd.readlines()
-				for line in lines:
-					denyUsers.append(line.strip())
+		return deny_users
 
-		return denyUsers
+	#def _read_denied_users_file
 
-	#def _readDenyUsersFile
+	def _read_users_list(self):
 
-	def _readUsersList(self):
+		users_list={}
 
-		usersList={}
+		if os.path.exists(self.users_list):
+			try:
+				with open(self.users_list,'r') as fd:
+					users_list=json.load(fd)
+			except Exception as e:
+				print(f"AccessControlManager._read_users_list. Error: {e}")
+				pass
 
-		if os.path.exists(self.usersList):
-			with open(self.usersList,'r') as fd:
-				usersList=json.load(fd)
+		return users_list
 
-		return usersList
+	#def _read_users_list
 
-	#def _readUsersList
+	def set_users_info(self,users_info):
 
-	def setUsersInfo(self,usersInfo):
-
-		denyUsers=[]
+		deny_users=[]
+		normalized_users_info={}
 
 		try:
-			if len(usersInfo)>0:
-				for item in usersInfo:
-					item=item.lower()
-					if usersInfo[item]["isLocked"]:
-						denyUsers.append(item)
-				with open(self.usersList,'w') as fd:
-					json.dump(usersInfo,fd)
-				
-				if len(denyUsers)>0:
-					with open(self.userDenyListPath,'w') as fd:
-						for item in denyUsers:
-							fd.write(item+"\n")
-					return n4d.responses.build_successful_call_response()
-				else:
-					return self.disableAccessDenyUser()
+			if not users_info:
+				if os.path.exists(self.users_list):
+					os.remove(self.users_list)
 
+				return self.disable_access_denied_user()
+
+			for username,user_data in users_info.items():
+				clean_name=username.lower()
+				normalized_users_info[clean_name]=user_data
+
+				if user_data.get("isLocked",True):
+					deny_users.append(clean_name)
+
+			with open(self.users_list,'w',encoding="'utf-8") as fd:
+				json.dump(normalized_users_info,fd)
+
+			if deny_users:
+				with open(self.user_denied_list_path,'w',encoding='utf-8') as fd:
+					for user in deny_users:
+						fd.write(f"{user}\n")
+
+				return n4d.responses.build_successful_call_response()
 			else:
-				if os.path.exists(self.usersList):
-					os.remove(self.usersList)
-					
-				return self.disableAccessDenyUser()
-			
+				return self.disable_access_denied_user()
+		
 		except Exception as e:
+			print(f"AccessControlManager.set_users_info. Error: {e}")
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_USER_ERROR)
 	
-	#def setDennyGroups
+	#def set_users_info
 
-	def disableAccessDenyUser(self):
+	def disable_access_denied_user(self):
 
 		try:
-			if self.isAccessDenyUserEnabled()['return']:
-				os.remove(self.userDenyListPath)
+			if os.path.exists(self.user_denied_list_path):
+				os.remove(self.user_denied_list_path)
 		
 			return n4d.responses.build_successful_call_response()
-		except:
+		except Exception as e:
+			print(f"AccessControlManager.disable_access_denied_user. Error: {e}")
 			return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_USER_ACCESS_CONTROL_ERROR)
 	
-	#def disableAccessDenyGroup
+	#def disable_access_denied_group
 
-	def _writeDefaultGroupFile(self,data):
+	def _write_default_group_file(self,data):
 
-		with open(self.defaultGroupsFile,'w') as fd:
+		with open(self.default_groups_file,'w',encoding='utf-8') as fd:
 			json.dump(data,fd)
 	
-	#def _writeDefaultGroupFile
+	#def _write_default_group_file
 
-	def isCDCAccessControlAllowed(self):
+	def is_cdc_access_control_allowed(self):
 
-		isAllowed=False
+		is_allowed=os.path.exists(self.sssd_config_path)
+	
+		return n4d.responses.build_successful_call_response(is_allowed)
+
+	#def is_cdc_access_control_allowed
+
+	def is_access_denied_cdc_enabled(self):
+
+		current_code=self._read_sssd_conf_file()
+
+		is_enabled=bool(current_code and current_code.strip())
+				
+		return n4d.responses.build_successful_call_response(is_enabled)
+
+	#def is_access_denied_cdc_enabled
+
+	def get_cdc_info(self):
+
+		current_code=self._read_sssd_conf_file()
+		cdc_info=self._read_cdc_info()
+
+		clean_code=current_code.strip() if current_code else ""
 		
-		if os.path.exists(self.sssdConfigPath):
-			isAllowed=True
-		
-		return n4d.responses.build_successful_call_response(isAllowed)
-
-	#def isCdcAccessControlAllowed
-
-	def isAccessDenyCDCEnabled(self):
-
-		isEnabled=False
-		currentCode=self._readSSSDConfFile()
-		
-		if currentCode!="":
-			isEnabled=True
-		
-		return n4d.responses.build_successful_call_response(isEnabled)
-
-	#def isAccessDenyCdcEnabled
-
-	def getCDCInfo(self):
-
-		currentCode=self._readSSSDConfFile()
-		cdcInfo=self._readCDCInfo()
-
-		if len(cdcInfo)>0:
-			if currentCode!="":
-				if not cdcInfo["accessControlEnabled"]:
-					cdcInfo["accessControlEnabled"]=True
-				if cdcInfo["code"]!=currentCode:
-					cdcInfo["code"]=currentCode
-			else:
-				if cdcInfo["accessControlEnabled"]:
-					cdcInfo["accessControlEnabled"]=False
+		if clean_code:
+			cdc_info["accessControlEnabled"]=True
+			cdc_info["code"]=clean_code
 
 		else:
-			if currentCode!="":
-				cdcInfo["accessControlEnabled"]=True
-				cdcInfo["code"]=currentCode
-			else:
-				cdcInfo["accessControlEnabled"]=False
-				cdcInfo["code"]=""
+			cdc_info["accessControlEnabled"]=False
+			if "code" not in cdc_info:
+				cdc_info["code"]=""
 				
-		return n4d.responses.build_successful_call_response(cdcInfo)
+		return n4d.responses.build_successful_call_response(cdc_info)
 
-	#def getCdcInfo
+	#def get_cdc_info
 
-	def setCDCInfo(self,cdcInfo):
-
-		currentCode=""
+	def set_cdc_info(self,cdc_info):
 
 		try:
-			if len(cdcInfo)>0:
-				with open(self.cdcInfo,'w') as fd:
-					json.dump(cdcInfo,fd)
+			if not cdc_info:
+				if os.path.exists(self.cdc_info):
+					os.remove(self.cdc_info)
+				
+				return self.disable_access_denied_cdc()
+			
+			with open(self.cdc_info,'w',encoding='utf-8') as fd:
+				json.dump(cdc_info,fd)
 
-				if cdcInfo["accessControlEnabled"]:
-					currentCode='GRP_%s,AdminSai'%cdcInfo["code"]
-					return self._writeSSSDConfFile(currentCode)
-				else:
-					return self.disableAccessDenyCDC()
+			if cdc_info.get("accessControlEnabled",False):
+				code=cdc_info.get("code","")
+				current_code=f'GRP_{code},AdminSai'
+				return self._write_sssd_conf_file(current_code)
 			else:
-				if os.path.exists(self.cdcInfo):
-					os.remove(self.cdcInfo)
-					return self.disableAccessDenyCDC()
-		except:
+				return self.disable_access_denied_cdc()
+		
+		except Exception as e:
+			print(f"AccessControlManager.set_cdc_info. Error: {e}")
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_CDC_ERROR)
 	
-	#def setCdcInfo
+	#def set_cdc_info
 
-	def disableAccessDenyCDC(self,updateCDCInfo=False):
+	def disable_access_denied_cdc(self,update_cdc_info=False):
 
-		if updateCDCInfo:
+		if update_cdc_info:
 			try:
-				cdcInfo=self._readCDCInfo()
-				if len(cdcInfo)>0:
-					if cdcInfo["accessControlEnabled"]:
-						cdcInfo["accessControlEnabled"]=False
-						with open(self.cdcInfo,'w') as fd:
-							json.dump(cdcInfo,fd)
-			except:
+				cdc_info=self._read_cdc_info()
+				if cdc_info.get("accessControlEnabled",False):
+					cdc_info["accessControlEnabled"]=False
+					with open(self.cdc_info,'w',encoding='utf-8') as fd:
+						json.dump(cdc_info,fd)
+			except Exception as e:
+				print(f"AccessControlManager.disable_access_denied_cdc. Error: {e}")
 				return n4d.responses.build_failed_call_response(AccessControlManager.DISABLE_CDC_ACCESS_CONTROL_ERROR)
 
-		return self._writeSSSDConfFile()
+		return self._write_sssd_conf_file()
 
-	#def disableAccessDenyCdc
+	#def disable_access_denied_cdc
 
-	def _readCDCInfo(self):
+	def _read_cdc_info(self):
 
-		cdcInfo={}
+		cdc_info={}
 
-		if os.path.exists(self.cdcInfo):
-			with open(self.cdcInfo,'r') as fd:
-				cdcInfo=json.load(fd)
+		try:
+			if os.path.exists(self.cdc_info):
+				with open(self.cdc_info,'r') as fd:
+					cdc_info=json.load(fd)
+		except Exception as e:
+			print(f"AccessControlManager._read_cdc_info.Error:{e}")
+			pass
 
-		return cdcInfo
+		return cdc_info
 
-	#def _readCDCInfo
+	#def _read_cdc_info
 
-	def _readSSSDConfFile(self):
+	def _read_sssd_conf_file(self):
 
-		currentCode=""
-		sectionRef=""
+		current_code=""
+		
 
-		if os.path.exists(self.sssdConfigPath):
+		if not os.path.exists(self.sssd_config_path):
+			return current_code
+
+		try:
 			configFile=configparser.ConfigParser()
 			configFile.optionxform=str
-			configFile.read(self.sssdConfigPath)
-			if configFile.has_section(self.sectionRefDesa):
-				sectionRef=self.sectionRefDesa
-			elif configFile.has_section(self.sectionRefPro):
-				sectionRef=self.sectionRefPro
+			configFile.read(self.sssd_config_path,encoding='utf-8')
 
-			if sectionRef!="":
-				if configFile.has_option(sectionRef,self.optionRef):
-					tmpCode=configFile.get(sectionRef,self.optionRef)
-					currentCode=tmpCode.split("GRP_")[1].split(",")[0]
+			section_ref=""
+			if configFile.has_section(self.section_ref_desa):
+				section_ref=self.section_ref_desa
+			elif configFile.has_section(self.section_ref_pro):
+				section_ref=self.section_ref_pro
 
-		return currentCode
+			if section_ref and configFile.has_option(section_ref,self.option_ref):
+				raw_code=configFile.get(section_ref,self.option_ref)
+				if 'GRP_' in raw_code:
+					parts=raw_code.split("GRP_")
+					if len(parts)>1:
+						current_code=parts[1].split(",")[0].strip()
+		except Exception as e:
+			print(f"AccessControlManager._read_sssd_conf_file. Error: {e}")
 
-	#def _readSSSDConfFile
+		return current_code
 
-	def _writeSSSDConfFile(self,code=""):
+	#def _read_sssd_conf_file
+
+	def _write_sssd_conf_file(self,code=""):
 		
-		sectionRef=[]
+		sections_to_update=[]
 		try:
-			if os.path.exists(self.sssdConfigPath):
+			if os.path.exists(self.sssd_config_path):
 				configFile=configparser.ConfigParser()
 				configFile.optionxform=str
-				configFile.read(self.sssdConfigPath)
-				if configFile.has_section(self.sectionRefDesa):
-					sectionRef.append(self.sectionRefDesa)
-				elif configFile.has_section(self.sectionRefPro):
-					sectionRef.append(self.sectionRefPro)
-					if configFile.has_section(self.sectionRefAlu):
-						sectionRef.append(self.sectionRefAlu)
+				configFile.read(self.sssd_config_path)
 
-				if len(sectionRef)>0:
-					for item in sectionRef:
-						if code!="":
-							configFile.set(item,self.optionRef,code)
+				if configFile.has_section(self.section_ref_desa):
+					sections_to_update.append(self.section_ref_desa)
+				elif configFile.has_section(self.section_ref_pro):
+					sections_to_update.append(self.section_ref_pro)
+				elif configFile.has_section(self.section_ref_alu):
+					sections_to_update.append(self.section_ref_alu)
+
+				if sections_to_update:
+					for section in sections_to_update:
+						if code:
+							configFile.set(section,self.option_ref,code)
 						else:
-							configFile.remove_option(item,self.optionRef)
+							configFile.remove_option(section,self.option_ref)
 
-					with open(self.sssdConfigPath,'w') as fd:
+					with open(self.sssd_config_path,'w',encoding='utf-8') as fd:
 						configFile.write(fd)
 
-			os.system('systemctl restart sssd')
+			subprocess.run(['systemctl','restart','sssd'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 			return n4d.responses.build_successful_call_response()
 
 		except Exception as e:
+			print(f"AccessControlManager._write_sssd_conf_file. Error: {e}")
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_CDC_ERROR)
 		
-	#def _writeSSSDConfFile 
+	#def _write_sssd_conf_file 
 
 #class AccessControlManager 
 
