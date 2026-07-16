@@ -1,5 +1,3 @@
-import org.kde.plasma.core 2.1 as PlasmaCore
-import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
@@ -7,71 +5,71 @@ import QtQuick.Window 2.15
 import QtQuick.Dialogs 1.3
 
 ApplicationWindow {
-
-    property bool closing: false
     id:mainWindow
+    property bool closing: false
+    property int margin: 1
+
     visible: true
     title: "LliureX Access Control"
-    property int margin: 1
-    width: mainLayout.width + 2 * margin
-    height: mainLayout.height + 2 * margin
-    minimumWidth: mainLayout.Layout.minimumWidth + 2 * margin
-    minimumHeight: mainLayout.Layout.minimumHeight + 2 * margin
+
+    width: mainLayout.implicitWidth + 2 * margin
+    height: mainLayout.implicitHeight + 2 * margin
+    minimumWidth: 675 + 2 * margin
+    minimumHeight: 550 + 2 * margin
+
     Component.onCompleted: {
-        x = Screen.width / 2 - width / 2
-        y = Screen.height / 2 - height /2
+        x = Screen.width / 2 - minimumWidth / 2
+        y = Screen.height / 2 - minimumHeight /2
     }
 
     
-    onClosing: {
-        close.accepted=closing;
-        mainStackBridge.closeApplication()
-        delay(100, function() {
-            if (mainStackBridge.closeGui){
-                closing=true,
-                closeTimer.stop(),           
-                mainWindow.close();
+    onClosing: (close) => {
+        close.accepted = closing;
+        if (!closing) {
+            mainStackBridge.closeApplication();
+            closeTimer.start();
+        }
+    }
 
-            }else{
-                closing=false;
+    Timer {
+        id: closeTimer
+        interval: 100
+        repeat: true
+        onTriggered: {
+            if (mainStackBridge.closeGui) {
+                stop();
+                mainWindow.closing = true;
+                mainWindow.close();
             }
-        })
-        
+        }
     }
     
     ColumnLayout {
         id: mainLayout
         anchors.fill: parent
-        anchors.margins: margin
-        Layout.minimumWidth:675
-        Layout.minimumHeight:500
+       
 
-        RowLayout {
-            id: bannerBox
-            Layout.alignment:Qt.AlignTop
-            Rectangle{
-                color: "#0049ac"
-                Layout.minimumWidth:mainLayout.width
-                Layout.preferredWidth:mainLayout.width
-                Layout.fillWidth:true
-                Layout.minimumHeight:120
-                Layout.maximumHeight:120
-                Image{
-                    id:banner
-                    source: "/usr/share/lliurex-access-control/rsrc/banner.png"
-                    anchors.centerIn:parent
-                }
+        Rectangle{
+            color: "#0049ab"
+            Layout.fillWidth: true
+            Layout.preferredHeight: 120
+
+            Image{
+                id:banner
+                source: "banner.png"
+                asynchronous:false
+                anchors.centerIn: parent
+                fillMode: Image.PreserveAspectFit
             }
         }
 
         StackView {
             id: mainView
-            property int currentIndex:mainStackBridge.currentStack
-            Layout.minimumHeight:370
-            Layout.alignment:Qt.AlignHCenter|Qt.AlignVCenter
-            Layout.leftMargin:0
             Layout.fillWidth:true
-            Layout.fillHeight: true
+            Layout.fillHeight:true
+            Layout.minimumHeight:420
+
+            property int currentIndex:mainStackBridge.currentStack
             initialItem:loadingView
 
             onCurrentIndexChanged:{
@@ -85,18 +83,18 @@ ApplicationWindow {
             }
 
             replaceEnter: Transition {
-                PropertyAnimation {
+                NumberAnimation {
                     property: "opacity"
                     from: 0
-                    to:1
+                    to: 1
                     duration: 60
                 }
             }
             replaceExit: Transition {
-                PropertyAnimation {
+                NumberAnimation { 
                     property: "opacity"
                     from: 1
-                    to:0
+                    to: 0
                     duration: 60
                 }
             }
@@ -117,18 +115,5 @@ ApplicationWindow {
         }
 
     }
-
-    Timer{
-        id:closeTimer
-    }
-
-    function delay(delayTime,cb){
-        closeTimer.interval=delayTime;
-        closeTimer.repeat=true;
-        closeTimer.triggered.connect(cb);
-        closeTimer.start()
-    }
-
-
 }
 

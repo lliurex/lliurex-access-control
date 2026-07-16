@@ -1,47 +1,56 @@
-import org.kde.plasma.core 2.1 as PlasmaCore
-import org.kde.kirigami 2.16 as Kirigami
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Dialogs 1.3
+import org.kde.plasma.core 2.1 as PlasmaCore
+import org.kde.kirigami 2.16 as Kirigami
 
 Rectangle{
     color:"transparent"
-    Text{ 
-        text:i18nd("lliurex-access-control","Restrict access by center")
-        font.family: "Quattrocento Sans Bold"
-        font.pointSize: 16
+
+    Timer{
+        id:debounceTimer
+        interval:500
+        repeat:false
+        property var callback
+        onTriggered: if (callback) callback()
     }
 
-    GridLayout{
+    ColumnLayout{
         id:generalLayout
-        rows:2
-        flow: GridLayout.TopToBottom
-        rowSpacing:10
-        width:parent.width-10
+        anchors.top:parent.top
         anchors.left:parent.left
+        anchors.right:parent.right
+        anchors.bottom:btnBox.top
+
+        anchors.leftMargin:5
+        anchors.rightMargin:15
+        anchors.bottomMargin:25
+        spacing: 10
+
+        Text{ 
+            text:i18nd("lliurex-access-control","Restrict access by center")
+            font.pointSize: 16
+        }
+
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:cdcStackBridge.showSettingsCDCMessage[0]
-            text:getMessageText(cdcStackBridge.showSettingsCDCMessage[1])
-            type:getMessageType(cdcStackBridge.showSettingsCDCMessage[2])
-            Layout.minimumWidth:490
+            visible:cdcStackBridge.showSettingsCDCMessage.show
+            text:getMessageText(cdcStackBridge.showSettingsCDCMessage.msgCode)
+            type:getMessageType(cdcStackBridge.showSettingsCDCMessage.type)
             Layout.fillWidth:true
-            Layout.topMargin: 40
+
         }
 
-        GridLayout{
+        ColumnLayout{
             id: optionsGrid
-            rows: 2
-            flow: GridLayout.TopToBottom
-            rowSpacing:5
-            Layout.topMargin: messageLabel.visible?0:50
+            spacing: 5
 
             CheckBox {
                 id:cdcControlCb
                 text:i18nd("lliurex-access-control","Activated access control by center on this computer")
-                checked:cdcStackBridge.isAccessDenyCDCEnabled
+                checked:cdcStackBridge.isCDCAccessControlEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 Keys.onReturnPressed: cdcControlCb.toggled()
@@ -51,8 +60,8 @@ Rectangle{
                 }
 
                 Layout.alignment:Qt.AlignLeft
-                Layout.bottomMargin:15
             }
+
             RowLayout {
                 Layout.fillWidth: true
                 Layout.alignment:Qt.AlignLeft
@@ -72,25 +81,25 @@ Rectangle{
                     horizontalAlignment:TextInput.AlignLeft
                     focus:true
                     implicitWidth:75
-                    onTextEdited:{
-                        if ((cdcEntry.text=="")||(cdcEntry.text.length==8)){
-                            wait(1000, function() {
-                                waitTimer.stop()
-                                cdcStackBridge.manageCDCCodeChange(cdcEntry.text)
-                            })
-                        }
+                    onTextChanged:{
+                        debounceTimer.callback= ()=>cdcStackBridge.manageCDCCodeChange(cdcEntry.text)
+                        debounceTimer.restart()
                     }
-
+                   
                 }
             }
         }
+
+        Item{
+            Layout.fillHeight:true
+        }
     }
+
     RowLayout{
         id:btnBox
         anchors.bottom: parent.bottom
         anchors.right:parent.right
-        anchors.bottomMargin:15
-        anchors.rightMargin:10
+        anchors.margins:15
         spacing:10
 
         Button {
@@ -98,14 +107,12 @@ Rectangle{
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-ok.svg"
+            icon.name:"dialog-ok"
             text:i18nd("lliurex-access-control","Apply")
-            Layout.preferredHeight:40
-            enabled:cdcStackBridge.settingsCDCChanged
+            enabled:cdcStackBridge.hasCDCChanges
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
-                applyChanges()
                 closeTimer.stop()
                 cdcStackBridge.applyCDCChanges()
             }
@@ -115,14 +122,12 @@ Rectangle{
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-cancel.svg"
+            icon.name:"dialog-cancel"
             text:i18nd("lliurex-access-control","Cancel")
-            Layout.preferredHeight: 40
-            enabled:cdcStackBridge.settingsCDCChanged
+            enabled:cdcStackBridge.hasCDCChanges
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
-                discardChanges()
                 closeTimer.stop()
                 cdcStackBridge.cancelCDCChanges()
             }
@@ -134,110 +139,42 @@ Rectangle{
         dialogTitle:"Lliurex Access Control"+" - "+i18nd("lliurex-access-control","Control by center")
         dialogVisible:cdcStackBridge.showCDCChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
-        Connections{
-            target:cdcChangesDialog
-            function onDialogApplyClicked(){
-                applyChanges()
-                
-            }
-            function onDiscardDialogClicked(){
-                discardChanges()
-            }
-            function onCancelDialogClicked(){
-                closeTimer.stop()
-            }
 
-        }
-    }
-    CustomPopup{
-        id:synchronizePopup
-     }
-
-    Timer{
-        id:delayTimer
-    }
-
-    function delay(delayTime,cb){
-        delayTimer.interval=delayTime;
-        delayTimer.repeat=true;
-        delayTimer.triggered.connect(cb);
-        delayTimer.start()
-    }
-
-    Timer{
-        id:waitTimer
-    }
-
-    function wait(delayTime,cb){
-        waitTimer.interval=delayTime;
-        waitTimer.repeat=true;
-        waitTimer.triggered.connect(cb);
-        waitTimer.start()
     }
 
 
     function getMessageText(code){
 
-        var msg="";
         switch (code){
             case 10:
-                msg=i18nd("lliurex-access-control","Changes applied successfully");
-                break;
+                return i18nd("lliurex-access-control","Changes applied successfully")
             case -50:
-                msg=i18nd("lliurex-access-control","It is not possible to deactive access control by center");
-                break;
+                return i18nd("lliurex-access-control","It is not possible to deactive access control by center")
             case -60:
-                msg=i18nd("lliurex-access-control","Unable to update the center code");
-                break;
+                return i18nd("lliurex-access-control","Unable to update the center code")
             case -90:
-                msg=i18nd("lliurex-access-control","No center code has been indicated");
-                break;
+                return i18nd("lliurex-access-control","No center code has been indicated")
             case -101:
-                 msg=i18nd("lliurex-access-control","Center code is not valid");
-                break;
-           
+                 return i18nd("lliurex-access-control","Center code is not valid")           
             default:
-                break;
+                return ""
         }
-        return msg;
-
     }
 
     function getMessageType(type){
 
-        switch (type){
-            case "Info":
-                return Kirigami.MessageType.Information
-            case "Success":
+        switch (type) {
+            case 0:
                 return Kirigami.MessageType.Positive
-            case "Error":
+            case 1:
                 return Kirigami.MessageType.Error
+            case 2:
+                return Kirigami.MessageType.Warning
+            case 3:
+                return Kirigami.MessageType.Information
+           default:
+                return Kirigami.MessageType.Information
         }
-
     } 
-
-    function applyChanges(){
-        synchronizePopup.open()
-        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
-        delayTimer.stop()
-        delay(500, function() {
-            if (mainStackBridge.closePopUp){
-                synchronizePopup.close(),
-                delayTimer.stop()
-            }
-        })
-    } 
-
-    function discardChanges(){
-        synchronizePopup.open()
-        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
-        delayTimer.stop()
-        delay(1000, function() {
-            if (mainStackBridge.closePopUp){
-                synchronizePopup.close(),
-                delayTimer.stop()
-
-            }
-        })
-    }  
+    
 } 

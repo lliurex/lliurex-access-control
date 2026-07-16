@@ -2,7 +2,6 @@
 
 from PySide2.QtCore import QObject,Signal,Slot,QThread,Property,QTimer,Qt,QModelIndex
 import os
-import threading
 import signal
 import copy
 import time
@@ -10,20 +9,23 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 class UpdateInfo(QThread):
 
-	def __init__(self,*args):
+	infoUpdated=Signal(dict)
 
-		QThread.__init__(self)
+	def __init__(self,manager,enableCDCControl,cdcInfo):
 
-		self.enabledInfo=args[0]
-		self.listInfo=args[1]
-		self.ret=[]
+		super().__init__()
+
+		self.manager=manager
+		self.enableCDCControl=enableCDCControl
+		self.cdcInfo=cdcInfo
 
 	#def __init__
 
 	def run(self,*args):
 		
 		time.sleep(1)
-		self.ret=Bridge.n4dMan.applyCDCChanges(self.enabledInfo,self.listInfo)
+		ret=self.manager.applyCDCChanges(self.enableCDCControl,self.cdcInfo)
+		self.infoUpdated.emit(ret)
 
 	#def run
 
@@ -31,14 +33,22 @@ class UpdateInfo(QThread):
 
 class Bridge(QObject):
 
+	isCDCAccessControlAllowedChanged=Signal()
+	isCDCAccessControlEnabledChanged=Signal()
+	cdcCodeChanged=Signal()
+	hasCDCChangesChanged=Signal()
+	showSettingsCDCMessageChanged=Signal()
+	showCDCChangesDialogChanged=Signal()
+
+
 	def __init__(self):
 
-		QObject.__init__(self)
+		super().__init__()
 		self.core=Core.Core.get_core()
-		Bridge.n4dMan=self.core.n4dManager
-		self._isAccessDenyCDCEnabled=False
-		self._settingsCDCChanged=False
-		self._showSettingsCDCMessage=[False,"","Success"]
+		self.n4dManager=self.core.n4dManager
+		self._isCDCAccessControlEnabled=False
+		self._hasCDCChanges=False
+		self._showSettingsCDCMessage={"show":False,"msgCode":"","type":""}
 		self._showCDCChangesDialog=False
 		self._isCDCAccessControlAllowed=False
 		self._cdcCode=""
@@ -46,180 +56,189 @@ class Bridge(QObject):
 
 	#def __init__
 
-	def getCDCConfig(self):
-
-		self.isCDCAccessControlAllowed=copy.deepcopy(Bridge.n4dMan.isCDCAccessControlAllowed)
-		self.isAccessDenyCDCEnabled=copy.deepcopy(Bridge.n4dMan.isAccessDenyCDCEnabled)
-		self.cdcInfo=copy.deepcopy(Bridge.n4dMan.cdcInfo)
-		if len(self.cdcInfo)>0:
-			self.cdcCode=self.cdcInfo["code"]
-
-	#def getCdcConfig
-
-	def _getIsCDCAccessControlAllowed(self):
+	@Property(bool,notify=isCDCAccessControlAllowedChanged)
+	def isCDCAccessControlAllowed(self):
 
 		return self._isCDCAccessControlAllowed
 
-	#def _getIsCDCAccessControlAllowed
+	#def isCDCAccessControlAllowed
 
-	def _setIsCDCAccessControlAllowed(self,isCDCAccessControlAllowed):
+	@isCDCAccessControlAllowed.setter
+	def isCDCAccessControlAllowed(self,isCDCAccessControlAllowed):
 
 		if self._isCDCAccessControlAllowed!=isCDCAccessControlAllowed:
 			self._isCDCAccessControlAllowed=isCDCAccessControlAllowed
-			self.on_isCDCAccessControlAllowed.emit()
+			self.isCDCAccessControlAllowedChanged.emit()
 
-	#def _setIsCDCAccessControlAllowed):
+	#def isCDCAccessControlAllowed)
 
-	def _getIsAccessDenyCDCEnabled(self):
+	@Property(bool,notify=isCDCAccessControlEnabledChanged)
+	def isCDCAccessControlEnabled(self):
 
-		return self._isAccessDenyCDCEnabled
+		return self._isCDCAccessControlEnabled
 
-	#def _getIsAccessDenyCDCEnabled
+	#def isCDCAccessControlEnabled
 
-	def _setIsAccessDenyCDCEnabled(self,isAccessDenyCDCEnabled):
+	@isCDCAccessControlEnabled.setter
+	def isCDCAccessControlEnabled(self,isCDCAccessControlEnabled):
 
-		if self._isAccessDenyCDCEnabled!=isAccessDenyCDCEnabled:
-			self._isAccessDenyCDCEnabled=isAccessDenyCDCEnabled
-			self.on_isAccessDenyCDCEnabled.emit()
+		if self._isCDCAccessControlEnabled!=isCDCAccessControlEnabled:
+			self._isCDCAccessControlEnabled=isCDCAccessControlEnabled
+			self.isCDCAccessControlEnabledChanged.emit()
 
-	#def _setIsAccessDenyCDCEnabled:
+	#def isCDCAccessControlEnabled:
 
-	def _getCdcCode(self):
+	@Property(str,notify=cdcCodeChanged)
+	def cdcCode(self):
 
 		return self._cdcCode
 
-	#def _getCdcCode
+	#def cdcCode
 
-	def _setCdcCode(self,cdcCode):
+	@cdcCode.setter
+	def cdcCode(self,cdcCode):
 
 		if self._cdcCode!=cdcCode:
 			self._cdcCode=cdcCode
-			self.on_cdcCode.emit()
+			self.cdcCodeChanged.emit()
 
-	#def _setCdcCode
+	#def cdcCode
 
-	def _getSettingsCDCChanged(self):
+	@Property(bool, notify=hasCDCChangesChanged)
+	def hasCDCChanges(self):
 
-		return self._settingsCDCChanged
+		return self._hasCDCChanges
 
-	#def _getSettingsCDCChanged
+	#def hasCDCChanges
 
-	def _setSettingsCDCChanged(self,settingsCDCChanged):
+	@hasCDCChanges.setter
+	def hasCDCChanges(self,hasCDCChanges):
 
-		if self._settingsCDCChanged!=settingsCDCChanged:
-			self._settingsCDCChanged=settingsCDCChanged
-			self.on_settingsCDCChanged.emit()
+		if self._hasCDCChanges!=hasCDCChanges:
+			self._hasCDCChanges=hasCDCChanges
+			self.hasCDCChangesChanged.emit()
 
-	#def _setSettingsCDCChanged
+	#def hasCDCChanges
 
-	def _getShowSettingsCDCMessage(self):
+	@Property('QVariant',notify=showSettingsCDCMessageChanged)
+	def showSettingsCDCMessage(self):
 
 		return self._showSettingsCDCMessage
 
-	#def _getShowSettingsCDCMessage
+	#def showSettingsCDCMessage
 
-	def _setShowSettingsCDCMessage(self,showSettingsCDCMessage):
+	@showSettingsCDCMessage.setter
+	def showSettingsCDCMessage(self,showSettingsCDCMessage):
 
 		if self._showSettingsCDCMessage!=showSettingsCDCMessage:
 			self._showSettingsCDCMessage=showSettingsCDCMessage
-			self.on_showSettingsCDCMessage.emit()
+			self.showSettingsCDCMessageChanged.emit()
 
-	#def _setShowSettingsCDCMessage
+	#def showSettingsCDCMessage
 
-	def _getShowCDCChangesDialog(self):
+	@Property(bool,notify=showCDCChangesDialogChanged)
+	def showCDCChangesDialog(self):
 
 		return self._showCDCChangesDialog
 
-	#def _getShowCDCChangesDialog	
+	#def showCDCChangesDialog	
 
-	def _setShowCDCChangesDialog(self,showCDCChangesDialog):
+	@showCDCChangesDialog.setter
+	def showCDCChangesDialog(self,showCDCChangesDialog):
 		
 		if self._showCDCChangesDialog!=showCDCChangesDialog:
 			self._showCDCChangesDialog=showCDCChangesDialog		
-			self.on_showCDCChangesDialog.emit()
+			self.showCDCChangesDialogChanged.emit()
 
-	#def _setShowCDCChangesDialog
+	#def showCDCChangesDialog
+
+	def getCDCConfig(self):
+
+		self.isCDCAccessControlAllowed=self.n4dManager.isCDCAccessControlAllowed
+		self.isCDCAccessControlEnabled=self.n4dManager.isCDCAccessControlEnabled
+		self.cdcInfo=copy.deepcopy(self.n4dManager.cdcInfo)
+		self.cdcCode=self.cdcInfo.get("code","")
+
+	#def getCdcConfig
+
 
 	@Slot(bool)
 	def manageCDCAccessControl(self,value):
 
-		self.showSettingsCDCMessage=[False,"","Success"]
+		self.showSettingsCDCMessage={"show":False,"msgCode":"","type":""}
 		
-		if value!=self.isAccessDenyCDCEnabled:
-			self.isAccessDenyCDCEnabled=value
+		if value!=self.isCDCAccessControlEnabled:
+			self.isCDCAccessControlEnabled=value
 			self.cdcInfo["accessControlEnabled"]=value
-			if self.isAccessDenyCDCEnabled!=Bridge.n4dMan.isAccessDenyCDCEnabled:
-				self.settingsCDCChanged=True
-			else:
-				self.settingsCDCChanged=False
+			self.hasCDCChanges=(self.isCDCAccessControlEnabled!=self.n4dManager.isCDCAccessControlEnabled)
 					
 	#def manageCDCAccessControl
 
 	@Slot(str)
 	def manageCDCCodeChange(self,newCode):
 
-		self.showSettingsCDCMessage=[False,"","Success"]
-		self.correctCode=Bridge.n4dMan.isCorrectCode(newCode)
+		self.showSettingsCDCMessage={"show":False,"msgCode":"","type":""}
+		self.correctCode=self.n4dManager.isCorrectCode(newCode)
+
 		if self.correctCode:
 			if self.cdcCode!=newCode:
 				self.cdcCode=newCode
 				self.cdcInfo["code"]=newCode
-				if self.cdcCode!=Bridge.n4dMan.cdcInfo["code"]:
-					self.settingsCDCChanged=True
-				else:
-					self.settingsCDCChanged=False
-
+				self.hasCDCChanges=(self.cdcCode!=self.n4dManager.cdcInfo.get("code"))
+			
 			if self.cdcCode=="" :
-				self.isAccessDenyCDCEnabled=False
+				self.isCDCAccessControlEnabled=False
 		else:
-			self.showSettingsCDCMessage=[True,Bridge.n4dMan.CDC_CODE_NOT_VALID,"Error"]
+			self.showSettingsCDCMessage={"show":True,"msgCode":self.n4dManager.CDC_CODE_NOT_VALID,"type":self.n4dManager.KIRIGAMI_MSG_ERROR}
 
 	#def manageCDCCodeChange
 
 	@Slot()
 	def applyCDCChanges(self):
 
-		self.showSettingsCDCMessage=[False,"","Success"]
-		if self.correctCode or not self.isAccessDenyCDCEnabled:
+		self.showSettingsCDCMessage={"show":False,"msgCode":"","type":""}
+
+		if self.correctCode or not self.isCDCAccessControlEnabled:
 			self.correctCode=True
-			self.core.mainStack.closePopUp=False
+			self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.SAVE_DATA_MSG}
 			self.showCDCChangesDialog=False
-			self.updateCDCInfo=UpdateInfo(self.isAccessDenyCDCEnabled,self.cdcInfo)
-			self.updateCDCInfo.start()
-			self.updateCDCInfo.finished.connect(self._applyCDCChanges)
+			self.updateCDCInfoT=UpdateInfo(self.n4dManager,self.isCDCAccessControlEnabled,self.cdcInfo)
+			self.updateCDCInfoT.start()
+			self.updateCDCInfoT.infoUpdated.connect(self._applyCDCChanges)
+			self.updateCDCInfoT.finished.connect(self.updateCDCInfoT.deleteLater)
 		else:
-			self.showSettingsCDCMessage=[True,Bridge.n4dMan.CDC_CODE_NOT_VALID,"Error"]
+			self.showSettingsCDCMessage={"show":True,"msgCode":self.n4dManager.CDC_CODE_NOT_VALID,"type":self.n4dManager.KIRIGAMI_MSG_ERROR}
 	
 	#def applyCdcChanges
 
-	def _applyCDCChanges(self):
+	@Slot(dict)
+	def _applyCDCChanges(self,ret):
 
-		if self.updateCDCInfo.ret[0]:
+		if ret.get("status"):
 			self._updateCDCConfig()
-			time.sleep(1)
-			self.showSettingsCDCMessage=[True,self.updateCDCInfo.ret[1],"Success"]
 			self.core.mainStack.closeGui=True
 		else:
-			self.showSettingsCDCMessage=[True,self.updateCDCInfo.ret[1],"Error"]
 			self.core.mainStack.closeGui=False
 			self.core.mainStack.moveToStack=""
 
+		self.showSettingsCDCMessage={"show":True,"msgCode":ret.get("code"),"type":ret.get("type")}
+
 		if self.core.mainStack.moveToStack!="":
 			self.core.mainStack.currentOptionsStack=self.core.mainStack.moveToStack
-			self.showSettingsCDCMessage=[False,"","Info"]
+			self.showSettingsCDCMessage={"show":False,"msgCode":"","type":""}
 			self.core.mainStack.moveToStack=""
 
-		self.settingsCDCChanged=False
-		self.core.mainStack.closePopUp=True
+		self.hasCDCChanges=False
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 
 	#def _applyCDCChanges
 
 	@Slot()
 	def cancelCDCChanges(self):
 
-		self.showSettingsCDCMessage=[False,"","Success"]
+		self.showSettingsCDCMessage={"show":False,"msgCode":"","type":""}
 		self.correctCode=True
-		self.core.mainStack.closePopUp=False
+		self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.RESTORE_DATA_MSG}
 		self.showCDCChangesDialog=False
 		self._cancelCDCChanges()
 
@@ -228,8 +247,8 @@ class Bridge(QObject):
 	def _cancelCDCChanges(self):
 
 		self._updateCDCConfig()
-		self.settingsCDCChanged=False
-		self.core.mainStack.closePopUp=True
+		self.hasCDCChanges=False
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		if self.core.mainStack.moveToStack!="":
 			self.core.mainStack.currentOptionsStack=self.core.mainStack.moveToStack
 		self.core.mainStack.moveToStack=""
@@ -240,30 +259,13 @@ class Bridge(QObject):
 
 	def _updateCDCConfig(self):
 
-		self.isAccessDenyCDCEnabled=copy.deepcopy(Bridge.n4dMan.isAccessDenyCDCEnabled)
-		self.cdcInfo=copy.deepcopy(Bridge.n4dMan.cdcInfo)
+		self.isCDCAccessControlEnabled=copy.deepcopy(self.n4dManager.isCDCAccessControlEnabled)
+		self.cdcInfo=copy.deepcopy(self.n4dManager.cdcInfo)
 		self.cdcCode=""
-		self.cdcCode=self.cdcInfo["code"]
+		self.cdcCode=self.cdcInfo.get("code")
 	
 	#def _updateCDCConfig
 	
-	on_isCDCAccessControlAllowed=Signal()
-	isCDCAccessControlAllowed=Property(bool,_getIsCDCAccessControlAllowed,_setIsCDCAccessControlAllowed,notify=on_isCDCAccessControlAllowed)
-
-	on_isAccessDenyCDCEnabled=Signal()
-	isAccessDenyCDCEnabled=Property(bool,_getIsAccessDenyCDCEnabled,_setIsAccessDenyCDCEnabled,notify=on_isAccessDenyCDCEnabled)
-	
-	on_cdcCode=Signal()
-	cdcCode=Property(str,_getCdcCode,_setCdcCode,notify=on_cdcCode)
-	
-	on_settingsCDCChanged=Signal()
-	settingsCDCChanged=Property(bool,_getSettingsCDCChanged,_setSettingsCDCChanged, notify=on_settingsCDCChanged)
-
-	on_showSettingsCDCMessage=Signal()
-	showSettingsCDCMessage=Property('QVariantList',_getShowSettingsCDCMessage,_setShowSettingsCDCMessage,notify=on_showSettingsCDCMessage)
-	
-	on_showCDCChangesDialog=Signal()
-	showCDCChangesDialog=Property(bool,_getShowCDCChangesDialog,_setShowCDCChangesDialog, notify=on_showCDCChangesDialog)
 
 #class Bridge
 

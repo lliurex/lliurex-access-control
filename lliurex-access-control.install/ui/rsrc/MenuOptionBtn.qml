@@ -4,56 +4,55 @@ import QtQuick.Layouts 1.15
 
 
 Item {
-	id:menuItem
-	width: 165
-	height: 35
+    id: menuItem
+    Layout.preferredWidth: 175
+    Layout.preferredHeight: 35
 
-	property alias optionIcon:menuOptionIcon.source
-	property alias optionText:menuOptionText.text
-	property alias optionEnabled:menuOption.enabled
-	signal menuOptionClicked()
+    property string optionIcon: ""
+    property alias optionText: control.text
+    property alias optionEnabled:control.enabled
 
-	Rectangle{
-		id:menuOption
-		width:165
-		height:35
-		color:"transparent"
-		border.color:"transparent"
-		enabled:optionEnabled
+    signal menuOptionClicked()
 
-		Row{
-			spacing:5
-			anchors.verticalCenter:menuOption.verticalCenter
-			leftPadding:5
+    ItemDelegate {
+        id: control
+        anchors.fill: parent
+        text: menuItem.optionText
 
-			Image{
-				id:menuOptionIcon
-				source:optionIcon
-			}
+        contentItem: RowLayout {
+            spacing: 5
+            anchors.fill: parent
+            anchors.leftMargin: 8
 
-			Text {
-				id:menuOptionText
-				text:optionText
-				anchors.verticalCenter:menuOptionIcon.verticalCenter
-			}  
+            Image {
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
+                Layout.alignment: Qt.AlignVCenter
+
+                source: menuItem.optionIcon ? "file:///usr/share/icons/breeze/" + menuItem.optionIcon : ""
+
+                sourceSize.width: 24
+                sourceSize.height: 24
+
+                fillMode: Image.PreserveAspectFit
+                visible: menuItem.optionIcon !== ""
+            }
+
+            Text {
+                text: control.text
+                font: control.font
+                color: !control.enabled ? "grey":
+                       control.down?"white":"black"
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+                Layout.fillWidth: true
+            }
+        }
+
+        background: Rectangle {
+            color: control.hovered ? "#add8e6" : "transparent"
+        }
+
+        onClicked: menuItem.menuOptionClicked()
     }
-
-    MouseArea {
-    	id: mouseAreaOption
-      anchors.fill: parent
-       hoverEnabled:true
-
-        onEntered: {
-          menuOption.color="#add8e6"
-        }
-        onExited: {
-          menuOption.color="transparent"
-        }
-        onClicked: {
-        	menuOptionClicked()
-        }
-    }   
-  }
 }
-
-
