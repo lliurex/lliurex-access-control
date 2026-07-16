@@ -48,7 +48,7 @@ class AccessControlCliManager(object):
 			except Exception as e:
 				msg="Authentication failed. Unable to execute action"
 				self._writeLog(msg)
-				print(f"   [Access-Control]: {msg}")
+				print(f'   [Access-Control]: {msg}')
 				sys.exit(1)
 		else:
 			masterKey=n4d.client.Key.master_key()
@@ -62,7 +62,7 @@ class AccessControlCliManager(object):
 
 	def showCurrentConfig(self,optionInfo):
 
-		self._writeLog(f"- Action: get information about {optionInfo}")
+		self._writeLog(f'- Action: get information about {optionInfo}')
 		self.createClient()
 
 		if optionInfo=="all" or optionInfo=="groups":
