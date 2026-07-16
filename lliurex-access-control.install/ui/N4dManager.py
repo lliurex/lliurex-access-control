@@ -73,7 +73,7 @@ class N4dManager:
 		self.writeLog("- Groups with restricted access: ")
 		
 		for groupName,groupData in self.groupsInfo.items():
-			self.writeLog(f"  - {groupName}: locked access {groupData.get("isLocked",False)}")
+			self.writeLog(f"  - {groupName}: locked access {groupData.get('isLocked',False)}")
 		
 		self.getGroupsConfig()
 		
@@ -90,7 +90,7 @@ class N4dManager:
 		
 		if self.usersInfo:
 			for userName,userData in self.usersInfo.items():
-				self.writeLog(f"  - {userName}: locked access {userData.get("isLocked",False)}")
+				self.writeLog(f"  - {userName}: locked access {userData.get('isLocked',False)}")
 		else:
 			self.writeLog("  - There is no user list")
 		
@@ -212,7 +212,7 @@ class N4dManager:
 			}
 			
 		except n4d.client.CallFailedError as e:
-			self.writeLog("- Error applying changes: %s" % e.code)
+			self.writeLog(f"- Error applying changes: {e.code}")
 			return {
 				"status": False,
 				"code": e.code,
@@ -261,7 +261,7 @@ class N4dManager:
 			}
 
 		except n4d.client.CallFailedError as e:
-			self.writeLog("- Error applying changes: %s"%e.code)
+			self.writeLog(f"- Error applying changes: {e.code}")
 			return {
 				"status":False,
 				"code":e.code,
@@ -356,7 +356,7 @@ class N4dManager:
 
 		updateCDCInfo = (newCode != currentCode) and (newCode != "")
 
-		if not cdcAccessControl and new_code == "":
+		if not cdcAccessControl and newCode == "":
 			updateCDCInfo = True
 			cdcInfo = {"code": ""} 
 
@@ -382,7 +382,7 @@ class N4dManager:
 					
 			if disableControl:
 				self.writeLog("- Action: disable access control by CDC")
-				self.client.AccessControlManager.disable_access_denied_cdc()
+				self.client.AccessControlManager.disable_access_denied_cdc(True)
 				self.writeLog("- Disable access control by CDC: Changes apply successful")
 				
 			self.loadCDCConfig("End")
@@ -394,7 +394,7 @@ class N4dManager:
 			}
 			
 		except n4d.client.CallFailedError as e:
-			self.writeLog("- Error applying changes: %s" % e.code)
+			self.writeLog(f"- Error applying changes: {e.code}")
 			return {
 				"status":False, 
 				"code":e.code,

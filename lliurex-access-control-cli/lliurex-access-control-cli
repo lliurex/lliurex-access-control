@@ -28,7 +28,7 @@ if __name__ == '__main__':
 			"    disablecontroluser:                          Disable access control by user\n"
 			"    enablecontroluser:                           Activate access control by users if there is a previous configuration with locked users\n"
 			"    removeuserfromlist <USERNAME> <USERNAME>...: Removed the indicated usernames from the user list\n"
-			"    removeuserlist: Remove the user list\n\n"
+			"    removeuserlist:                              Remove the user list\n\n"
 			
 			"Flags:\n"
 			"    -h, --help                                   Show help\n"

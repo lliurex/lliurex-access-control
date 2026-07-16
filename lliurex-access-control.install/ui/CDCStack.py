@@ -127,6 +127,7 @@ class Bridge(QObject):
 
 	#def showSettingsCDCMessage
 
+	@showSettingsCDCMessage.setter
 	def showSettingsCDCMessage(self,showSettingsCDCMessage):
 
 		if self._showSettingsCDCMessage!=showSettingsCDCMessage:
@@ -178,11 +179,12 @@ class Bridge(QObject):
 
 		self.showSettingsCDCMessage={"show":False,"msgCode":"","type":""}
 		self.correctCode=self.n4dManager.isCorrectCode(newCode)
+
 		if self.correctCode:
 			if self.cdcCode!=newCode:
 				self.cdcCode=newCode
 				self.cdcInfo["code"]=newCode
-				hasCDCChanges=(self.cdcCode!=self.n4dManager.cdcInfo.get("code"))
+				self.hasCDCChanges=(self.cdcCode!=self.n4dManager.cdcInfo.get("code"))
 			
 			if self.cdcCode=="" :
 				self.isCDCAccessControlEnabled=False
@@ -198,12 +200,12 @@ class Bridge(QObject):
 
 		if self.correctCode or not self.isCDCAccessControlEnabled:
 			self.correctCode=True
-			self.core.mainStack.closePopUp=False
+			self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.SAVE_DATA_MSG}
 			self.showCDCChangesDialog=False
 			self.updateCDCInfoT=UpdateInfo(self.n4dManager,self.isCDCAccessControlEnabled,self.cdcInfo)
 			self.updateCDCInfoT.start()
 			self.updateCDCInfoT.infoUpdated.connect(self._applyCDCChanges)
-			self.updateCDCInfo.finished.connect(self.updateCDCInfoT.deleteLater)
+			self.updateCDCInfoT.finished.connect(self.updateCDCInfoT.deleteLater)
 		else:
 			self.showSettingsCDCMessage={"show":True,"msgCode":self.n4dManager.CDC_CODE_NOT_VALID,"type":self.n4dManager.KIRIGAMI_MSG_ERROR}
 	
@@ -214,7 +216,6 @@ class Bridge(QObject):
 
 		if ret.get("status"):
 			self._updateCDCConfig()
-			time.sleep(1)
 			self.core.mainStack.closeGui=True
 		else:
 			self.core.mainStack.closeGui=False
@@ -228,7 +229,7 @@ class Bridge(QObject):
 			self.core.mainStack.moveToStack=""
 
 		self.hasCDCChanges=False
-		self.core.mainStack.closePopUp=True
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 
 	#def _applyCDCChanges
 
@@ -237,7 +238,7 @@ class Bridge(QObject):
 
 		self.showSettingsCDCMessage={"show":False,"msgCode":"","type":""}
 		self.correctCode=True
-		self.core.mainStack.closePopUp=False
+		self.core.mainStack.showPopUp={"show":True,"msgCode":self.core.mainStack.RESTORE_DATA_MSG}
 		self.showCDCChangesDialog=False
 		self._cancelCDCChanges()
 
@@ -247,7 +248,7 @@ class Bridge(QObject):
 
 		self._updateCDCConfig()
 		self.hasCDCChanges=False
-		self.core.mainStack.closePopUp=True
+		self.core.mainStack.showPopUp={"show":False,"msgCode":""}
 		if self.core.mainStack.moveToStack!="":
 			self.core.mainStack.currentOptionsStack=self.core.mainStack.moveToStack
 		self.core.mainStack.moveToStack=""

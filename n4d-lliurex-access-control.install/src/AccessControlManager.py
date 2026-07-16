@@ -315,14 +315,15 @@ class AccessControlManager:
 		cdc_info=self._read_cdc_info()
 
 		clean_code=current_code.strip() if current_code else ""
-
+		
 		if clean_code:
 			cdc_info["accessControlEnabled"]=True
 			cdc_info["code"]=clean_code
 
 		else:
 			cdc_info["accessControlEnabled"]=False
-			cdc_info["code"]=""
+			if "code" not in cdc_info:
+				cdc_info["code"]=""
 				
 		return n4d.responses.build_successful_call_response(cdc_info)
 
@@ -338,7 +339,7 @@ class AccessControlManager:
 				return self.disable_access_denied_cdc()
 			
 			with open(self.cdc_info,'w',encoding='utf-8') as fd:
-				json.dump(cdcInfo,fd)
+				json.dump(cdc_info,fd)
 
 			if cdc_info.get("accessControlEnabled",False):
 				code=cdc_info.get("code","")
@@ -359,7 +360,7 @@ class AccessControlManager:
 			try:
 				cdc_info=self._read_cdc_info()
 				if cdc_info.get("accessControlEnabled",False):
-					cdf_info["accessControlEnabled"]=False
+					cdc_info["accessControlEnabled"]=False
 					with open(self.cdc_info,'w',encoding='utf-8') as fd:
 						json.dump(cdc_info,fd)
 			except Exception as e:
@@ -374,9 +375,13 @@ class AccessControlManager:
 
 		cdc_info={}
 
-		if os.path.exists(self.cdc_info):
-			with open(self.cdc_info,'r') as fd:
-				cdc_info=json.load(fd)
+		try:
+			if os.path.exists(self.cdc_info):
+				with open(self.cdc_info,'r') as fd:
+					cdc_info=json.load(fd)
+		except Exception as e:
+			print(f"AccessControlManager._read_cdc_info.Error:{e}")
+			pass
 
 		return cdc_info
 
@@ -440,11 +445,11 @@ class AccessControlManager:
 					with open(self.sssd_config_path,'w',encoding='utf-8') as fd:
 						configFile.write(fd)
 
-			subprocess.run(['systemctl','restart','ssd'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+			subprocess.run(['systemctl','restart','sssd'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 			return n4d.responses.build_successful_call_response()
 
 		except Exception as e:
-			print(f"AccessControlManager._write_sssd_conf_file. Error: {ẽ}")
+			print(f"AccessControlManager._write_sssd_conf_file. Error: {e}")
 			return n4d.responses.build_failed_call_response(AccessControlManager.SET_CDC_ERROR)
 		
 	#def _write_sssd_conf_file 

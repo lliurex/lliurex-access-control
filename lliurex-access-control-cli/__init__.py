@@ -395,7 +395,7 @@ class AccessControlCliManager(object):
 			self._getCDCInfo("End")
 			return 0
 		except n4d.client.CallFailedError as e:
-			self._writeLog("- Error applying changes: %s"%e.code)
+			self._writeLog(f"- Error applying changes: {e.code}")
 			print('   [Access-Control]: Error. Unable to activate center access control')
 			return 1
 	
@@ -421,7 +421,7 @@ class AccessControlCliManager(object):
 		self.groupsInfo=self.n4dClient.AccessControlManager.get_groups_info(initLoad)
 		self._writeLog("- Groups with restricted access: ")
 		for group,groupData in self.groupsInfo.items():
-			self._writeLog(f"  - {group}: locked access {groupData.get("isLocked")}")
+			self._writeLog(f"  - {group}: locked access {groupData.get('isLocked')}")
 
 	#def _getGroupInfo
 
@@ -434,7 +434,7 @@ class AccessControlCliManager(object):
 		self._writeLog("- Users with restricted access: ")
 		if len(self.usersInfo)>0:
 			for user,userData in self.usersInfo.items():
-				self._writeLog(f"  - {user}: locked access {userData.get("isLocked")}")
+				self._writeLog(f"  - {user}: locked access {userData.get('isLocked')}")
 		else:
 			self._writeLog("  - There is no user list")
 	
@@ -449,7 +449,7 @@ class AccessControlCliManager(object):
 		self._writeLog(f"- Access Control by CDC enabled: {self.isCDCAccessControlEnabled}")
 		self.cdcInfo=self.n4dClient.AccessControlManager.get_cdc_info()
 		if self.cdcInfo["code"]:
-			self.cdcCode=self.cdcInfo.grt("code")
+			self.cdcCode=self.cdcInfo.get("code")
 			currentCode=self.cdcCode
 		else:
 			currentCode=None
@@ -462,13 +462,13 @@ class AccessControlCliManager(object):
 		correctGroups=self._checkCorrectGroups(groupsSelected)
 
 		if not correctGroups:
-			print('   [Access-Control]: The groups indicates to %s their acces are not correct. See currentconfig groups to get correct groups'%action)
+			print(f'   [Access-Control]: The groups indicates to {action} their acces are not correct. See currentconfig groups to get correct groups')
 			return 1
 
 		currentStatusChanged=self._checkCurrentConfiguration('groups',groupsSelected,action)
 		
 		if not currentStatusChanged:
-			print('   [Access-Control]: The indicated groups are already %sed. Nothing to do'%action)
+			print(f'   [Access-Control]: The indicated groups are already {action}sed. Nothing to do')
 			return 0
 
 		if action=="lock" and not self.isGroupAccessControlEnabled:
@@ -520,7 +520,7 @@ class AccessControlCliManager(object):
 
 		if not correctUsers:
 			if action=="unlock":
-				print('   [Access-Control]: The users indicates to %s their acces are not correct. See currentconfig users to get correct users'%action)
+				print(f'   [Access-Control]: The users indicates to {action} their acces are not correct. See currentconfig users to get correct users')
 				return 1
 			
 			ret=self._checkIfUserIsCurrentUser(usersSelected)
@@ -559,7 +559,7 @@ class AccessControlCliManager(object):
 		currentStatusChanged=self._checkCurrentConfiguration('users',usersSelected,action)
 		
 		if not currentStatusChanged:
-			print('   [Access-Control]: The indicated users are already %sed. Nothing to do'%action)
+			print(f'   [Access-Control]: The indicated users are already {action}ed. Nothing to do')
 			return 0
 
 		if action=="lock" and not self.isUserAccessControlEnabled:

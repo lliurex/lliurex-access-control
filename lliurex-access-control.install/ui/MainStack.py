@@ -186,7 +186,7 @@ class Bridge(QObject):
 	@Slot()
 	def openHelp(self):
 
-		helpUrl='xdg-open https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Lliurex-Access-Control'
+		helpUrl='https://wiki.edu.gva.es/lliurex/tiki-index.php?page=Lliurex-Access-Control'
 		QDesktopServices.openUrl(QUrl(helpUrl))
 
 	#def openHelp
