@@ -1,10 +1,10 @@
 import QtQuick
 import QtQuick.Controls
-import QtQml.Models
-import org.kde.plasma.components as Components
+import QtQuick.Layouts
+import org.kde.kirigami as Kirigami
 
 
-Components.ItemDelegate{
+ItemDelegate{
 
     id: listUserItem
     property string userId
@@ -12,33 +12,50 @@ Components.ItemDelegate{
 
     enabled:true
     height:45
+    width: listUserItem.ListView.view?listUserItem.ListView.view.width -10 : 0
+    hoverEnabled:true
 
-    Item{
-        id: menuItem
-        height:visible?30:0
-        width:parent.width-removeUserBtn.width
-	anchors.verticalCenter:parent.verticalCenter
+    leftPadding:15
+    rightPadding:15
 
-        MouseArea {
-            id: mouseAreaOption
-            anchors.fill: parent
-            hoverEnabled:true
-            propagateComposedEvents:true
-
-            onEntered: {
-                listUser.currentIndex=index
+    onHoveredChanged:{
+        if (listUserItem.ListView.view){
+            if (hovered){
+                listUserItem.ListView.view.currentIndex=index
             }
-		
+        }else if (!hovered && !optionsMenu.opened && listUserItem.ListView.view===index){
+            listUserItem.ListView.view.currentIndex=-1
         }
+    }
+
+    background:Rectangle {
+        x:5
+        y:5
+        width:parent.width-10
+        height:parent.height-5 
+        color: (listUserItem.hovered) 
+               ?Qt.alpha(Kirigami.Theme.highlightColor,0.15)
+               :"transparent"
+        radius:6
+        border.width:1
+        border.color:(listUserItem.hovered)
+                      ?Kirigami.Theme.highlightColor
+                      :"transparent"
+
+    }
+    
+    contentItem:RowLayout {
+
+        spacing: 10
+
+
         CheckBox {
             id:userCheck
             checked:isLocked
             onToggled:{
-                userStackBridge.manageUserChecked([userId,checked])
+                userStackBridge.manageUserChecked({"userId":userId,"isLocked":checked})
             }
-            anchors.left:parent.left
-            anchors.leftMargin:5
-            anchors.verticalCenter:parent.verticalCenter
+
             ToolTip.delay: 1000
             ToolTip.timeout: 3000
             ToolTip.visible: hovered
@@ -54,19 +71,18 @@ Components.ItemDelegate{
         Text{
             id: userName
             text: userId
-            width: parent.width-removeUserBtn.width-20
-            clip: true
-            anchors.left:userCheck.right
-            anchors.leftMargin:5
-            anchors.verticalCenter:parent.verticalCenter
+            Layout.fillWidth: true
+            Layout.preferredWidth:0 
+            elide: Text.ElideMiddle
+            Layout.alignment: Qt.AlignVCenter
         }
+
         Button{
             id:removeUserBtn
             display:AbstractButton.IconOnly
-            icon.name:"delete.svg"
-            anchors.left:userName.right
-	    anchors.verticalCenter:parent.verticalCenter
-            visible:listUserItem.ListView.isCurrentItem
+            icon.name:"delete"
+            visible: listUserItem.hovered
+            Layout.preferredWidth: visible ? implicitWidth : 0
             onClicked:{
                 userStackBridge.removeUser(index)
                 entryRow.visible=false

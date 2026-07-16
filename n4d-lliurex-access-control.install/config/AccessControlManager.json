@@ -5,49 +5,41 @@
 		"class": "AccessControlManager"
 	},
 	"METHODS": {
-		"isAccessDenyGroupEnabled": {
+		"is_access_denied_group_enabled": {
 			"allowed_groups": [
 				"anonymous"
 			]
 		},
-		"getGroupsInfo": {
+		"get_groups_info": {
 			"allowed_groups": [
 				"anonymous"
 			]
 		},
-		"setGroupsInfo": {
+		"set_groups_info": {
 			"allowed_groups": [
 				"sudo",
 				"admins",
 				"teachers"
 			]
 		},
-		"disableAccessDenyGroup": {
+		"disable_access_denied_group": {
 			"allowed_groups": [
 				"sudo",
 				"admins",
 				"teachers"
 			]
 		},
-		"isAccessDenyUserEnabled": {
+		"is_access_denied_user_enabled": {
 			"allowed_groups": [
 				"anonymous"
 			]
 		},
-		"getUsersInfo": {
+		"get_users_info": {
 			"allowed_groups": [
 				"anonymous"
 			]
 		},
-		"setUsersInfo": {
-			"allowed_groups": [
-				"sudo",
-				"admins",
-				"teachers"
-			]
-
-		},
-		"disableAccessDenyUser": {
+		"set_users_info": {
 			"allowed_groups": [
 				"sudo",
 				"admins",
@@ -55,29 +47,37 @@
 			]
 
 		},
-		"isCDCAccessControlAllowed":{
+		"disable_access_denied_user": {
+			"allowed_groups": [
+				"sudo",
+				"admins",
+				"teachers"
+			]
+
+		},
+		"is_cdc_access_control_allowed":{
 			"allowed_groups":[
 				"anonymous"
 			]
 		},
-		"isAccessDenyCDCEnabled":{
+		"is_access_denied_cdc_enabled":{
 			"allowed_groups":[
 				"anonymous"
 			]
 		},
-		"getCDCInfo":{
+		"get_cdc_info":{
 			"allowed_groups":[
 				"anonymous"
 			]
 		},
-		"setCDCInfo":{
+		"set_cdc_info":{
 			"allowed_groups":[
 				"sudo",
 				"admins",
 				"teachers"
 			]
 		},
-		"disableAccessDenyCDC": {
+		"disable_access_denied_cdc": {
 			"allowed_groups": [
 				"sudo",
 				"admins",

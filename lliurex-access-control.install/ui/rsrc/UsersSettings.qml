@@ -1,132 +1,124 @@
-import org.kde.plasma.core as PlasmaCore
-import org.kde.kirigami as Kirigami
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
 
 
 Rectangle{
     color:"transparent"
-    Text{ 
-        text:i18nd("lliurex-access-control","Restrict access by user")
-        font.family: "Quattrocento Sans Bold"
-        font.pointSize: 16
-    }
-
-    GridLayout{
+    
+    ColumnLayout{
         id:generalLayout
-        rows:2
-        flow: GridLayout.TopToBottom
-        rowSpacing:10
-        width:parent.width
-        height:parent.height-90
+        anchors.top:parent.top
         anchors.left:parent.left
+        anchors.right:parent.right
+        anchors.bottom:btnBox.top
+
+        anchors.leftMargin:5
+        anchors.rightMargin:15
+        anchors.bottomMargin:25
+        spacing: 10
+
+        Text{ 
+            text:i18nd("lliurex-access-control","Restrict access by user")
+            font.pointSize: 16
+        }
 
         Kirigami.InlineMessage {
             id: messageLabel
-            visible:userStackBridge.showSettingsUserMessage[0]
-            text:getMessageText(userStackBridge.showSettingsUserMessage[1])
-            type:getMessageType(userStackBridge.showSettingsUserMessage[2])
-            Layout.minimumWidth:490
+            visible:userStackBridge.showSettingsUserMessage.show
+            text:getMessageText(userStackBridge.showSettingsUserMessage.msgCode)
+            type:getMessageType(userStackBridge.showSettingsUserMessage.type)
             Layout.fillWidth:true
-            Layout.topMargin: 40
-            Layout.rightMargin:10
         }
 
-        GridLayout{
+        ColumnLayout {
             id: optionsGrid
-            rows: 4
-            flow: GridLayout.TopToBottom
-            rowSpacing:5
-            Layout.topMargin: messageLabel.visible?0:50
+            spacing: 5
 
             CheckBox {
-                id:userControlCb
-                text:i18nd("lliurex-access-control","Activated access control by user on this computer")
-                checked:userStackBridge.isAccessDenyUserEnabled
+                id: userControlCb
+                text: i18nd("lliurex-access-control", "Activated access control by user on this computer")
+                checked: userStackBridge.isUserAccessControlEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
-                onToggled:{
-                   userStackBridge.manageUserAccessControl(checked)
-                }
+                Layout.alignment: Qt.AlignLeft
 
-                Layout.alignment:Qt.AlignLeft
-                Layout.bottomMargin:15
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.alignment:Qt.AlignCenter
-                Layout.rightMargin:addUserBtn.width+25
-
-                Text{
-                    id:usersList
-                    text:i18nd("lliurex-access-control","Users with restricted access:")
-                    font.pointSize:10
-                    width:userEntry.width
+                onToggled: {
+                    userStackBridge.manageUserAccessControl(checked)
                 }
             }
+
+            Text {
+                id: usersList
+                text: i18nd("lliurex-access-control", "Users with restricted access:")
+                font.pointSize: 10
+                Layout.alignment: Qt.AlignLeft
+                Layout.topMargin:10
+
+            }
+
             RowLayout {
-                id:entryRow
-                Layout.alignment:Qt.AlignLeft
-                visible:false
+                id: entryRow
+                visible: false
+                spacing: 5
+                Layout.alignment: Qt.AlignLeft
                 Layout.rightMargin:addUserBtn.width+25
-                
-                TextField{
-                    id:userEntry
-                    placeholderText:i18nd("lliurex-access-control","User names separated by space")
-                    font.pointSize:10
-                    width:263
-                    Layout.fillWidth:true
-                    focus:true
+                Layout.preferredWidth: usersList.implicitWidth
 
+                TextField {
+                    id: userEntry
+                    placeholderText: i18nd("lliurex-access-control", "User names separated by space")
+                    font.pointSize: 10
+                    focus: true
+                    Layout.fillWidth: true
                 }
-                Button{
-                   id:applyUserBtn
-                   display:AbstractButton.IconOnly
-                   icon.name:"dialog-ok.svg"
-                   enabled:userEntry.text.trim().length>0?true:false
-                   focus:true
-                   ToolTip.delay: 1000
-                   ToolTip.timeout: 3000
-                   ToolTip.visible: hovered
-                   ToolTip.text:i18nd("lliurex-access-control","Click to add the users to list")
-                   Keys.onReturnPressed: applyUserBtn.clicked()
-                   Keys.onEnterPressed: applyUserBtn.clicked()
-                   onClicked:{
-                        synchronizePopup.open()
-                        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Validating data. Wait a moment...")
-                        delay(500, function() {
-                            if (mainStackBridge.closePopUp){
-                                synchronizePopup.close(),
-                                timer.stop
 
-                            }
-                        })
+                Button {
+                    id: applyUserBtn
+                    display: AbstractButton.IconOnly
+                    icon.name: "dialog-ok"
+                    enabled: userEntry.text.trim().length > 0
+                    focus: true
+                    
+                    ToolTip.delay: 1000
+                    ToolTip.timeout: 3000
+                    ToolTip.visible: hovered
+                    ToolTip.text: i18nd("lliurex-access-control", "Click to add the users to list")
+                    
+                    Keys.onReturnPressed: applyUserBtn.clicked()
+                    Keys.onEnterPressed: applyUserBtn.clicked()
+                    
+                    onClicked: {
                         userStackBridge.addUser(userEntry.text)
-                        entryRow.visible=false
+                        entryRow.visible = false
                         userEntry.text=""
-
-                   }
+                    }
                 }
+
                 Button{
                    id:cancelUserBtn
                    display:AbstractButton.IconOnly
-                   icon.name:"dialog-close.svg"
+                   icon.name:"dialog-close"
                    focus:true
+
                    ToolTip.delay: 1000
                    ToolTip.timeout: 3000
                    ToolTip.visible: hovered
                    ToolTip.text:i18nd("lliurex-access-control","Click to close")
+
                    Keys.onReturnPressed: cancelUserBtn.clicked()
                    Keys.onEnterPressed: cancelUserBtn.clicked()
+                   
                    onClicked:{
                         entryRow.visible=false
                         userEntry.text=""
                    }
                 }
-
             }
-            RowLayout{
+
+           RowLayout{
                 Layout.alignment:Qt.AlignHCenter
                 Layout.rightMargin:10
 
@@ -141,13 +133,14 @@ Rectangle{
                 ColumnLayout{
                     id:userBtnLayout
                     Layout.leftMargin:10
+
                     Button{
                         id:addUserBtn
                         display:AbstractButton.TextBesideIcon
-                        icon.name:"contact-new.svg"
+                        icon.name:"contact-new"
                         text:i18nd("lliurex-access-control","Add users")
-                        implicitWidth:140
                         enabled:userControlCb.checked && userEntry.text==""
+                        implicitWidth:140
                         Keys.onReturnPressed: addUserBtn.clicked()
                         Keys.onEnterPressed: addUserBtn.clicked()
                         onClicked:{
@@ -158,17 +151,11 @@ Rectangle{
                     Button{
                         id:removeListBtn
                         display:AbstractButton.TextBesideIcon
-                        icon.name:"delete.svg"
+                        icon.name:"delete"
                         text:i18nd("lliurex-access-control","Remove List")
-                        implicitWidth:140
                         focus:true
-                        enabled:{
-                            if ((userList.listCount>0)&&(userEntry.text=="")){
-                                true
-                            }else{
-                                false
-                            }
-                        }
+                        enabled:(userList.listCount>0 && userEntry.text==="")?true:false
+                        implicitWidth:140
                         Keys.onReturnPressed: removeListBtn.clicked()
                         Keys.onEnterPressed: removeListBtn.clicked()                    
                         onClicked:{
@@ -180,12 +167,16 @@ Rectangle{
             }
         }
     }
+
+    Item{
+        Layout.fillHeight:true
+    }
+
     RowLayout{
         id:btnBox
         anchors.bottom: parent.bottom
         anchors.right:parent.right
-        anchors.bottomMargin:15
-        anchors.rightMargin:10
+        anchors.margins:15
         spacing:10
 
         Button {
@@ -193,31 +184,28 @@ Rectangle{
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-ok.svg"
+            icon.name:"dialog-ok"
             text:i18nd("lliurex-access-control","Apply")
-            Layout.preferredHeight:40
-            enabled:userStackBridge.settingsUserChanged
+            enabled:userStackBridge.hasUserChanges
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()                    
             onClicked:{
-                applyChanges(),
-                closeTimer.stop(),
+                closeTimer.stop()
                 userStackBridge.applyUserChanges()
             }
         }
+
         Button {
             id:cancelBtn
             visible:true
             focus:true
             display:AbstractButton.TextBesideIcon
-            icon.name:"dialog-cancel.svg"
+            icon.name:"dialog-cancel"
             text:i18nd("lliurex-access-control","Cancel")
-            Layout.preferredHeight: 40
-            enabled:userStackBridge.settingsUserChanged
+            enabled:userStackBridge.hasUserChanges
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()                    
             onClicked:{
-                discardChanges(),
                 closeTimer.stop(),
                 userStackBridge.cancelUserChanges()
             }
@@ -231,54 +219,60 @@ Rectangle{
 
         anchors.centerIn:Overlay.overlay
         closePolicy:Popup.NoAutoClose
+
         background:Rectangle{
             color:"#ebeced"
             border.color:"#b8b9ba"
             border.width:1
-            radius:5.0
+            radius:5
         }
 
-        contentItem: Rectangle {
-            color: "#ebeced"
+        contentItem: Item {
             implicitWidth: 550
             implicitHeight: 105
-            anchors.topMargin:5
-            anchors.leftMargin:5
 
-            Image{
-                id:adminDialogIcon
-                source:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
-
-            }
-            Text {
-                id:adminDialogText
-                text:i18nd("lliurex-access-control","Local administrators have been detected in the list of users to add.\nDo you want to include them in the list of users?")
-                font.family: "Quattrocento Sans Bold"
-                font.pointSize: 10
-                anchors.left:adminDialogIcon.right
-                anchors.verticalCenter:adminDialogIcon.verticalCenter
-                anchors.leftMargin:10
-            
-            }
             RowLayout {
-                anchors.bottom:parent.bottom
-                anchors.right:parent.right
-                anchors.topMargin:15
-                spacing:10
+                id: contentRow
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                spacing: 15
+
+
+                Kirigami.Icon {
+                    id:adminDialogIcon
+                    source:"dialog-warning.svg"
+                    Layout.preferredWidth: Kirigami.Units.iconSizes.huge
+                    Layout.preferredHeight: Kirigami.Units.iconSizes.huge
+                }
+
+                Text {
+                    id:adminDialogText
+                    text:i18nd("lliurex-access-control","Local administrators have been detected in the list of users to add.\nDo you want to include them in the list of users?")
+                    font.pointSize: 10
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                    color: "#31363b"
+                
+                }
+            }
+
+            RowLayout {
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                anchors.margins: 10
+                spacing: 10
 
                 Button {
                     id:adminDialogApplyBtn
                     display:AbstractButton.TextBesideIcon
-                    icon.name:"dialog-ok.svg"
+                    icon.name:"dialog-ok"
                     text: i18nd("lliurex-access-control","Yes")
                     focus:true
-                    font.family: "Quattrocento Sans Bold"
-                    font.pointSize: 10
                     Keys.onReturnPressed: adminDialogApplyBtn.clicked()
                     Keys.onEnterPressed: adminDialogApplyBtn.clicked()
-                    onClicked:{
-                        userStackBridge.manageLocalAdminDialog("Accept")
-                    }                    
+                    onClicked:userStackBridge.manageLocalAdminDialog("Accept")
 
                 }
 
@@ -288,35 +282,22 @@ Rectangle{
                     icon.name:"dialog-cancel.svg"
                     text: i18nd("lliurex-access-control","No")
                     focus:true
-                    font.family: "Quattrocento Sans Bold"
-                    font.pointSize: 10
                     Keys.onReturnPressed: adminDialogCancelBtn.clicked()
                     Keys.onEnterPressed: adminDialogCancelBtn.clicked()
-                    onClicked:{
-                        userStackBridge.manageLocalAdminDialog("Cancel")
-                    }                    
+                    
+                    onClicked: userStackBridge.manageLocalAdminDialog("Cancel")
        
                 }
 
             }
         }
-     }
+    }
 
     ChangesDialog{
         id:userChangesDialog
         dialogVisible:userStackBridge.showUserChangesDialog
         dialogMsg:i18nd("lliurex-access-control","The are pending changes to apply.\nDo you want apply the changes or discard them?")
-        Connections{
-            target:userChangesDialog
-            function onDialogApplyClicked(){
-                applyChanges()
-                
-            }
-            function onDiscardDialogClicked(){
-                discardChanges()
-            }
-
-        }
+        
     }
 
     Popup{
@@ -325,33 +306,41 @@ Rectangle{
         modal:true
         closePolicy:Popup.NoAutoClose
         anchors.centerIn:Overlay.overlay
+
         background:Rectangle{
             color:"#ebeced"
             border.color:"#b8b9ba"
             border.width:1
             radius:5.0
-       }
+        }
 
-        contentItem: Rectangle {
-            color: "#ebeced"
+        contentItem: Item {
             implicitWidth: 480
             implicitHeight: 105
-            anchors.topMargin:5
-            anchors.leftMargin:5
 
-            Image{
-                id:removeListDialogIcon
-                source:"/usr/share/icons/breeze/status/64/dialog-warning.svg"
-            }
+            RowLayout {
+                id: contentRemoveRow
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                spacing: 15
 
-            Text {
-                id:removeListDialogText
-                text:i18nd("lliurex-access-control","The user list is going to be delete.Do you wish to continue?")
-                font.family: "Quattrocento Sans Bold"
-                font.pointSize: 10
-                anchors.left:removeListDialogIcon.right
-                anchors.verticalCenter:removeListDialogIcon.verticalCenter
-                anchors.leftMargin:10
+                Kirigami.Icon {
+                    id:removeListDialogIcon
+                    source:"dialog-warning.svg"
+                    Layout.preferredWidth: Kirigami.Units.iconSizes.huge
+                    Layout.preferredHeight: Kirigami.Units.iconSizes.huge
+                }
+
+                Text {
+                    id:removeListDialogText
+                    text:i18nd("lliurex-access-control","The user list is going to be delete.Do you wish to continue?")
+                    font.pointSize: 10
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                    color: "#31363b"
+                }
             }
            
             RowLayout {
@@ -363,11 +352,9 @@ Rectangle{
                 Button {
                     id:removeListDialogApplyBtn
                     display:AbstractButton.TextBesideIcon
-                    icon.name:"dialog-ok.svg"
+                    icon.name:"dialog-ok"
                     text: i18nd("lliurex-access-control","Accept")
                     focus:true
-                    font.family: "Quattrocento Sans Bold"
-                    font.pointSize: 10
                     Keys.onReturnPressed: removeListDialogApplyBtn.clicked()
                     Keys.onEnterPressed: removeListDialogApplyBtn.clicked()
                     onClicked:{
@@ -381,106 +368,57 @@ Rectangle{
                Button {
                     id:removeListDialogCancelBtn
                     display:AbstractButton.TextBesideIcon
-                    icon.name:"dialog-cancel.svg"
+                    icon.name:"dialog-cancel"
                     text: i18nd("lliurex-access-control","Cancel")
                     focus:true
-                    font.family: "Quattrocento Sans Bold"
-                    font.pointSize: 10
                     Keys.onReturnPressed: removeListDialogCancelBtn.clicked()
                     Keys.onEnterPressed: removeListDialogCancelBtn.clicked()
-                    onClicked:{
-                        removeListDialog.close() 
-                    }                  
-
+                    onClicked:removeListDialog.close() 
                 }
           
             }
         }
     }
 
-    CustomPopup{
-        id:synchronizePopup
-     }
-
-    Timer{
-        id:timer
-    }
-
-    function delay(delayTime,cb){
-        timer.interval=delayTime;
-        timer.repeat=true;
-        timer.triggered.connect(cb);
-        timer.start()
-    }
-
 
     function getMessageText(code){
 
-        var msg="";
         switch (code){
             case 10:
-                msg=i18nd("lliurex-access-control","Changes applied successfully");
-                break;
+                return i18nd("lliurex-access-control","Changes applied successfully")
             case -30:
-                msg=i18nd("lliurex-access-control","It is not possible to deactive access control by user");
-                break;
+                return i18nd("lliurex-access-control","It is not possible to deactive access control by user")
             case -40:
-                msg=i18nd("lliurex-access-control","Unable to update the user list");
-                break;                
+                return i18nd("lliurex-access-control","Unable to update the user list")           
             case -80:
-                msg=i18nd("lliurex-access-control","There are no users selected to lock their access");
-                break;
+                return i18nd("lliurex-access-control","There are no users selected to lock their access")
             case -90:
-                msg=i18nd("lliurex-access-control","The indicated users already exist in the list");
-                break;
+                return i18nd("lliurex-access-control","The indicated users already exist in the list")
             case -100:
-                msg=i18nd("lliurex-access-control","It is not possible to lock the user with which you are configuring the access control");
-                break;
+                return i18nd("lliurex-access-control","It is not possible to lock the user with which you are configuring the access control")
             case -200:
-				msg=i18nd("lliurex-access-control", "It is not possible to lock users from teacher or admins groups")
-				break;
+				return i18nd("lliurex-access-control", "It is not possible to lock users from teacher or admins groups")
             default:
-                break;
+                return ""
         }
-        return msg;
 
     }
 
     function getMessageType(type){
 
-        switch (type){
-            case "Info":
-                return Kirigami.MessageType.Information
-            case "Success":
+        switch (type) {
+            case 0:
                 return Kirigami.MessageType.Positive
-            case "Error":
+            case 1:
                 return Kirigami.MessageType.Error
-            case "Warning":
+            case 2:
                 return Kirigami.MessageType.Warning
-
+            case 3:
+                return Kirigami.MessageType.Information
+           default:
+                return Kirigami.MessageType.Information
         }
 
     } 
-
-    function applyChanges(){
-        synchronizePopup.open()
-        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Apply changes. Wait a moment...")
-        delay(500, function() {
-            if (mainStackBridge.closePopUp){
-                synchronizePopup.close(),
-                timer.stop()
-            }
-          })
-    } 
-
-    function discardChanges(){
-        synchronizePopup.open()
-        synchronizePopup.popupMessage=i18nd("lliurex-access-control", "Restoring previous values. Wait a moment...")
-        delay(1000, function() {
-            if (mainStackBridge.closePopUp){
-                synchronizePopup.close(),
-                timer.stop()
-            }
-          })
-    }      
+   
 } 

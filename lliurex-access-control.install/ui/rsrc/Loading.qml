@@ -4,43 +4,64 @@ import QtQuick.Layouts
 
 
 Rectangle{
+    id:loadRoot
     visible: true
-    Layout.fillWidth:true
-    Layout.fillHeight: true
 
-    GridLayout{
-        id: loadGrid
-        rows: 2
-        flow: GridLayout.TopToBottom
-        anchors.centerIn:parent
+    color:"transparent"
 
-        RowLayout{
-            Layout.fillWidth: true
-            Layout.alignment:Qt.AlignHCenter
+    ColumnLayout {
+        id: mainLoaderLayout
+        anchors.centerIn: parent
+        width: parent.width * 0.9
+        spacing: 15
 
-            Rectangle{
-                color:"transparent"
-                width:30
-                height:30
-                
-                AnimatedImage{
-                    source: "/usr/share/lliurex-access-control/rsrc/loading.gif"
-                    transform: Scale {xScale:0.45;yScale:0.45}
+        ColumnLayout{
+            Layout.alignment: Qt.AlignHCenter
+            spacing:10
+
+            Image{
+                id:spinnerImage
+                source: "loading.png"
+                Layout.preferredWidth: 24
+                Layout.preferredHeight: 24
+                Layout.alignment: Qt.AlignHCenter
+                fillMode: Image.PreserveAspectFit
+                smooth:false
+                antialiasing:false
+
+                rotation:0
+            }
+            
+            Timer{
+                id:rotationTimer
+                running:(spinnerImage!==null && loadRoot!==null) && loadRoot.visible
+                repeat:true
+                interval:100
+
+                onTriggered:{
+
+                    if (spinnerImage && typeof spinnerImage.rotation!="undefined"){
+                        var nextRotation= spinnerImage.rotation-30
+                        if (nextRotation<0){
+                            nextRotation=330
+                        }
+                        spinnerImage.rotation=nextRotation
+                     }else{
+                        stop()
+                     }   
+
                 }
             }
-        }
 
-        RowLayout{
-            Layout.fillWidth: true
-            Layout.alignment:Qt.AlignHCenter
-
-            Text{
-                id:loadtext
+            Text {
+                id: loadText
                 text:i18nd("lliurex-access-control", "Loading. Wait a moment...")
-                font.family: "Quattrocento Sans Bold"
                 font.pointSize: 10
-                Layout.alignment:Qt.AlignHCenter
+                color: palette.windowText
+                Layout.alignment: Qt.AlignHCenter
             }
+
         }
+
     }
 }
