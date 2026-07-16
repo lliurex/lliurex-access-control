@@ -1,3 +1,10 @@
+lliurex-access-control (1.22.21) noble; urgency=medium
+
+  * Refactorized code
+  * Migrated cli from python3-clint to argparser
+
+ -- Juan Ramon Pelegrina <juapesai@hotmail.com>  Thu, 16 Jul 2026 12:14:03 +0200
+
 lliurex-access-control (1.22.20) noble; urgency=medium
 
   * Fixed custom dialog template
