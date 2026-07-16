@@ -17,7 +17,7 @@ Description: App to manage access control to computer
 
 Package: lliurex-access-control-cli
 Architecture: amd64
-Depends: ${shlibs:Depends},n4d-lliurex-access-control, python3, python3-n4d-client, python3-clint
+Depends: ${shlibs:Depends},n4d-lliurex-access-control, python3, python3-n4d-client
 Description: CLI to manage access control to computer
  This package provides a cli to manage access control to computer
 
