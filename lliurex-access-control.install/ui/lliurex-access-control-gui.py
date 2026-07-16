@@ -30,7 +30,7 @@ engine.load(url)
 if not engine.rootObjects():
 	sys.exit(-1)
 
-engine.quit.connect(QApplication.quit)
+engine.quit.connect(app.quit)
 ret=app.exec()
 del engine
 del app
