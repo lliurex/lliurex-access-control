@@ -7,6 +7,14 @@ import org.kde.kirigami as Kirigami
 Rectangle{
     color:"transparent"
 
+    Timer{
+        id:debounceTimer
+        interval:500
+        repeat:false
+        property var callback
+        onTriggered: if (callback) callback()
+    }
+
     ColumnLayout{
         id:generalLayout
         anchors.top:parent.top
@@ -41,7 +49,7 @@ Rectangle{
             CheckBox {
                 id:cdcControlCb
                 text:i18nd("lliurex-access-control","Activated access control by center on this computer")
-                checked:cdcStackBridge.isAccessDenyCDCEnabled
+                checked:cdcStackBridge.isCDCAccessControlEnabled
                 font.pointSize: 10
                 focusPolicy: Qt.NoFocus
                 Keys.onReturnPressed: cdcControlCb.toggled()
@@ -72,22 +80,18 @@ Rectangle{
                     horizontalAlignment:TextInput.AlignLeft
                     focus:true
                     implicitWidth:75
-                    onTextEdited:{
-                        if ((cdcEntry.text=="")||(cdcEntry.text.length==8)){
-                            wait(1000, function() {
-                                waitTimer.stop()
-                                cdcStackBridge.manageCDCCodeChange(cdcEntry.text)
-                            })
-                        }
+                    onTextChanged:{
+                        debounceTimer.callback= ()=>cdcStackBridge.manageCDCCodeChange(cdcEntry.text)
+                        debounceTimer.restart()
                     }
-
+                   
                 }
             }
         }
-    }
 
-    Item{
-        Layout.fillHeight:true
+        Item{
+            Layout.fillHeight:true
+        }
     }
 
     RowLayout{
@@ -104,7 +108,7 @@ Rectangle{
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-ok"
             text:i18nd("lliurex-access-control","Apply")
-            enabled:cdcStackBridge.settingsCDCChanged
+            enabled:cdcStackBridge.hasCDCChanges
             Keys.onReturnPressed: applyBtn.clicked()
             Keys.onEnterPressed: applyBtn.clicked()
             onClicked:{
@@ -119,7 +123,7 @@ Rectangle{
             display:AbstractButton.TextBesideIcon
             icon.name:"dialog-cancel"
             text:i18nd("lliurex-access-control","Cancel")
-            enabled:cdcStackBridge.settingsCDCChanged
+            enabled:cdcStackBridge.hasCDCChanges
             Keys.onReturnPressed: cancelBtn.clicked()
             Keys.onEnterPressed: cancelBtn.clicked()
             onClicked:{
