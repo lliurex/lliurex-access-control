@@ -261,7 +261,6 @@ class Bridge(QObject):
 
 		self.isCDCAccessControlEnabled=copy.deepcopy(self.n4dManager.isCDCAccessControlEnabled)
 		self.cdcInfo=copy.deepcopy(self.n4dManager.cdcInfo)
-		self.cdcCode=""
 		self.cdcCode=self.cdcInfo.get("code")
 	
 	#def _updateCDCConfig
